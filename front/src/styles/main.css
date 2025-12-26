@@ -383,3 +383,67 @@ hr {
     height: 50px;
     overflow: hidden; /* Asegura que no se vea el recorte */
   }
+
+  /* ========================================================= */
+/* 8. INTEGRACIÓN DE SIDEBAR AL LAYOUT */
+/* ========================================================= */
+
+.master-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.layout-body {
+    display: flex;
+    flex: 1; /* Ocupa el resto del espacio debajo del navbar */
+    flex-direction: row;
+}
+
+/* El sidebar ocupa un ancho fijo */
+.sidebar-container {
+    width: 240px;
+    background-color: var(--color-card-bg);
+    border-right: 1px solid #ddd;
+    padding: var(--spacing-lg);
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+}
+
+.sidebar-title {
+    font-size: 1rem;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-lg);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Área de contenido principal */
+.content-area {
+    flex: 1;
+    background-color: var(--color-background);
+    padding: var(--spacing-md);
+}
+
+/* Re-ajuste de tu app-container original */
+.has-sidebar .app-container {
+    max-width: 100%; /* Permitimos que use más espacio si hay sidebar */
+    margin: 0 auto;
+}
+
+/* Responsividad para móviles */
+@media (max-width: 768px) {
+    .layout-body {
+        flex-direction: column; /* Sidebar arriba del contenido en móvil */
+    }
+    .sidebar-container {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+}
