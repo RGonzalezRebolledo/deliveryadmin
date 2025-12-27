@@ -60,10 +60,10 @@ function Login() {
     }
   };
 
-  const handleRegister = () => {
-    // navigate('/Register');
-    navigate('/Register', { state: { role: role } });
-  };
+  // const handleRegister = () => {
+  //   // navigate('/Register');
+  //   navigate('/Register', { state: { role: role } });
+  // };
 
   return (
     <div className="order-form">
@@ -97,9 +97,9 @@ function Login() {
           Iniciar Sesión
         </button>
       </form>
-      <button className="btn-client" onClick={handleRegister}>
+      {/* <button className="btn-client" onClick={handleRegister}>
         Registro
-      </button>
+      </button> */}
     </div>
   );
 }

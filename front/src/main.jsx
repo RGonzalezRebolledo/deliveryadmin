@@ -60,7 +60,7 @@ const router = createBrowserRouter([
       // GRUPO DE RUTAS PROTEGIDAS PARA CLIENTES (Rol: 'cliente')
       // ------------------------------------------------------------------
       {
-        element: <ProtectedRoute allowedRoles={['cliente']} />,
+        element: <ProtectedRoute allowedRoles={['administrador']} />,
         children: [
         ]
       },
@@ -69,7 +69,7 @@ const router = createBrowserRouter([
       // GRUPO DE RUTAS PROTEGIDAS PARA CONDUCTORES (Rol: 'conductor' o 'delivery')
       // ------------------------------------------------------------------
       {
-        element: <ProtectedRoute allowedRoles={['repartidor']} />,
+        element: <ProtectedRoute allowedRoles={['supervisor']} />,
         children: [
 
           // Añade más rutas de conductor aquí
