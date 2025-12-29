@@ -9,8 +9,8 @@ const API_BASE_URL = window.GLOBAL_API_URL || 'http://localhost:4000';
 function Login() {
   const navigate = useNavigate();
   const { login } = useAuth(); // 💡 Obtener la función login del contexto
-  const location = useLocation();
-  const role = location.state?.role || 'repartidor';
+  // const location = useLocation();
+  // const role = '';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');  // Cambia a 'password' para consistencia
@@ -27,11 +27,10 @@ function Login() {
         
       // });
       const response = await axios.post(
-        `${API_BASE_URL}/login`, 
+        `${API_BASE_URL}/login/admin`, 
         {
             email,
             password,
-            tipo: role,
         },
         {
             // 💡 INTEGRACIÓN DE LAS CREDENCIALES
@@ -41,14 +40,16 @@ function Login() {
           // 💡 USAR LA FUNCIÓN LOGIN DEL CONTEXTO
             // response.data.user contiene { email, tipo, nombre } que recibimos del backend
             login(response.data.user);
-            console.log (response.data)
-
+            //console.log (response.data.user)
+            const {tipo} = response.data.user
+            console.log (tipo)
       // Axios resuelve solo para status 2xx, así que esto se ejecuta en éxito
       // alert('Inicio de sesión exitoso. Navegando al Dashboard.');
-      if (role === 'cliente') {
-        navigate('/client/dashboard');
-      } else {
-        navigate('/delivery/dashboard');
+      
+      if (tipo === 'administrador') {
+        navigate('/dashboardAdmin');
+      } else if (tipo === 'supervisor') {
+        navigate('/dashboardSupervisor');
       }
     } catch (err) {
       if (err.response) {

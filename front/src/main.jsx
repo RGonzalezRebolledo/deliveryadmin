@@ -8,6 +8,7 @@ import Layout from './pages/public/Layout.jsx';
 import Home from './pages/public/Home.jsx'; 
 import Login from './pages/public/Login.jsx';
 import Register from './pages/public/Register.jsx';
+import DashboardAdmin from './pages/administrador/dashboardAdmin.jsx';
 
 // 💡 IMPORTACIONES DE PROTECCIÓN
 import ProtectedRoute from './components/ProtectedRoute.jsx'; 
@@ -57,22 +58,27 @@ const router = createBrowserRouter([
       },
       
       // ------------------------------------------------------------------
-      // GRUPO DE RUTAS PROTEGIDAS PARA CLIENTES (Rol: 'cliente')
+      // GRUPO DE RUTAS PROTEGIDAS PARA administrador (Rol: 'administrador')
       // ------------------------------------------------------------------
       {
         element: <ProtectedRoute allowedRoles={['administrador']} />,
         children: [
+          {
+            path: "dashboardAdmin", // Sin "/" inicial si es hijo, corregido typo
+            element: <DashboardAdmin />,
+          },
+          // { path: "gestion-usuarios", element: <Usuarios /> }
         ]
       },
       
-      // ------------------------------------------------------------------
-      // GRUPO DE RUTAS PROTEGIDAS PARA CONDUCTORES (Rol: 'conductor' o 'delivery')
-      // ------------------------------------------------------------------
       {
-        element: <ProtectedRoute allowedRoles={['supervisor']} />,
+        element: <ProtectedRoute allowedRoles={['supervisor', 'administrador']} />, // El admin suele poder ver lo del supervisor
         children: [
-
-          // Añade más rutas de conductor aquí
+          // {
+          //   path: "dashboardSupervisor",
+          //   element: <DashboardSupervisor />,
+          // },
+          // { path: "pedidos", element: <Pedidos /> }
         ]
       },
       

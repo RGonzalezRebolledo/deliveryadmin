@@ -12,10 +12,10 @@ const PublicRoute = () => {
 
     // 2. LÓGICA DE REDIRECCIÓN: Si el usuario está autenticado, no debe ver rutas públicas.
     if (isAuthenticated && user) {
-        if (user.tipo === 'cliente') {
+        if (user.tipo === 'administrador') {
             // Redirige el cliente a su dashboard
-            return <Navigate to="/client/dashboard" replace />;
-        } else if (user.tipo === 'repartidor' || user.tipo === 'delivery') {
+            return <Navigate to="/dashboardAdmin" replace />;
+        } else if (user.tipo === 'supervisor') {
             // Redirige el conductor a su dashboard
             return <Navigate to="/delivery/dashboard" replace />;
         }
