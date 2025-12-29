@@ -358,7 +358,7 @@ hr {
 .mi-enlace {
     color: black; /* Color del texto */
     text-decoration: none; /* Quita el subrayado por defecto */
-    font-size: 16px;
+    font-size: 14px;
     padding: 10px 20px;
    /* border: 1px solid blue; */
     border-radius: 5px;
@@ -435,6 +435,26 @@ hr {
     max-width: 100%; /* Permitimos que use más espacio si hay sidebar */
     margin: 0 auto;
 }
+
+.btn-submenu {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font: inherit; /* Hereda fuente de los otros links */
+}
+
+.submenu-items {
+    background-color: rgba(0, 0, 0, 0.05); /* Un tono más oscuro para diferenciar */
+    border-radius: 4px;
+}
+
+.submenu-link {
+    font-size: 0.9rem; /* Un poco más pequeña que el link principal */
+    padding: 8px 12px;
+}
+
 
 /* Responsividad para móviles */
 @media (max-width: 768px) {
