@@ -19,6 +19,7 @@ const Sidebar = () => {
                 <Link to={user?.tipo === 'administrador' ? '/dashboardAdmin' : '/dashboardSupervisor'} className="mi-enlace">
                     📊 Dashboard
                 </Link>
+                <Link to="/gestion-usuarios" className="mi-enlace">Comercios Afiliados</Link>
 
                 {/* 🛡️ Solo para Administrador */}
                 {user?.tipo === 'administrador' && (
@@ -39,7 +40,7 @@ const Sidebar = () => {
                     
                     {configOpen && (
                         <div className="submenu-items" style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column' }}>
-                            <Link to="/config/vehiculo" className="mi-enlace submenu-link"> Tipo  Vehiculos</Link>
+                            <Link to="/typevehicle" className="mi-enlace submenu-link"> Tipo  Vehiculos</Link>
                             <Link to="/config/servicio" className="mi-enlace submenu-link"> Tipo Servicio</Link>
 
                             {/* Submenú condicional dentro de configuración */}

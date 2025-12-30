@@ -9,6 +9,7 @@ import Home from './pages/public/Home.jsx';
 import Login from './pages/public/Login.jsx';
 import Register from './pages/public/Register.jsx';
 import DashboardAdmin from './pages/administrador/dashboardAdmin.jsx';
+import TypeVehicle from './pages/sidebar/TypeVehicle.jsx';
 
 // 💡 IMPORTACIONES DE PROTECCIÓN
 import ProtectedRoute from './components/ProtectedRoute.jsx'; 
@@ -74,10 +75,10 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute allowedRoles={['supervisor', 'administrador']} />, // El admin suele poder ver lo del supervisor
         children: [
-          // {
-          //   path: "dashboardSupervisor",
-          //   element: <DashboardSupervisor />,
-          // },
+           {
+           path: "typevehicle",
+           element: <TypeVehicle />,
+           },
           // { path: "pedidos", element: <Pedidos /> }
         ]
       },

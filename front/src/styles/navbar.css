@@ -40,12 +40,14 @@
     display: flex;
     align-items: center; /* Centra verticalmente el texto y el botón */
     gap: 15px; /* Espacio entre el nombre y el botón */
+
 }
 
 .user-info span {
     /* Estilo del nombre del cliente */
     font-weight: 600;
     color: #333;
+    text-transform: uppercase;
 }
 
 .user-info button {
