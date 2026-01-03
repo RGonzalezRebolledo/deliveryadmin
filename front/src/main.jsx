@@ -9,7 +9,8 @@ import Home from './pages/public/Home.jsx';
 import Login from './pages/public/Login.jsx';
 import Register from './pages/public/Register.jsx';
 import DashboardAdmin from './pages/administrador/dashboardAdmin.jsx';
-import TypeVehicle from './pages/sidebar/TypeVehicle.jsx';
+import TypeVehicle from './pages/utils/TypeVehicle.jsx';
+import TypeService from './pages/utils/TypeService.jsx';
 
 // 💡 IMPORTACIONES DE PROTECCIÓN
 import ProtectedRoute from './components/ProtectedRoute.jsx'; 
@@ -79,7 +80,7 @@ const router = createBrowserRouter([
            path: "typevehicle",
            element: <TypeVehicle />,
            },
-          // { path: "pedidos", element: <Pedidos /> }
+           { path: "typeservice", element: <TypeService /> }
         ]
       },
       

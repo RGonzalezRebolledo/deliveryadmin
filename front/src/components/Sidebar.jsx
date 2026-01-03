@@ -41,7 +41,7 @@ const Sidebar = () => {
                     {configOpen && (
                         <div className="submenu-items" style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column' }}>
                             <Link to="/typevehicle" className="enlace-sidebar submenu-link"> Tipo  Vehiculos</Link>
-                            <Link to="/config/servicio" className="enlace-sidebar submenu-link"> Tipo Servicio</Link>
+                            <Link to="/typeService" className="enlace-sidebar submenu-link"> Tipo Servicio</Link>
 
                             {/* Submenú condicional dentro de configuración */}
                             {user?.tipo === 'administrador' && (
