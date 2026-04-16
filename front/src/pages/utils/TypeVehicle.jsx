@@ -3,7 +3,8 @@
   import axios from 'axios';
   import { useNavigate } from 'react-router-dom';
 
-  const API_BASE_URL = window.GLOBAL_API_URL || 'http://localhost:4000';
+//   const API_BASE_URL = window.GLOBAL_API_URL || 'http://localhost:4000';
+const API_BASE_URL = 'https://delivery-backend-production-c3cb.up.railway.app';
   
   const TypeVehicle = () => {
       const [formData, setFormData] = useState({

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAuth } from '../hooks/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom'; // 💡 Importar useLocation
-import logogazella from '../assets/logo.png';
+import logogazella from '/logo.png';
 import '../styles/navbar.css';
 
 const Navbar = () => {

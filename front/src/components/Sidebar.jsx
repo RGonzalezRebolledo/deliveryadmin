@@ -20,6 +20,7 @@ const Sidebar = () => {
                     📊 Dashboard
                 </Link>
                 <Link to="/gestion-usuarios" className="enlace-sidebar">Comercios Afiliados</Link>
+                <Link to="/conductores/ResumenDrivers" className="enlace-sidebar">Conductores</Link>
 
                 {/* 🛡️ Solo para Administrador */}
                 {user?.tipo === 'administrador' && (

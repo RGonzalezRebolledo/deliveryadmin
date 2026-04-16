@@ -2,7 +2,8 @@
   import React, { useState } from 'react';
   import axios from 'axios';
 
-  const API_BASE_URL = window.GLOBAL_API_URL || 'http://localhost:4000';
+//   const API_BASE_URL = window.GLOBAL_API_URL || 'http://localhost:4000';
+const API_BASE_URL = 'https://delivery-backend-production-c3cb.up.railway.app';
   
   const TypeService = () => {
       const [formData, setFormData] = useState({

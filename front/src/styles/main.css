@@ -48,7 +48,7 @@ body {
 
 .app-container {
     padding: var(--spacing-md); 
-    max-width: 600px; /* Limita el ancho para diseño móvil */
+    max-width: 100%; /* Limita el ancho para diseño móvil */
     margin: 0 auto; /* Centra el contenedor */
     min-height: 100vh;
 }
@@ -487,3 +487,53 @@ hr {
   .enlace-sidebar:active {
     color: darkblue; /* Color cuando se hace clic */
   }
+
+  /* ========================================================= */
+/* 9. ESTILOS PARA TABLAS ADMINISTRATIVAS */
+/* ========================================================= */
+
+.admin-table-container {
+    width: 100%;
+    background-color: var(--color-card-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden; /* Para que los bordes redondeados funcionen */
+    margin-top: var(--spacing-md);
+}
+
+.admin-table {
+    width: 100%; /* Fuerza a la tabla a ocupar todo el ancho */
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.admin-table th {
+    background-color: #f8f9fa;
+    color: #888;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    padding: var(--spacing-md);
+    text-align: left;
+    border-bottom: 2px solid #eee;
+}
+
+.admin-table td {
+    padding: var(--spacing-md);
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    color: var(--color-text-dark);
+}
+
+.admin-table tr:hover {
+    background-color: #fff9f9; /* Un toque del color primary muy suave */
+}
+
+/* Ajuste para el botón dentro de la tabla */
+.btn-table-action {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    background-color: var(--color-secondary);
+    color: white;
+    border-radius: var(--radius-sm);
+}
