@@ -13,8 +13,10 @@
     align-items: center;
     
     /* Estilo básico para el navbar */
-    background-color: white; /* Un fondo suave */
+    background-color: var(--color-card-bg); /* Un fondo suave */
+    border-radius: 15px;
     padding: 5px 5px; /* Espacio interior */
+    
     /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra ligera */
 }
 

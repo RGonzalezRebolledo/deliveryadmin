@@ -8,10 +8,13 @@ import Layout from './pages/public/Layout.jsx';
 import Home from './pages/public/Home.jsx'; 
 import Login from './pages/public/Login.jsx';
 import Register from './pages/public/Register.jsx';
-import DashboardAdmin from './pages/administrador/dashboardAdmin.jsx';
+import DashboardAdmin from './pages/administrador/DashboardAdmin.jsx';
 import TypeVehicle from './pages/utils/TypeVehicle.jsx';
 import TypeService from './pages/utils/TypeService.jsx';
 import ResumenDrivers from './pages/conductores/ResumenDrivers.jsx';
+import ActiveOrders from './pages/administrador/AdminActiveOrders.jsx';
+import ClientsList from './pages/administrador/AdminClientsList.jsx';
+import DriversMonitor from './pages/administrador/AdminDriversMonitor.jsx';
 
 // 💡 IMPORTACIONES DE PROTECCIÓN
 import ProtectedRoute from './components/ProtectedRoute.jsx'; 
@@ -82,7 +85,11 @@ const router = createBrowserRouter([
            element: <TypeVehicle />,
            },
            { path: "typeservice", element: <TypeService /> },
-           { path: "conductores/ResumenDrivers", element: <ResumenDrivers/> }
+           { path: "conductores/ResumenDrivers", element: <ResumenDrivers/> },
+
+           { path: "administrador/AdminActiveOrders", element: <ActiveOrders/> },
+           { path: "administrador/AdminClientsList", element: <ClientsList/> },
+           { path: "administrador/AdminDriversMonitor", element: <DriversMonitor/> }
         ]
       },
       

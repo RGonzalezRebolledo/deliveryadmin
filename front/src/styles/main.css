@@ -5,13 +5,13 @@
 :root {
     /* Paleta de colores inspirada en PedidosYa/Delivery Apps */
     --color-primary: #FF5A5F; /* Naranja/Rojo vibrante (Main Brand Color) */
-    --color-secondary: #00BFFF; /* Azul vibrante (Accent/Delivery) */
+    --color-secondary: #c1eaf8; /* Azul vibrante (Accent/Delivery) */
     
     /* --color-background: linear-gradient(to bottom, rgba(0, 123, 255, 0.5), rgba(0, 0, 139, 0.7)); /* Degradado azul semi-transparente 
   */
 
-    --color-background: #f9fafc; /* Fondo general muy suave */
-    --color-card-bg: #ffffff; /* Fondo de tarjetas */
+    --color-background: #b0eafc; /* Fondo general muy suave */
+    --color-card-bg: #9bddf7; /* Fondo de tarjetas */
     --color-text-dark: #333333;
     --color-text-light: #ffffff;
     --color-success: #4CAF50; /* Verde para acciones positivas */
@@ -392,6 +392,7 @@ hr {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+
 }
 
 .layout-body {
@@ -404,11 +405,11 @@ hr {
 .sidebar-container {
     width: 240px;
     background-color: var(--color-card-bg);
-    border-right: 1px solid #ddd;
+    /* border-right: 1px solid #ddd; */
     padding: var(--spacing-lg);
     box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    border-radius: 15px;
 }
-
 .sidebar-title {
     font-size: 1rem;
     color: var(--color-primary);
@@ -434,6 +435,7 @@ hr {
 .has-sidebar .app-container {
     max-width: 100%; /* Permitimos que use más espacio si hay sidebar */
     margin: 0 auto;
+
 }
 
 .btn-submenu {

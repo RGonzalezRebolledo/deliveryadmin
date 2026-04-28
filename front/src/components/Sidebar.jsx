@@ -19,8 +19,11 @@ const Sidebar = () => {
                 <Link to={user?.tipo === 'administrador' ? '/dashboardAdmin' : '/dashboardSupervisor'} className="enlace-sidebar">
                     📊 Dashboard
                 </Link>
-                <Link to="/gestion-usuarios" className="enlace-sidebar">Comercios Afiliados</Link>
+                {/* <Link to="/gestion-usuarios" className="enlace-sidebar">Comercios Afiliados</Link> */}
                 <Link to="/conductores/ResumenDrivers" className="enlace-sidebar">Conductores</Link>
+                <Link to="/administrador/AdminClientsList" className="enlace-sidebar">Clientes</Link>
+                <Link to="/administrador/AdminActiveOrders" className="enlace-sidebar">Pedidos</Link>
+                <Link to="/administrador/AdminDriversMonitor" className="enlace-sidebar">Conductores-pedidos</Link>
 
                 {/* 🛡️ Solo para Administrador */}
                 {user?.tipo === 'administrador' && (
