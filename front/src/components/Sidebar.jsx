@@ -21,20 +21,21 @@ const Sidebar = () => {
                 </Link>
                 {/* <Link to="/gestion-usuarios" className="enlace-sidebar">Comercios Afiliados</Link> */}
                 <Link to="/conductores/ResumenDrivers" className="enlace-sidebar">Conductores</Link>
+                <Link to="/administrador/AdminAvailableDrivers" className="enlace-sidebar">Conductores Activos</Link>
                 <Link to="/administrador/AdminClientsList" className="enlace-sidebar">Clientes</Link>
                 <Link to="/administrador/AdminActiveOrders" className="enlace-sidebar">Pedidos</Link>
-                <Link to="/administrador/AdminDriversMonitor" className="enlace-sidebar">Conductores-pedidos</Link>
+                <Link to="/administrador/AdminDriversMonitor" className="enlace-sidebar">Conductores-Pedidos</Link>
 
                 {/* 🛡️ Solo para Administrador */}
                 {user?.tipo === 'administrador' && (
                     <>
-                        <Link to="/gestion-usuarios" className="enlace-sidebar">👥 Usuarios</Link>
-                        <Link to="/reportes-financieros" className="enlace-sidebar">💰 Finanzas</Link>
+                        {/* <Link to="/gestion-usuarios" className="enlace-sidebar">👥 Usuarios</Link>
+                        <Link to="/reportes-financieros" className="enlace-sidebar">💰 Finanzas</Link> */}
                     </>
                 )}
 
-                <Link to="/pedidos" className="enlace-sidebar">📦 Gestión de Pedidos</Link>
-                <Link to="/profile" className="enlace-sidebar">👤 Mi Perfil</Link>
+                {/* <Link to="/pedidos" className="enlace-sidebar">📦 Gestión de Pedidos</Link>
+                <Link to="/profile" className="enlace-sidebar">👤 Mi Perfil</Link> */}
 
                 {/* --- SECCIÓN CONFIGURACIÓN CON SUBMENÚ --- */}
                 <div className="submenu-container">
@@ -50,8 +51,8 @@ const Sidebar = () => {
                             {/* Submenú condicional dentro de configuración */}
                             {user?.tipo === 'administrador' && (
                                 <>
-                                    <Link to="/config/tarifas" className="enlace-sidebar submenu-link">💵 Tarifas de Envío</Link>
-                                    <Link to="/config/zonas" className="enlace-sidebar submenu-link">📍 Zonas de Entrega</Link>
+                                    {/* <Link to="/config/tarifas" className="enlace-sidebar submenu-link">💵 Tarifas de Envío</Link>
+                                    <Link to="/config/zonas" className="enlace-sidebar submenu-link">📍 Zonas de Entrega</Link> */}
                                 </>
                             )}
                         </div>

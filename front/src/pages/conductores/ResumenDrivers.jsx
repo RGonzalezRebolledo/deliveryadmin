@@ -191,6 +191,7 @@ const AdminDriverVerification = () => {
           <table className="admin-table">
             <thead>
               <tr>
+                <th style={{ textAlign: "center" }}>ID</th> {/* COLUMNA AGREGADA */}
                 <th style={{ textAlign: "center" }}>Nombre</th>
                 <th style={{ textAlign: "center" }}>Email</th>
                 <th style={{ textAlign: "center" }}>Estatus</th>
@@ -205,27 +206,30 @@ const AdminDriverVerification = () => {
 
                 return (
                   <tr key={d.usuario_id}>
+                    {/* CELDA DE ID AGREGADA */}
+                    <td style={{ textAlign: "center", fontWeight: "bold", color: "#666" }}>
+                        #{d.usuario_id}
+                    </td>
                     <td style={{ textAlign: "center" }}>
-                      {/* NOMBRE INTEGRADO: NEGRO, SIN SUBRAYADO, CON HOVER */}
                       <button
                         onClick={() => {
                           setDriverToView(d);
                           setShowViewModal(true);
                         }}
                         style={{
-                            display: "flex",           // Activa Flexbox
-                            alignItems: "center",      // Centra verticalmente
-                            justifyContent: "center",  // Centra horizontalmente
-                            width: "100%",             // Ocupa todo el ancho de la celda para facilitar el clic
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "100%",
                             background: "transparent", 
                             border: "none",
-                            outline: "none",           
-                            boxShadow: "none",         
+                            outline: "none",
+                            boxShadow: "none",
                             color: "#222",
                             textDecoration: "none",
                             cursor: "pointer",
                             fontWeight: "bold",
-                            padding: "8px 0",          // Un poco de espacio vertical para que sea fácil tocarlo
+                            padding: "8px 0",
                             margin: 0,
                             fontSize: "0.95rem",
                             transition: "color 0.2s"
