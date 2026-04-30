@@ -4,8 +4,8 @@ import axios from 'axios';
 import { useAuth } from '../../hooks/AuthContext'; // 💡 Importar el Hook de Auth
 
 
-// const API_BASE_URL = window.GLOBAL_API_URL || 'http://localhost:4000';
-const API_BASE_URL = 'https://delivery-backend-production-c3cb.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 function Login() {
   const navigate = useNavigate();
