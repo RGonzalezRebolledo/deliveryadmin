@@ -36,6 +36,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
     // 1. EFECTO INMEDIATO: Sincroniza el estado en cuanto cambia la prop 'driver'
     useEffect(() => {
+        console.log("👉 OBJETO DRIVER RECIBIDO EN EL MODAL:", driver);
         if (driver) {
             setFormData(buildInitialFormData(driver));
         }
