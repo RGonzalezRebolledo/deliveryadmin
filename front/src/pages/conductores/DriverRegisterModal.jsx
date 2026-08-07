@@ -32,6 +32,8 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
         foto_documento: data?.foto_documento || data?.foto_cedula || data?.foto_doc || data?.documento_foto || ''
     });
 
+    console.log("URL Foto Documento:", formData.foto_documento);
+
     const [formData, setFormData] = useState(() => buildInitialFormData(driver));
 
     // 1. EFECTO INMEDIATO: Sincroniza el estado en cuanto cambia la prop 'driver'
