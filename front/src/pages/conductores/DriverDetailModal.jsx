@@ -24,7 +24,7 @@ const DriverDetailModal = ({ driver, onClose }) => {
 
   const imgContainerStyle = {
     flex: 1,
-    height: "280px", // Ajustado para que encajen bien las 3 tarjetas en horizontal
+    height: "280px",
     borderRadius: "8px",
     overflow: "hidden",
     border: "1px solid #ddd",
@@ -38,10 +38,10 @@ const DriverDetailModal = ({ driver, onClose }) => {
 
   // Formateador visual para el Tipo de Conductor
   const getConductorLabel = (tipo) => {
-    if (!tipo) return 'No especificado';
+    if (!tipo) return 'Sin asignar';
     return tipo.toLowerCase().includes('interno') 
-      ? 'Conductor Interno (Prioritario)' 
-      : 'Conductor Foráneo / Aliado';
+      ? 'Interno (Prioritario)' 
+      : 'Foráneo / Aliado';
   };
 
   return (
@@ -58,12 +58,13 @@ const DriverDetailModal = ({ driver, onClose }) => {
           paddingBottom: '15px'
         }}>
           <div>
-            {/* NOMBRE Y STATUS A LA PAR */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '5px' }}>
-              <p style={{ margin: 0, color: "#333", fontSize: "1.1rem", fontWeight: '600' }}>
+            {/* NOMBRE, STATUS Y TIPO DE CONDUCTOR EN LA MISMA LÍNEA */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '5px', flexWrap: 'wrap' }}>
+              <p style={{ margin: 0, color: "#333", fontSize: "1.1rem", fontWeight: '600', marginRight: '4px' }}>
                 {driver.nombre}
               </p>
               
+              {/* BADGE DE ESTATUS */}
               <span style={{
                 backgroundColor: statusColor,
                 color: '#fff',
@@ -77,6 +78,22 @@ const DriverDetailModal = ({ driver, onClose }) => {
                 textTransform: 'uppercase'
               }}>
                 <span style={{ fontSize: '0.9rem' }}>●</span> {driver.is_active}
+              </span>
+
+              {/* 🆕 BADGE DE TIPO DE CONDUCTOR (Al lado del estatus) */}
+              <span style={{
+                backgroundColor: '#e2e8f0',
+                color: '#1e293b',
+                padding: '2px 8px',
+                borderRadius: '4px',
+                fontSize: '0.65rem',
+                fontWeight: '700',
+                display: 'inline-flex',
+                alignItems: 'center',
+                border: '1px solid #cbd5e1',
+                textTransform: 'uppercase'
+              }}>
+                🚗 {getConductorLabel(driver.tipo_conductor)}
               </span>
             </div>
           </div>
@@ -104,7 +121,7 @@ const DriverDetailModal = ({ driver, onClose }) => {
           </button>
         </div>
 
-        {/* 1. SECCIÓN DE IMÁGENES (Ahoar 3 Columnas) */}
+        {/* 1. SECCIÓN DE IMÁGENES (3 Columnas) */}
         <div style={{ display: 'flex', gap: '15px', marginBottom: '25px' }}>
           {/* Foto Perfil */}
           <div style={imgContainerStyle}>
@@ -130,7 +147,7 @@ const DriverDetailModal = ({ driver, onClose }) => {
             />
           </div>
 
-          {/* 🆕 Foto C.I / Documento */}
+          {/* Foto C.I / Documento */}
           <div style={imgContainerStyle}>
             <div style={tagStyle}>FOTO C.I / DOC</div>
             <img 
@@ -168,14 +185,6 @@ const DriverDetailModal = ({ driver, onClose }) => {
           <div>
             <span style={labelStyle}>Tipo de Vehículo</span>
             <span style={valueStyle}>{driver.tipo_vehiculo || 'No asignado'}</span>
-          </div>
-          
-          {/* 🆕 Tipo de Conductor (Ocupa las 2 columnas) */}
-          <div style={{ gridColumn: 'span 2' }}>
-            <span style={labelStyle}>Tipo de Conductor</span>
-            <span style={{ ...valueStyle, fontWeight: 'bold', color: '#1e293b' }}>
-              {getConductorLabel(driver.tipo_conductor)}
-            </span>
           </div>
         </div>
 
