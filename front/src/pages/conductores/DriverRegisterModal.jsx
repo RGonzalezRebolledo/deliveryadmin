@@ -5,6 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY; 
 
 const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
+    console.log("1. PROP DRIVER RECIBIDO:", driver);
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState({ perfil: false, vehiculo: false, documento: false });
     const [vehicleTypes, setVehicleTypes] = useState([]); 
@@ -32,7 +33,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
         foto_documento: data?.foto_documento || data?.foto_cedula || data?.foto_doc || data?.documento_foto || ''
     });
 
-    console.log("URL Foto Documento:", formData.foto_documento);
+   
 
     const [formData, setFormData] = useState(() => buildInitialFormData(driver));
 
