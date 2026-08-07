@@ -12,7 +12,14 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
     const isEditing = !!driver?.repartidor_id;
 
-    // Función auxiliar para construir formData sin perder campos
+    // Normaliza el valor de tipo_conductor a minúsculas para que coincida con las <option>
+    const normalizeConductorType = (type) => {
+        if (!type) return 'interno';
+        const val = String(type).toLowerCase().trim();
+        return (val === 'foraneo' || val === 'foráneo') ? 'foraneo' : 'interno';
+    };
+
+    // Función auxiliar estricta para mapear todas las posibles variantes de las propiedades
     const buildInitialFormData = (data) => ({
         usuario_id: data?.usuario_id || '',
         documento_identidad: data?.documento_identidad || data?.cedula || '',
@@ -21,46 +28,58 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
         vehicleDescript: data?.tipo_vehiculo || data?.vehiculo || '',   
         foto: data?.foto || data?.foto_perfil || '',
         foto_vehiculo: data?.foto_vehiculo || '',
-        // Soporta variaciones de nombres de campo comunes desde la BD
-        tipo_conductor: data?.tipo_conductor || data?.tipo || data?.tipo_repartidor || 'interno', 
-        foto_documento: data?.foto_documento || data?.foto_cedula || data?.foto_doc || ''
+        tipo_conductor: normalizeConductorType(data?.tipo_conductor || data?.tipo || data?.tipo_repartidor), 
+        foto_documento: data?.foto_documento || data?.foto_cedula || data?.foto_doc || data?.documento_foto || ''
     });
 
     const [formData, setFormData] = useState(() => buildInitialFormData(driver));
 
-    // Sincronizar formData si la prop driver cambia
+    // Cargar vehículos e inicializar estado
     useEffect(() => {
-        if (driver) {
-            setFormData(buildInitialFormData(driver));
-        }
-    }, [driver]);
+        let isMounted = true;
 
-    useEffect(() => {
-        const fetchInitialData = async () => {
+        const fetchAndInitialize = async () => {
+            setIsLoadingData(true);
             try {
                 const response = await axios.get(`${API_BASE_URL}/utils/vehicle`, { withCredentials: true });
-                setVehicleTypes(response.data);
-                
-                if (isEditing && response.data.length > 0) {
-                    const currentVehicle = response.data.find(v => 
-                        v.id === driver?.tipo_vehiculo_id || v.descript === (driver?.tipo_vehiculo || driver?.vehiculo)
+                const vehicles = response.data || [];
+
+                if (!isMounted) return;
+                setVehicleTypes(vehicles);
+
+                // Construimos la base con los datos pasados por prop
+                const baseForm = buildInitialFormData(driver);
+
+                // Si estamos editando, empatamos el id y descripción del vehículo
+                if (driver && vehicles.length > 0) {
+                    const matchedVehicle = vehicles.find(v => 
+                        v.id === driver?.tipo_vehiculo_id || 
+                        String(v.descript).toLowerCase() === String(driver?.tipo_vehiculo || driver?.vehiculo).toLowerCase()
                     );
-                    if (currentVehicle) {
-                        setFormData(prev => ({ 
-                            ...prev, 
-                            tipo_vehiculo_id: currentVehicle.id,
-                            vehicleDescript: currentVehicle.descript 
-                        }));
+
+                    if (matchedVehicle) {
+                        baseForm.tipo_vehiculo_id = matchedVehicle.id;
+                        baseForm.vehicleDescript = matchedVehicle.descript;
                     }
                 }
+
+                setFormData(baseForm);
             } catch (err) {
                 console.error('Error al cargar tipos de vehículos:', err);
+                if (isMounted) {
+                    setFormData(buildInitialFormData(driver));
+                }
             } finally {
-                setIsLoadingData(false);
+                if (isMounted) setIsLoadingData(false);
             }
         };
-        fetchInitialData();
-    }, [isEditing, driver]);
+
+        fetchAndInitialize();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [driver]);
 
     const handleVehicleChange = (e) => {
         const selectedDescript = e.target.value;
@@ -68,7 +87,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
         setFormData(prev => ({
             ...prev,
             vehicleDescript: selectedDescript,
-            tipo_vehiculo_id: vehicleObj?.id
+            tipo_vehiculo_id: vehicleObj?.id || ''
         }));
     };
 
