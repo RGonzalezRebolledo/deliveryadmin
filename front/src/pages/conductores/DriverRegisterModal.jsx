@@ -6,38 +6,32 @@ const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY;
 
 const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
     const [loading, setLoading] = useState(false);
-    // 🆕 Añadido estado para la subida de documento
     const [uploading, setUploading] = useState({ perfil: false, vehiculo: false, documento: false });
     const [vehicleTypes, setVehicleTypes] = useState([]); 
     const [isLoadingData, setIsLoadingData] = useState(true);
 
-    const isEditing = !!driver.repartidor_id;
+    const isEditing = !!driver?.repartidor_id;
 
-    const [formData, setFormData] = useState({
-        usuario_id: driver.usuario_id,
-        documento_identidad: driver.documento_identidad || driver.cedula || '',
-        tipo_documento: driver.tipo_documento || 'CI',
-        tipo_vehiculo_id: driver.tipo_vehiculo_id || '', 
-        vehicleDescript: driver.tipo_vehiculo || driver.vehiculo || '',   
-        foto: driver.foto || '',
-        foto_vehiculo: driver.foto_vehiculo || '',
-        tipo_conductor: driver.tipo_conductor || 'interno', // 🆕 Por defecto 'interno'
-        foto_documento: driver.foto_documento || ''          // 🆕 Foto del documento
+    // Función auxiliar para construir formData sin perder campos
+    const buildInitialFormData = (data) => ({
+        usuario_id: data?.usuario_id || '',
+        documento_identidad: data?.documento_identidad || data?.cedula || '',
+        tipo_documento: data?.tipo_documento || 'CI',
+        tipo_vehiculo_id: data?.tipo_vehiculo_id || '', 
+        vehicleDescript: data?.tipo_vehiculo || data?.vehiculo || '',   
+        foto: data?.foto || data?.foto_perfil || '',
+        foto_vehiculo: data?.foto_vehiculo || '',
+        // Soporta variaciones de nombres de campo comunes desde la BD
+        tipo_conductor: data?.tipo_conductor || data?.tipo || data?.tipo_repartidor || 'interno', 
+        foto_documento: data?.foto_documento || data?.foto_cedula || data?.foto_doc || ''
     });
 
+    const [formData, setFormData] = useState(() => buildInitialFormData(driver));
+
+    // Sincronizar formData si la prop driver cambia
     useEffect(() => {
         if (driver) {
-            setFormData({
-                usuario_id: driver.usuario_id,
-                documento_identidad: driver.documento_identidad || driver.cedula || '',
-                tipo_documento: driver.tipo_documento || 'CI',
-                tipo_vehiculo_id: driver.tipo_vehiculo_id || '', 
-                vehicleDescript: driver.tipo_vehiculo || driver.vehiculo || '',   
-                foto: driver.foto || '',
-                foto_vehiculo: driver.foto_vehiculo || '',
-                tipo_conductor: driver.tipo_conductor || 'interno',
-                foto_documento: driver.foto_documento || ''
-            });
+            setFormData(buildInitialFormData(driver));
         }
     }, [driver]);
 
@@ -49,7 +43,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                 
                 if (isEditing && response.data.length > 0) {
                     const currentVehicle = response.data.find(v => 
-                        v.id === driver.tipo_vehiculo_id || v.descript === (driver.tipo_vehiculo || driver.vehiculo)
+                        v.id === driver?.tipo_vehiculo_id || v.descript === (driver?.tipo_vehiculo || driver?.vehiculo)
                     );
                     if (currentVehicle) {
                         setFormData(prev => ({ 
@@ -78,7 +72,6 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
         }));
     };
 
-    // 🆕 Lógica actualizada para manejar la tercera foto
     const handleImageUpload = async (file, field) => {
         if (!file) return;
         
@@ -101,7 +94,6 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // 🆕 Validación de las 3 fotos obligatorias
         if (!formData.foto || !formData.foto_vehiculo || !formData.foto_documento) {
             return alert("Sube las 3 fotos requeridas (Perfil, Vehículo y Documento).");
         }
@@ -124,18 +116,18 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
             <div style={modalContentStyle}>
                 <h3 style={headerStyle}>
                     {isEditing ? 'Editar Registro:' : 'Completar Registro:'} 
-                    <span style={{ color: '#333', display: 'block' }}>{driver.nombre}</span>
+                    <span style={{ color: '#333', display: 'block' }}>{driver?.nombre}</span>
                 </h3>
                 
                 <form onSubmit={handleSubmit} style={formStyle}>
                     
-                    {/* 🆕 CAMPO: Tipo Conductor */}
+                    {/* CAMPO: Tipo Conductor */}
                     <div>
                         <label style={labelStyle}>Tipo de Conductor</label>
                         <select 
                             style={inputStyle}
                             value={formData.tipo_conductor}
-                            onChange={(e) => setFormData({...formData, tipo_conductor: e.target.value})}
+                            onChange={(e) => setFormData(prev => ({ ...prev, tipo_conductor: e.target.value }))}
                             required
                         >
                             <option value="interno">Conductor Interno (Prioritario)</option>
@@ -149,7 +141,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                             <select 
                                 style={{ ...inputStyle, width: '35%' }}
                                 value={formData.tipo_documento}
-                                onChange={(e) => setFormData({...formData, tipo_documento: e.target.value})}
+                                onChange={(e) => setFormData(prev => ({ ...prev, tipo_documento: e.target.value }))}
                             >
                                 <option value="CI">CI</option>
                                 <option value="Pasaporte">Pasaporte</option>
@@ -159,7 +151,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                                 style={{ ...inputStyle, width: '65%' }}
                                 type="text" placeholder="Ej: 25888999" required
                                 value={formData.documento_identidad}
-                                onChange={(e) => setFormData({...formData, documento_identidad: e.target.value})} 
+                                onChange={(e) => setFormData(prev => ({ ...prev, documento_identidad: e.target.value }))} 
                             />
                         </div>
                     </div>
@@ -182,7 +174,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                         </select>
                     </div>
 
-                    {/* 🆕 SECCIÓN DE FOTOS (3 Columnas) */}
+                    {/* SECCIÓN DE FOTOS (3 Columnas) */}
                     <div style={photoSectionStyle}>
                         {/* Foto Perfil */}
                         <div style={photoColumnStyle}>
@@ -204,7 +196,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                             </div>
                         </div>
 
-                        {/* 🆕 Foto Documento */}
+                        {/* Foto Documento */}
                         <div style={photoColumnStyle}>
                             <label style={labelStyle}>Foto C.I / Doc</label>
                             <input type="file" accept="image/*" style={fileInputStyle} onChange={(e) => handleImageUpload(e.target.files[0], 'foto_documento')} />
