@@ -12,14 +12,14 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
     const isEditing = !!driver?.repartidor_id;
 
-    // Normaliza el valor de tipo_conductor a minúsculas para que coincida con las <option>
+    // Normaliza el tipo de conductor a minúsculas para que coincida exactamente con las <option>
     const normalizeConductorType = (type) => {
         if (!type) return 'interno';
         const val = String(type).toLowerCase().trim();
         return (val === 'foraneo' || val === 'foráneo') ? 'foraneo' : 'interno';
     };
 
-    // Función auxiliar estricta para mapear todas las posibles variantes de las propiedades
+    // Construcción limpia del objeto de estado desde el prop recibida
     const buildInitialFormData = (data) => ({
         usuario_id: data?.usuario_id || '',
         documento_identidad: data?.documento_identidad || data?.cedula || '',
@@ -34,11 +34,18 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
     const [formData, setFormData] = useState(() => buildInitialFormData(driver));
 
-    // Cargar vehículos e inicializar estado
+    // 1. EFECTO INMEDIATO: Sincroniza el estado en cuanto cambia la prop 'driver'
+    useEffect(() => {
+        if (driver) {
+            setFormData(buildInitialFormData(driver));
+        }
+    }, [driver]);
+
+    // 2. EFECTO DE CARA DE VEHÍCULOS: No sobrescribe foto_documento ni tipo_conductor
     useEffect(() => {
         let isMounted = true;
 
-        const fetchAndInitialize = async () => {
+        const fetchVehicles = async () => {
             setIsLoadingData(true);
             try {
                 const response = await axios.get(`${API_BASE_URL}/utils/vehicle`, { withCredentials: true });
@@ -47,10 +54,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                 if (!isMounted) return;
                 setVehicleTypes(vehicles);
 
-                // Construimos la base con los datos pasados por prop
-                const baseForm = buildInitialFormData(driver);
-
-                // Si estamos editando, empatamos el id y descripción del vehículo
+                // Solo empatamos el tipo de vehículo si estamos editando
                 if (driver && vehicles.length > 0) {
                     const matchedVehicle = vehicles.find(v => 
                         v.id === driver?.tipo_vehiculo_id || 
@@ -58,23 +62,21 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                     );
 
                     if (matchedVehicle) {
-                        baseForm.tipo_vehiculo_id = matchedVehicle.id;
-                        baseForm.vehicleDescript = matchedVehicle.descript;
+                        setFormData(prev => ({
+                            ...prev,
+                            tipo_vehiculo_id: matchedVehicle.id,
+                            vehicleDescript: matchedVehicle.descript
+                        }));
                     }
                 }
-
-                setFormData(baseForm);
             } catch (err) {
                 console.error('Error al cargar tipos de vehículos:', err);
-                if (isMounted) {
-                    setFormData(buildInitialFormData(driver));
-                }
             } finally {
                 if (isMounted) setIsLoadingData(false);
             }
         };
 
-        fetchAndInitialize();
+        fetchVehicles();
 
         return () => {
             isMounted = false;
@@ -113,6 +115,11 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (!formData.usuario_id) {
+            return alert("Error: No se ha especificado el ID del usuario.");
+        }
+
         if (!formData.foto || !formData.foto_vehiculo || !formData.foto_documento) {
             return alert("Sube las 3 fotos requeridas (Perfil, Vehículo y Documento).");
         }
