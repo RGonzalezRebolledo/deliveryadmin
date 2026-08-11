@@ -10,7 +10,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
     const [uploading, setUploading] = useState({ perfil: false, vehiculo: false, documento: false });
     const [vehicleTypes, setVehicleTypes] = useState([]); 
     const [isLoadingData, setIsLoadingData] = useState(true);
-    const [errorMessage, setErrorMessage] = useState(''); // Estado para mostrar errores en UI
+    const [errorMessage, setErrorMessage] = useState('');
 
     const isEditing = !!driver?.repartidor_id;
 
@@ -21,11 +21,11 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
         return (val === 'foraneo' || val === 'foráneo') ? 'foraneo' : 'interno';
     };
 
-    // Construcción del estado inicial con fallback para usuario_id / id
+    // Construcción del estado inicial con saneamiento numérico
     const buildInitialFormData = (data) => ({
         usuario_id: data?.usuario_id || data?.id || '',
-        telefono: (data?.telefono || data?.phone || '').replace(/\D/g, '').slice(0, 11), // Solo números y máx 11
-        documento_identidad: data?.documento_identidad || data?.cedula || '',
+        telefono: (data?.telefono || data?.phone || '').replace(/\D/g, '').slice(0, 11), // Solo números, máx 11
+        documento_identidad: (data?.documento_identidad || data?.cedula || '').replace(/\D/g, '').slice(0, 10), // Solo números
         tipo_documento: data?.tipo_documento || 'CI',
         tipo_vehiculo_id: data?.tipo_vehiculo_id || '', 
         vehicleDescript: data?.tipo_vehiculo || data?.vehiculo || '',   
@@ -84,11 +84,20 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
         };
     }, [driver]);
 
-    // Manejador del teléfono: Solo números y hasta 11 dígitos
+    // MANEJADOR TELÉFONO: Solo dígitos y máx 11 caracteres
     const handlePhoneChange = (e) => {
         const value = e.target.value;
         if (/^\d*$/.test(value) && value.length <= 11) {
             setFormData(prev => ({ ...prev, telefono: value }));
+            setErrorMessage('');
+        }
+    };
+
+    // MANEJADOR DOCUMENTO / CÉDULA: Solo dígitos y máx 10 caracteres
+    const handleDocNumberChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value) && value.length <= 10) {
+            setFormData(prev => ({ ...prev, documento_identidad: value }));
             setErrorMessage('');
         }
     };
@@ -138,6 +147,10 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
         if (formData.telefono.length !== 11) {
             return setErrorMessage("El número de teléfono debe tener exactamente 11 dígitos.");
+        }
+
+        if (!formData.documento_identidad) {
+            return setErrorMessage("Por favor ingresa el número de documento de identidad.");
         }
 
         if (!formData.foto || !formData.foto_vehiculo || !formData.foto_documento) {
@@ -190,7 +203,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                         </select>
                     </div>
 
-                    {/* CAMPO: Teléfono (Solo números y máx 11) */}
+                    {/* CAMPO: Teléfono (Solo números y máx 11 dígitos) */}
                     <div>
                         <label style={labelStyle}>Número de Teléfono (11 dígitos)</label>
                         <input 
@@ -205,7 +218,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                         />
                     </div>
 
-                    {/* CAMPO: Documento de Identidad */}
+                    {/* CAMPO: Documento de Identidad (Solo números) */}
                     <div>
                         <label style={labelStyle}>Documento de Identidad</label>
                         <div style={{ display: 'flex', gap: '8px' }}>
@@ -220,9 +233,13 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                             </select>
                             <input 
                                 style={{ ...inputStyle, width: '65%' }}
-                                type="text" placeholder="Ej: 25888999" required
+                                type="text" 
+                                inputMode="numeric"
+                                placeholder="Ej: 25888999" 
+                                required
+                                maxLength={10}
                                 value={formData.documento_identidad}
-                                onChange={(e) => setFormData(prev => ({ ...prev, documento_identidad: e.target.value }))} 
+                                onChange={handleDocNumberChange} 
                             />
                         </div>
                     </div>
@@ -319,7 +336,6 @@ const loaderStyle = { fontSize: '0.75rem', color: '#ff4d4d', fontWeight: 'bold' 
 const footerStyle = { display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px', borderTop: '1px solid #eee', paddingTop: '20px' };
 const btnCancelStyle = { backgroundColor: 'transparent', border: '1px solid #ddd', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', color: '#999' };
 
-// Estilos de alerta de error
 const errorBannerStyle = {
     backgroundColor: '#ffebe9',
     color: '#d93025',
@@ -345,7 +361,6 @@ const closeErrorBtnStyle = {
 };
 
 export default DriverRegisterModal;
-
 
 // import React, { useEffect, useState } from 'react';
 // import axios from 'axios';
