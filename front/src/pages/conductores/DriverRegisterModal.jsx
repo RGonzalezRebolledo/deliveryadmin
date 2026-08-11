@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -13,16 +14,16 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
     const isEditing = !!driver?.repartidor_id;
 
-    // Normaliza el tipo de conductor a minúsculas para que coincida exactamente con las <option>
+    // Normaliza el tipo de conductor a minúsculas
     const normalizeConductorType = (type) => {
         if (!type) return 'interno';
         const val = String(type).toLowerCase().trim();
         return (val === 'foraneo' || val === 'foráneo') ? 'foraneo' : 'interno';
     };
 
-    // Construcción limpia del objeto de estado desde la prop recibida
+    // Construcción del estado inicial con fallback para usuario_id / id
     const buildInitialFormData = (data) => ({
-        usuario_id: data?.usuario_id || '',
+        usuario_id: data?.usuario_id || data?.id || '',
         telefono: data?.telefono || data?.phone || '',
         documento_identidad: data?.documento_identidad || data?.cedula || '',
         tipo_documento: data?.tipo_documento || 'CI',
@@ -36,15 +37,12 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
     const [formData, setFormData] = useState(() => buildInitialFormData(driver));
 
-    // 1. EFECTO INMEDIATO: Sincroniza el estado en cuanto cambia la prop 'driver'
     useEffect(() => {
-        console.log("👉 OBJETO DRIVER RECIBIDO EN EL MODAL:", driver);
         if (driver) {
             setFormData(buildInitialFormData(driver));
         }
     }, [driver]);
 
-    // 2. EFECTO DE CARGA DE VEHÍCULOS
     useEffect(() => {
         let isMounted = true;
 
@@ -57,7 +55,6 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                 if (!isMounted) return;
                 setVehicleTypes(vehicles);
 
-                // Solo empatamos el tipo de vehículo si estamos editando
                 if (driver && vehicles.length > 0) {
                     const matchedVehicle = vehicles.find(v => 
                         v.id === driver?.tipo_vehiculo_id || 
@@ -123,18 +120,25 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
             return alert("Error: No se ha especificado el ID del usuario.");
         }
 
+        if (!formData.telefono) {
+            return alert("Por favor ingresa un número de teléfono.");
+        }
+
         if (!formData.foto || !formData.foto_vehiculo || !formData.foto_documento) {
             return alert("Sube las 3 fotos requeridas (Perfil, Vehículo y Documento).");
         }
 
+        // Se extrae vehicleDescript para limpiar el objeto payload que irá al servidor
+        const { vehicleDescript, ...payload } = formData;
+
         setLoading(true);
         try {
-            await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, formData, { withCredentials: true });
+            await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, payload, { withCredentials: true });
             alert(isEditing ? "¡Registro actualizado!" : "¡Registro exitoso!");
             onSuccess();
             onClose();
         } catch (error) {
-            alert("Error al guardar los datos.");
+            alert(error.response?.data?.error || "Error al guardar los datos.");
         } finally {
             setLoading(false);
         }
@@ -293,7 +297,6 @@ const btnCancelStyle = { backgroundColor: 'transparent', border: '1px solid #ddd
 
 export default DriverRegisterModal;
 
-
 // import React, { useEffect, useState } from 'react';
 // import axios from 'axios';
 
@@ -316,9 +319,10 @@ export default DriverRegisterModal;
 //         return (val === 'foraneo' || val === 'foráneo') ? 'foraneo' : 'interno';
 //     };
 
-//     // Construcción limpia del objeto de estado desde el prop recibida
+//     // Construcción limpia del objeto de estado desde la prop recibida
 //     const buildInitialFormData = (data) => ({
 //         usuario_id: data?.usuario_id || '',
+//         telefono: data?.telefono || data?.phone || '',
 //         documento_identidad: data?.documento_identidad || data?.cedula || '',
 //         tipo_documento: data?.tipo_documento || 'CI',
 //         tipo_vehiculo_id: data?.tipo_vehiculo_id || '', 
@@ -328,8 +332,6 @@ export default DriverRegisterModal;
 //         tipo_conductor: normalizeConductorType(data?.tipo_conductor || data?.tipo || data?.tipo_repartidor), 
 //         foto_documento: data?.foto_documento || data?.foto_cedula || data?.foto_doc || data?.documento_foto || ''
 //     });
-
-   
 
 //     const [formData, setFormData] = useState(() => buildInitialFormData(driver));
 
@@ -341,7 +343,7 @@ export default DriverRegisterModal;
 //         }
 //     }, [driver]);
 
-//     // 2. EFECTO DE CARA DE VEHÍCULOS: No sobrescribe foto_documento ni tipo_conductor
+//     // 2. EFECTO DE CARGA DE VEHÍCULOS
 //     useEffect(() => {
 //         let isMounted = true;
 
@@ -461,6 +463,20 @@ export default DriverRegisterModal;
 //                         </select>
 //                     </div>
 
+//                     {/* CAMPO: Teléfono */}
+//                     <div>
+//                         <label style={labelStyle}>Número de Teléfono</label>
+//                         <input 
+//                             style={inputStyle}
+//                             type="text" 
+//                             placeholder="Ej: +584121234567" 
+//                             required
+//                             value={formData.telefono}
+//                             onChange={(e) => setFormData(prev => ({ ...prev, telefono: e.target.value }))} 
+//                         />
+//                     </div>
+
+//                     {/* CAMPO: Documento de Identidad */}
 //                     <div>
 //                         <label style={labelStyle}>Documento de Identidad</label>
 //                         <div style={{ display: 'flex', gap: '8px' }}>
@@ -482,6 +498,7 @@ export default DriverRegisterModal;
 //                         </div>
 //                     </div>
 
+//                     {/* CAMPO: Tipo de Vehículo */}
 //                     <div>
 //                         <label style={labelStyle}>Tipo de Vehículo</label>
 //                         <select 
@@ -574,3 +591,4 @@ export default DriverRegisterModal;
 // const btnCancelStyle = { backgroundColor: 'transparent', border: '1px solid #ddd', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', color: '#999' };
 
 // export default DriverRegisterModal;
+
