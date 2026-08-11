@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 
 const DriverDetailModal = ({ driver, onClose }) => {
   if (!driver) return null;
+
+  // Estado para controlar la imagen seleccionada en pantalla completa
+  const [previewImage, setPreviewImage] = useState(null);
 
   // --- ESTILOS REUTILIZABLES ---
   const labelStyle = {
@@ -30,7 +33,8 @@ const DriverDetailModal = ({ driver, onClose }) => {
     border: "1px solid #ddd",
     backgroundColor: "#f9f9f9",
     position: "relative",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+    cursor: "zoom-in"
   };
 
   // Color dinámico según estatus
@@ -80,7 +84,7 @@ const DriverDetailModal = ({ driver, onClose }) => {
                 <span style={{ fontSize: '0.9rem' }}>●</span> {driver.is_active}
               </span>
 
-              {/* 🆕 BADGE DE TIPO DE CONDUCTOR (Al lado del estatus) */}
+              {/* BADGE DE TIPO DE CONDUCTOR */}
               <span style={{
                 backgroundColor: '#e2e8f0',
                 color: '#1e293b',
@@ -121,10 +125,13 @@ const DriverDetailModal = ({ driver, onClose }) => {
           </button>
         </div>
 
-        {/* 1. SECCIÓN DE IMÁGENES (3 Columnas) */}
+        {/* 1. SECCIÓN DE IMÁGENES (3 Columnas con funcionalidad de ampliación) */}
         <div style={{ display: 'flex', gap: '15px', marginBottom: '25px' }}>
           {/* Foto Perfil */}
-          <div style={imgContainerStyle}>
+          <div 
+            style={imgContainerStyle} 
+            onClick={() => driver.foto && setPreviewImage(driver.foto)}
+          >
             <div style={tagStyle}>FOTO PERFIL</div>
             <img 
               src={driver.foto} 
@@ -136,7 +143,10 @@ const DriverDetailModal = ({ driver, onClose }) => {
           </div>
 
           {/* Foto Vehículo */}
-          <div style={imgContainerStyle}>
+          <div 
+            style={imgContainerStyle} 
+            onClick={() => driver.foto_vehiculo && setPreviewImage(driver.foto_vehiculo)}
+          >
             <div style={tagStyle}>FOTO VEHÍCULO</div>
             <img 
               src={driver.foto_vehiculo} 
@@ -148,7 +158,10 @@ const DriverDetailModal = ({ driver, onClose }) => {
           </div>
 
           {/* Foto C.I / Documento */}
-          <div style={imgContainerStyle}>
+          <div 
+            style={imgContainerStyle} 
+            onClick={() => driver.foto_documento && setPreviewImage(driver.foto_documento)}
+          >
             <div style={tagStyle}>FOTO C.I / DOC</div>
             <img 
               src={driver.foto_documento} 
@@ -203,6 +216,22 @@ const DriverDetailModal = ({ driver, onClose }) => {
           Cerrar Revisión
         </button>
       </div>
+
+      {/* LIGHTBOX: VISOR DE IMAGEN AMPLIADA */}
+      {previewImage && (
+        <div style={lightboxOverlayStyle} onClick={() => setPreviewImage(null)}>
+          <div style={lightboxContentStyle} onClick={(e) => e.stopPropagation()}>
+            <button 
+              type="button" 
+              style={closeLightboxBtnStyle} 
+              onClick={() => setPreviewImage(null)}
+            >
+              ✕
+            </button>
+            <img src={previewImage} alt="Vista Ampliada" style={lightboxImgStyle} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -230,6 +259,57 @@ const tagStyle = {
   borderRadius: '2px',
   fontSize: '0.7rem', fontWeight: '800', 
   zIndex: 5, boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+};
+
+// ESTILOS PARA LIGHTBOX (VISTA AMPLIADA)
+const lightboxOverlayStyle = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100vw',
+  height: '100vh',
+  backgroundColor: 'rgba(0, 0, 0, 0.85)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 3000,
+  backdropFilter: 'blur(5px)'
+};
+
+const lightboxContentStyle = {
+  position: 'relative',
+  maxWidth: '90%',
+  maxHeight: '90%',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center'
+};
+
+const lightboxImgStyle = {
+  maxWidth: '100%',
+  maxHeight: '85vh',
+  borderRadius: '12px',
+  boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+  objectFit: 'contain'
+};
+
+const closeLightboxBtnStyle = {
+  position: 'absolute',
+  top: '-40px',
+  right: '0px',
+  background: 'white',
+  border: 'none',
+  borderRadius: '50%',
+  width: '32px',
+  height: '32px',
+  fontSize: '1rem',
+  fontWeight: 'bold',
+  color: '#333',
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
 };
 
 export default DriverDetailModal;
