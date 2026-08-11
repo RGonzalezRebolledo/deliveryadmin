@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -11,6 +10,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
     const [uploading, setUploading] = useState({ perfil: false, vehiculo: false, documento: false });
     const [vehicleTypes, setVehicleTypes] = useState([]); 
     const [isLoadingData, setIsLoadingData] = useState(true);
+    const [errorMessage, setErrorMessage] = useState(''); // Estado para mostrar errores en UI
 
     const isEditing = !!driver?.repartidor_id;
 
@@ -24,7 +24,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
     // Construcción del estado inicial con fallback para usuario_id / id
     const buildInitialFormData = (data) => ({
         usuario_id: data?.usuario_id || data?.id || '',
-        telefono: data?.telefono || data?.phone || '',
+        telefono: (data?.telefono || data?.phone || '').replace(/\D/g, '').slice(0, 11), // Solo números y máx 11
         documento_identidad: data?.documento_identidad || data?.cedula || '',
         tipo_documento: data?.tipo_documento || 'CI',
         tipo_vehiculo_id: data?.tipo_vehiculo_id || '', 
@@ -71,6 +71,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                 }
             } catch (err) {
                 console.error('Error al cargar tipos de vehículos:', err);
+                setErrorMessage('No se pudieron cargar los tipos de vehículos.');
             } finally {
                 if (isMounted) setIsLoadingData(false);
             }
@@ -82,6 +83,15 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
             isMounted = false;
         };
     }, [driver]);
+
+    // Manejador del teléfono: Solo números y hasta 11 dígitos
+    const handlePhoneChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value) && value.length <= 11) {
+            setFormData(prev => ({ ...prev, telefono: value }));
+            setErrorMessage('');
+        }
+    };
 
     const handleVehicleChange = (e) => {
         const selectedDescript = e.target.value;
@@ -95,6 +105,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
     const handleImageUpload = async (file, field) => {
         if (!file) return;
+        setErrorMessage('');
         
         let fieldKey = 'perfil';
         if (field === 'foto_vehiculo') fieldKey = 'vehiculo';
@@ -107,7 +118,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
             const res = await axios.post(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, data);
             setFormData(prev => ({ ...prev, [field]: res.data.data.url }));
         } catch (err) {
-            alert("Error al subir imagen");
+            setErrorMessage("Error al subir la imagen. Por favor intenta de nuevo.");
         } finally {
             setUploading(prev => ({ ...prev, [fieldKey]: false }));
         }
@@ -115,30 +126,33 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMessage('');
         
         if (!formData.usuario_id) {
-            return alert("Error: No se ha especificado el ID del usuario.");
+            return setErrorMessage("Error: No se ha especificado el ID del usuario.");
         }
 
         if (!formData.telefono) {
-            return alert("Por favor ingresa un número de teléfono.");
+            return setErrorMessage("Por favor ingresa un número de teléfono.");
+        }
+
+        if (formData.telefono.length !== 11) {
+            return setErrorMessage("El número de teléfono debe tener exactamente 11 dígitos.");
         }
 
         if (!formData.foto || !formData.foto_vehiculo || !formData.foto_documento) {
-            return alert("Sube las 3 fotos requeridas (Perfil, Vehículo y Documento).");
+            return setErrorMessage("Sube las 3 fotos requeridas (Perfil, Vehículo y Documento).");
         }
 
-        // Se extrae vehicleDescript para limpiar el objeto payload que irá al servidor
         const { vehicleDescript, ...payload } = formData;
 
         setLoading(true);
         try {
             await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, payload, { withCredentials: true });
-            alert(isEditing ? "¡Registro actualizado!" : "¡Registro exitoso!");
             onSuccess();
             onClose();
         } catch (error) {
-            alert(error.response?.data?.error || "Error al guardar los datos.");
+            setErrorMessage(error.response?.data?.error || "Error al guardar los datos del repartidor.");
         } finally {
             setLoading(false);
         }
@@ -151,6 +165,14 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                     {isEditing ? 'Editar Registro:' : 'Completar Registro:'} 
                     <span style={{ color: '#333', display: 'block' }}>{driver?.nombre}</span>
                 </h3>
+
+                {/* BANNER DE ERROR VISUAL */}
+                {errorMessage && (
+                    <div style={errorBannerStyle}>
+                        <span>⚠️ {errorMessage}</span>
+                        <button type="button" onClick={() => setErrorMessage('')} style={closeErrorBtnStyle}>×</button>
+                    </div>
+                )}
                 
                 <form onSubmit={handleSubmit} style={formStyle}>
                     
@@ -168,16 +190,18 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                         </select>
                     </div>
 
-                    {/* CAMPO: Teléfono */}
+                    {/* CAMPO: Teléfono (Solo números y máx 11) */}
                     <div>
-                        <label style={labelStyle}>Número de Teléfono</label>
+                        <label style={labelStyle}>Número de Teléfono (11 dígitos)</label>
                         <input 
                             style={inputStyle}
                             type="text" 
-                            placeholder="Ej: +584121234567" 
+                            inputMode="numeric"
+                            placeholder="Ej: 04121234567" 
                             required
+                            maxLength={11}
                             value={formData.telefono}
-                            onChange={(e) => setFormData(prev => ({ ...prev, telefono: e.target.value }))} 
+                            onChange={handlePhoneChange} 
                         />
                     </div>
 
@@ -282,7 +306,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 // Estilos
 const modalOverlayStyle = { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000, backdropFilter: 'blur(4px)' };
 const modalContentStyle = { backgroundColor: 'white', padding: '30px', borderRadius: '20px', width: '90%', maxWidth: '650px', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', maxHeight: '90vh', overflowY: 'auto', boxSizing: 'border-box' };
-const headerStyle = { color: '#ff4d4d', textAlign: 'center', margin: '0 0 20px 0', fontSize: '1.4rem' };
+const headerStyle = { color: '#ff4d4d', textAlign: 'center', margin: '0 0 15px 0', fontSize: '1.4rem' };
 const formStyle = { display: 'flex', flexDirection: 'column', gap: '18px' };
 const labelStyle = { display: 'block', fontSize: '0.7rem', fontWeight: '800', marginBottom: '6px', color: '#888', textTransform: 'uppercase' };
 const inputStyle = { padding: '12px', borderRadius: '10px', border: '1px solid #ddd', fontSize: '0.95rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
@@ -295,7 +319,33 @@ const loaderStyle = { fontSize: '0.75rem', color: '#ff4d4d', fontWeight: 'bold' 
 const footerStyle = { display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px', borderTop: '1px solid #eee', paddingTop: '20px' };
 const btnCancelStyle = { backgroundColor: 'transparent', border: '1px solid #ddd', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', color: '#999' };
 
+// Estilos de alerta de error
+const errorBannerStyle = {
+    backgroundColor: '#ffebe9',
+    color: '#d93025',
+    border: '1px solid #f5c2c7',
+    padding: '10px 14px',
+    borderRadius: '10px',
+    marginBottom: '15px',
+    fontSize: '0.85rem',
+    fontWeight: '600',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+};
+const closeErrorBtnStyle = {
+    background: 'none',
+    border: 'none',
+    color: '#d93025',
+    fontSize: '1.2rem',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    padding: '0 4px',
+    lineHeight: '1'
+};
+
 export default DriverRegisterModal;
+
 
 // import React, { useEffect, useState } from 'react';
 // import axios from 'axios';
@@ -312,16 +362,16 @@ export default DriverRegisterModal;
 
 //     const isEditing = !!driver?.repartidor_id;
 
-//     // Normaliza el tipo de conductor a minúsculas para que coincida exactamente con las <option>
+//     // Normaliza el tipo de conductor a minúsculas
 //     const normalizeConductorType = (type) => {
 //         if (!type) return 'interno';
 //         const val = String(type).toLowerCase().trim();
 //         return (val === 'foraneo' || val === 'foráneo') ? 'foraneo' : 'interno';
 //     };
 
-//     // Construcción limpia del objeto de estado desde la prop recibida
+//     // Construcción del estado inicial con fallback para usuario_id / id
 //     const buildInitialFormData = (data) => ({
-//         usuario_id: data?.usuario_id || '',
+//         usuario_id: data?.usuario_id || data?.id || '',
 //         telefono: data?.telefono || data?.phone || '',
 //         documento_identidad: data?.documento_identidad || data?.cedula || '',
 //         tipo_documento: data?.tipo_documento || 'CI',
@@ -335,15 +385,12 @@ export default DriverRegisterModal;
 
 //     const [formData, setFormData] = useState(() => buildInitialFormData(driver));
 
-//     // 1. EFECTO INMEDIATO: Sincroniza el estado en cuanto cambia la prop 'driver'
 //     useEffect(() => {
-//         console.log("👉 OBJETO DRIVER RECIBIDO EN EL MODAL:", driver);
 //         if (driver) {
 //             setFormData(buildInitialFormData(driver));
 //         }
 //     }, [driver]);
 
-//     // 2. EFECTO DE CARGA DE VEHÍCULOS
 //     useEffect(() => {
 //         let isMounted = true;
 
@@ -356,7 +403,6 @@ export default DriverRegisterModal;
 //                 if (!isMounted) return;
 //                 setVehicleTypes(vehicles);
 
-//                 // Solo empatamos el tipo de vehículo si estamos editando
 //                 if (driver && vehicles.length > 0) {
 //                     const matchedVehicle = vehicles.find(v => 
 //                         v.id === driver?.tipo_vehiculo_id || 
@@ -422,18 +468,25 @@ export default DriverRegisterModal;
 //             return alert("Error: No se ha especificado el ID del usuario.");
 //         }
 
+//         if (!formData.telefono) {
+//             return alert("Por favor ingresa un número de teléfono.");
+//         }
+
 //         if (!formData.foto || !formData.foto_vehiculo || !formData.foto_documento) {
 //             return alert("Sube las 3 fotos requeridas (Perfil, Vehículo y Documento).");
 //         }
 
+//         // Se extrae vehicleDescript para limpiar el objeto payload que irá al servidor
+//         const { vehicleDescript, ...payload } = formData;
+
 //         setLoading(true);
 //         try {
-//             await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, formData, { withCredentials: true });
+//             await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, payload, { withCredentials: true });
 //             alert(isEditing ? "¡Registro actualizado!" : "¡Registro exitoso!");
 //             onSuccess();
 //             onClose();
 //         } catch (error) {
-//             alert("Error al guardar los datos.");
+//             alert(error.response?.data?.error || "Error al guardar los datos.");
 //         } finally {
 //             setLoading(false);
 //         }
