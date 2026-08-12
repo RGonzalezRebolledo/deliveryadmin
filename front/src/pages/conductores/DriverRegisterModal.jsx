@@ -11,6 +11,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
     const [vehicleTypes, setVehicleTypes] = useState([]); 
     const [isLoadingData, setIsLoadingData] = useState(true);
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     
     // Estado para la imagen ampliada (Lightbox)
     const [previewImage, setPreviewImage] = useState(null);
@@ -135,6 +136,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage('');
+        setSuccessMessage('');
         
         if (!formData.usuario_id) {
             return setErrorMessage("Error: No se ha especificado el ID del usuario.");
@@ -160,9 +162,16 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
         setLoading(true);
         try {
-            await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, payload, { withCredentials: true });
-            onSuccess();
-            onClose();
+            const response = await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, payload, { withCredentials: true });
+            
+            const msg = response.data?.message || (isEditing ? 'Las modificaciones fueron realizadas correctamente.' : 'Registro realizado con éxito.');
+            setSuccessMessage(msg);
+
+            setTimeout(() => {
+                onSuccess(msg);
+                onClose();
+            }, 1500);
+
         } catch (error) {
             setErrorMessage(error.response?.data?.error || "Error al guardar los datos del repartidor.");
         } finally {
@@ -183,6 +192,13 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                     <div style={errorBannerStyle}>
                         <span>⚠️ {errorMessage}</span>
                         <button type="button" onClick={() => setErrorMessage('')} style={closeErrorBtnStyle}>×</button>
+                    </div>
+                )}
+
+                {/* BANNER DE ÉXITO VISUAL */}
+                {successMessage && (
+                    <div style={successBannerStyle}>
+                        <span>✅ {successMessage}</span>
                     </div>
                 )}
                 
@@ -370,9 +386,24 @@ const errorBannerStyle = {
     fontSize: '0.85rem',
     fontWeight: '600',
     display: 'flex',
-    justifyContent: 'space-between',
+    justify: 'space-between',
     alignItems: 'center'
 };
+
+const successBannerStyle = {
+    backgroundColor: '#d4edda',
+    color: '#155724',
+    border: '1px solid #c3e6cb',
+    padding: '10px 14px',
+    borderRadius: '10px',
+    marginBottom: '15px',
+    fontSize: '0.85rem',
+    fontWeight: '600',
+    display: 'flex',
+    justify: 'space-between',
+    alignItems: 'center'
+};
+
 const closeErrorBtnStyle = {
     background: 'none',
     border: 'none',
@@ -393,7 +424,7 @@ const lightboxOverlayStyle = {
     height: '100vh',
     backgroundColor: 'rgba(0, 0, 0, 0.85)',
     display: 'flex',
-    justifyContent: 'center',
+    justify: 'center',
     alignItems: 'center',
     zIndex: 3000,
     backdropFilter: 'blur(5px)'
@@ -404,7 +435,7 @@ const lightboxContentStyle = {
     maxWidth: '90%',
     maxHeight: '90%',
     display: 'flex',
-    justifyContent: 'center',
+    justify: 'center',
     alignItems: 'center'
 };
 
@@ -431,12 +462,11 @@ const closeLightboxBtnStyle = {
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justify: 'center',
     boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
 };
 
 export default DriverRegisterModal;
-
 
 
 // import React, { useEffect, useState } from 'react';
