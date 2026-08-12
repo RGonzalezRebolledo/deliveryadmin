@@ -134,15 +134,15 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
         setLoading(true);
         try {
             await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, payload, { withCredentials: true });
-            // alert(isEditing ? "¡Registro actualizado!" : "¡Registro exitoso!");
+         alert(isEditing ? "¡Registro actualizado!" : "¡Registro exitoso!");
             
-            await Swal.fire({
-                icon: 'success',
-                title: isEditing ? '¡Registro actualizado!' : '¡Registro exitoso!',
-                text: response.data?.message || 'Los cambios se guardaron correctamente.',
-                timer: 1800,
-                showConfirmButton: false
-            });
+            // await Swal.fire({
+            //     icon: 'success',
+            //     title: isEditing ? '¡Registro actualizado!' : '¡Registro exitoso!',
+            //     text: response.data?.message || 'Los cambios se guardaron correctamente.',
+            //     timer: 1800,
+            //     showConfirmButton: false
+            // });
 
             onSuccess();
             onClose();
