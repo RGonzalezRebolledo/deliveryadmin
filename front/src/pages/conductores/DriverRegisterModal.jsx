@@ -133,19 +133,35 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 
         setLoading(true);
         try {
-            await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, payload, { withCredentials: true });
-         alert(isEditing ? "¡Registro actualizado!" : "¡Registro exitoso!");
+        //     await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, payload, { withCredentials: true });
+        // //  alert(isEditing ? "¡Registro actualizado!" : "¡Registro exitoso!");
             
-            // await Swal.fire({
-            //     icon: 'success',
-            //     title: isEditing ? '¡Registro actualizado!' : '¡Registro exitoso!',
-            //     text: response.data?.message || 'Los cambios se guardaron correctamente.',
-            //     timer: 1800,
-            //     showConfirmButton: false
-            // });
+        //     await Swal.fire({
+        //         icon: 'success',
+        //         title: isEditing ? '¡Registro actualizado!' : '¡Registro exitoso!',
+        //         text: response.data?.message || 'Los cambios se guardaron correctamente.',
+        //         timer: 1800,
+        //         showConfirmButton: false
+        //     });
 
-            onSuccess();
-            onClose();
+        //     onSuccess();
+        //     onClose();
+            // 1. Guardar la respuesta de axios en la variable "response"
+    const response = await axios.post(`${API_BASE_URL}/driver/driver-register-modal`, payload, { withCredentials: true });
+
+    // 2. Ahora sí puedes usar response.data
+    await Swal.fire({
+        icon: 'success',
+        title: isEditing ? '¡Registro actualizado!' : '¡Registro exitoso!',
+        text: response.data?.message || 'Los cambios se guardaron correctamente.',
+        timer: 1800,
+        showConfirmButton: false
+    });
+
+    if (typeof onSuccess === 'function') onSuccess();
+    if (typeof onClose === 'function') onClose();
+
+
         } catch (error) {
             // alert(error.response?.data?.error || "Error al guardar los datos.");
             Swal.fire({
