@@ -17,6 +17,8 @@
     "react-slick": "^0.31.0",
     "recharts": "^3.8.1",
     "slick-carousel": "^1.8.1",
+    "sweetalert2": "^11.26.25",
+    "sweetalert2-react-content": "^5.1.2",
     "vite-plugin-pwa": "^1.1.0",
     "workbox-core": "^7.3.0",
     "workbox-expiration": "^7.3.0",
