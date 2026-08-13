@@ -142,7 +142,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                 icon: 'success',
                 title: isEditing ? '¡Registro actualizado!' : '¡Registro exitoso!',
                 text: response.data?.message || 'Los cambios se guardaron correctamente.',
-                timer: 1800,
+                timer: 2100,
                 showConfirmButton: false
             });
 
