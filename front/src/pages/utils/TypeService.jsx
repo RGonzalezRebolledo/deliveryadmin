@@ -70,6 +70,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
             const response = await axios.post(
                 `${API_BASE_URL}/utils/service`,
                 dataToSend, 
+                { withCredentials: true }
             );
             setLoading(false);
             setMessage('✅ ¡Registro exitoso!');

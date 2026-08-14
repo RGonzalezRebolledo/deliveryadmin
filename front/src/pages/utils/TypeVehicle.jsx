@@ -70,6 +70,7 @@
             const response = await axios.post(
                 `${API_BASE_URL}/utils/vehicle`,
                 dataToSend, 
+                { withCredentials: true }
             );
             setLoading(false);
             setMessage('✅ ¡Registro exitoso!');
