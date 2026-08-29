@@ -8,26 +8,19 @@ import { useAuth } from '../../hooks/AuthContext'; // Ajusta la ruta a tu AuthCo
 function LiquidacionRepartidoresAdmin() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     
-    // Obtenemos la tasa del dólar cargada en el AuthContext
+    // Obtenemos la tasa del dólar directamente del AuthContext
     const { exchangeRate } = useAuth(); 
 
     const [drivers, setDrivers] = useState([]);
     const [selectedDriverIds, setSelectedDriverIds] = useState([]);
     const [loading, setLoading] = useState(false);
     
-    // Sincronizamos la tasa con el valor global del AuthContext
-    const [tasaBs, setTasaBs] = useState(exchangeRate || 0);
+    // Usamos el valor directamente de exchangeRate (convertido a número)
+    const tasaBs = Number(exchangeRate || 0);
 
     // Modal de Referencia de Pago
     const [showModal, setShowModal] = useState(false);
     const [numeroReferencia, setNumeroReferencia] = useState('');
-
-    // Sincronizar tasaBs si exchangeRate cambia en el context
-    useEffect(() => {
-        if (exchangeRate) {
-            setTasaBs(Number(exchangeRate));
-        }
-    }, [exchangeRate]);
 
     useEffect(() => {
         fetchPendientes();
@@ -92,7 +85,7 @@ function LiquidacionRepartidoresAdmin() {
         doc.text('Gazzella Express - Relación de Pago a Conductores', 14, 15);
         doc.setFontSize(10);
         doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-VE')} ${new Date().toLocaleTimeString('es-VE')}`, 14, 22);
-        doc.text(`Tasa del Sistema (BCV): ${Number(tasaBs).toFixed(2)} Bs/USD`, 14, 27);
+        doc.text(`Tasa Oficial del Sistema: ${tasaBs.toFixed(2)} Bs/USD`, 14, 27);
 
         const tableColumn = ["Conductor", "Cédula", "Teléfono", "Pedidos", "Monto USD", "Monto (Bs)", "Estatus"];
         const tableRows = selectedDriversData.map(d => [
@@ -159,16 +152,25 @@ function LiquidacionRepartidoresAdmin() {
                 🛵 Liquidación y Pago a Conductores
             </h2>
 
-            {/* Configuración de Tasa y Acciones Superior */}
+            {/* Visualización de Tasa (Inmodificable) y Acciones */}
             <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#475569' }}>Tasa del Sistema (Bs/USD):</label>
                     <input 
-                        type="number" 
-                        step="0.01" 
-                        value={tasaBs} 
-                        onChange={(e) => setTasaBs(Number(e.target.value))}
-                        style={{ width: '130px', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontWeight: 'bold', backgroundColor: '#f8fafc' }}
+                        type="text" 
+                        value={tasaBs ? `${tasaBs.toFixed(2)} Bs.` : 'Cargando...'} 
+                        disabled
+                        readOnly
+                        style={{ 
+                            width: '130px', 
+                            padding: '8px', 
+                            borderRadius: '6px', 
+                            border: '1px solid #cbd5e1', 
+                            fontWeight: 'bold', 
+                            backgroundColor: '#e2e8f0', // Fondo gris que indica inhabilitado
+                            color: '#334155',
+                            cursor: 'not-allowed'
+                        }}
                     />
                 </div>
 
