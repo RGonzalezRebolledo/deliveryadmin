@@ -3,27 +3,29 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { useAuth } from '../../hooks/AuthContext'; // Importamos el contexto de autenticación
+import { useAuth } from '../../hooks/AuthContext'; // Ajusta la ruta a tu AuthContext
 
 function LiquidacionRepartidoresAdmin() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-    const { exchangeRate } = useAuth(); // Extraemos la tasa del sistema desde el contexto
+    
+    // Obtenemos la tasa del dólar cargada en el AuthContext
+    const { exchangeRate } = useAuth(); 
 
     const [drivers, setDrivers] = useState([]);
     const [selectedDriverIds, setSelectedDriverIds] = useState([]);
     const [loading, setLoading] = useState(false);
     
-    // Tasa por defecto sincronizada con el sistema/BCV
-    const [tasaBs, setTasaBs] = useState(exchangeRate || 40.00); 
+    // Sincronizamos la tasa con el valor global del AuthContext
+    const [tasaBs, setTasaBs] = useState(exchangeRate || 0);
 
-    // Estado para Modal de Pago
+    // Modal de Referencia de Pago
     const [showModal, setShowModal] = useState(false);
     const [numeroReferencia, setNumeroReferencia] = useState('');
 
-    // Actualizar la tasa si el contexto global de Auth la carga dinámicamente
+    // Sincronizar tasaBs si exchangeRate cambia en el context
     useEffect(() => {
         if (exchangeRate) {
-            setTasaBs(exchangeRate);
+            setTasaBs(Number(exchangeRate));
         }
     }, [exchangeRate]);
 
@@ -36,7 +38,7 @@ function LiquidacionRepartidoresAdmin() {
         try {
             const res = await axios.get(`${API_BASE_URL}/pendientes`, { withCredentials: true });
             
-            // Garantizar que únicamente manejamos registros pendientes
+            // Filtrar únicamente los registros pendientes de liquidar
             const pendientesData = (res.data || []).filter(d => 
                 !d.estatus || d.estatus.toLowerCase() === 'pendiente' || Number(d.total_pedidos_pendientes) > 0
             );
@@ -50,7 +52,6 @@ function LiquidacionRepartidoresAdmin() {
         }
     };
 
-    // Selección masiva
     const handleSelectAll = (e) => {
         if (e.target.checked) {
             setSelectedDriverIds(drivers.map(d => d.repartidor_id));
@@ -59,7 +60,6 @@ function LiquidacionRepartidoresAdmin() {
         }
     };
 
-    // Selección individual
     const handleSelectOne = (id) => {
         if (selectedDriverIds.includes(id)) {
             setSelectedDriverIds(selectedDriverIds.filter(item => item !== id));
@@ -68,19 +68,18 @@ function LiquidacionRepartidoresAdmin() {
         }
     };
 
-    // Obtener los IDs de todas las liquidaciones asociadas a los conductores seleccionados
     const getSelectedLiquidacionIds = () => {
         return drivers
             .filter(d => selectedDriverIds.includes(d.repartidor_id))
             .flatMap(d => d.liquidacion_ids || []);
     };
 
-    // Totales calculados dinámicamente
+    // Cálculos de Totales
     const selectedDriversData = drivers.filter(d => selectedDriverIds.includes(d.repartidor_id));
     const totalUSD = selectedDriversData.reduce((acc, curr) => acc + Number(curr.total_usd || 0), 0);
     const totalBsCalculado = totalUSD * tasaBs;
 
-    // Generación del Reporte PDF con Estatus "PENDIENTE"
+    // Reporte PDF
     const handleExportPDF = () => {
         if (selectedDriversData.length === 0) {
             Swal.fire('Atención', 'Seleccione al menos un conductor para generar el PDF', 'warning');
@@ -89,14 +88,12 @@ function LiquidacionRepartidoresAdmin() {
 
         const doc = new jsPDF();
 
-        // Encabezado del documento
         doc.setFontSize(16);
         doc.text('Gazzella Express - Relación de Pago a Conductores', 14, 15);
         doc.setFontSize(10);
         doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-VE')} ${new Date().toLocaleTimeString('es-VE')}`, 14, 22);
-        doc.text(`Tasa Oficial de Sistema (BCV): ${Number(tasaBs).toFixed(2)} Bs/USD`, 14, 27);
+        doc.text(`Tasa del Sistema (BCV): ${Number(tasaBs).toFixed(2)} Bs/USD`, 14, 27);
 
-        // Estructura de la tabla (incluye la columna Estatus)
         const tableColumn = ["Conductor", "Cédula", "Teléfono", "Pedidos", "Monto USD", "Monto (Bs)", "Estatus"];
         const tableRows = selectedDriversData.map(d => [
             `${d.nombre || ''} ${d.apellido || ''}`.trim(),
@@ -115,11 +112,10 @@ function LiquidacionRepartidoresAdmin() {
             theme: 'striped',
             headStyles: { fillColor: [249, 115, 22] },
             columnStyles: {
-                6: { fontStyle: 'bold', textColor: [217, 119, 6] } // Color ambar para resaltar "PENDIENTE"
+                6: { fontStyle: 'bold', textColor: [217, 119, 6] }
             }
         });
 
-        // Posición y cuadro de totales al final de la tabla
         const finalY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : 32) + 10;
         doc.setFontSize(11);
         doc.setFont(undefined, 'bold');
@@ -129,7 +125,7 @@ function LiquidacionRepartidoresAdmin() {
         doc.save(`Pago_Conductores_Pendientes_${Date.now()}.pdf`);
     };
 
-    // Procesar Confirmación de Pago
+    // Procesar Liquidación
     const handleConfirmarPago = async () => {
         const liquidacionIds = getSelectedLiquidacionIds();
 
@@ -163,16 +159,16 @@ function LiquidacionRepartidoresAdmin() {
                 🛵 Liquidación y Pago a Conductores
             </h2>
 
-            {/* Configuración de Tasa del Sistema y Acciones Superior */}
+            {/* Configuración de Tasa y Acciones Superior */}
             <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#475569' }}>Tasa Sistema (Bs/USD):</label>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#475569' }}>Tasa del Sistema (Bs/USD):</label>
                     <input 
                         type="number" 
                         step="0.01" 
                         value={tasaBs} 
                         onChange={(e) => setTasaBs(Number(e.target.value))}
-                        style={{ width: '130px', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontWeight: 'bold' }}
+                        style={{ width: '130px', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontWeight: 'bold', backgroundColor: '#f8fafc' }}
                     />
                 </div>
 
@@ -195,7 +191,7 @@ function LiquidacionRepartidoresAdmin() {
                 </div>
             </div>
 
-            {/* Tabla de Conductores con Pagos Pendientes */}
+            {/* Tabla de Resultados */}
             <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '12px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
                     <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
@@ -247,7 +243,7 @@ function LiquidacionRepartidoresAdmin() {
                 </table>
             </div>
 
-            {/* Modal para ingresar Referencia de Pago */}
+            {/* Modal para ingresar la referencia de pago */}
             {showModal && (
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
                     <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', maxWidth: '400px', width: '100%' }}>
