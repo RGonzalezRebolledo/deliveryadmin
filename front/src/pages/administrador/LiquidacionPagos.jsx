@@ -26,7 +26,7 @@ function LiquidacionRepartidoresAdmin() {
         setLoading(true);
         try {
             const res = await axios.get(`${API_BASE_URL}/pendientes`, { withCredentials: true });
-            setDrivers(res.data);
+            setDrivers(res.data || []);
             setSelectedDriverIds([]);
         } catch (err) {
             Swal.fire('Error', 'No se pudieron cargar las liquidaciones pendientes', 'error');
@@ -53,16 +53,16 @@ function LiquidacionRepartidoresAdmin() {
         }
     };
 
-    // Obtener los IDs de todas las liquidaciones (filas de la BD) asociadas a los conductores seleccionados
+    // Obtener los IDs de todas las liquidaciones asociadas a los conductores seleccionados
     const getSelectedLiquidacionIds = () => {
         return drivers
             .filter(d => selectedDriverIds.includes(d.repartidor_id))
-            .flatMap(d => d.liquidacion_ids);
+            .flatMap(d => d.liquidacion_ids || []);
     };
 
     // Totales calculados dinámicamente
     const selectedDriversData = drivers.filter(d => selectedDriverIds.includes(d.repartidor_id));
-    const totalUSD = selectedDriversData.reduce((acc, curr) => acc + Number(curr.total_usd), 0);
+    const totalUSD = selectedDriversData.reduce((acc, curr) => acc + Number(curr.total_usd || 0), 0);
     const totalBsCalculado = totalUSD * tasaBs;
 
     // Generación del Reporte PDF
@@ -77,17 +77,17 @@ function LiquidacionRepartidoresAdmin() {
         doc.setFontSize(16);
         doc.text('Gazzella Express - Relación de Pago a Conductores', 14, 15);
         doc.setFontSize(10);
-        doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-VE')} ${new Date().toLocaleTimeString()}`, 14, 22);
-        doc.text(`Tasa de Cambio Aplicada: ${tasaBs.toFixed(2)} Bs/USD`, 14, 27);
+        doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-VE')} ${new Date().toLocaleTimeString('es-VE')}`, 14, 22);
+        doc.text(`Tasa de Cambio Aplicada: ${Number(tasaBs).toFixed(2)} Bs/USD`, 14, 27);
 
         const tableColumn = ["Conductor", "Cédula", "Teléfono", "Pedidos", "Monto USD", "Monto a Pagar (Bs)"];
         const tableRows = selectedDriversData.map(d => [
-            `${d.nombre} ${d.apellido}`,
+            `${d.nombre || ''} ${d.apellido || ''}`.trim(),
             d.cedula || 'N/A',
             d.telefono || 'N/A',
-            d.total_pedidos_pendientes,
-            `$${Number(d.total_usd).toFixed(2)}`,
-            `${(Number(d.total_usd) * tasaBs).toFixed(2)} Bs.`
+            d.total_pedidos_pendientes || 0,
+            `$${Number(d.total_usd || 0).toFixed(2)}`,
+            `${(Number(d.total_usd || 0) * tasaBs).toFixed(2)} Bs.`
         ]);
 
         doc.autoTable({
@@ -98,7 +98,7 @@ function LiquidacionRepartidoresAdmin() {
             headStyles: { fillColor: [249, 115, 22] }
         });
 
-        const finalY = doc.lastAutoTable.finalY + 10;
+        const finalY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : 32) + 10;
         doc.setFontSize(11);
         doc.setFont(undefined, 'bold');
         doc.text(`Total en USD: $${totalUSD.toFixed(2)}`, 14, finalY);
@@ -107,7 +107,7 @@ function LiquidacionRepartidoresAdmin() {
         doc.save(`Pago_Conductores_${Date.now()}.pdf`);
     };
 
-    // Procesar Confirmación
+    // Procesar Confirmación de Pago
     const handleConfirmarPago = async () => {
         const liquidacionIds = getSelectedLiquidacionIds();
 
@@ -157,16 +157,16 @@ function LiquidacionRepartidoresAdmin() {
                 <div style={{ marginLeft: 'auto', display: 'flex', gap: '10px' }}>
                     <button 
                         onClick={handleExportPDF}
-                        disabled={selectedDriverIds.length === 0}
-                        style={{ padding: '10px 16px', background: '#334155', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', opacity: selectedDriverIds.length === 0 ? 0.5 : 1 }}
+                        disabled={selectedDriverIds.length === 0 || loading}
+                        style={{ padding: '10px 16px', background: '#334155', color: '#fff', border: 'none', borderRadius: '8px', cursor: selectedDriverIds.length === 0 ? 'not-allowed' : 'pointer', opacity: selectedDriverIds.length === 0 ? 0.5 : 1 }}
                     >
                         📄 Exportar PDF
                     </button>
 
                     <button 
                         onClick={() => setShowModal(true)}
-                        disabled={selectedDriverIds.length === 0}
-                        style={{ padding: '10px 16px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', opacity: selectedDriverIds.length === 0 ? 0.5 : 1 }}
+                        disabled={selectedDriverIds.length === 0 || loading}
+                        style={{ padding: '10px 16px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: selectedDriverIds.length === 0 ? 'not-allowed' : 'pointer', opacity: selectedDriverIds.length === 0 ? 0.5 : 1 }}
                     >
                         💳 Liquidar Seleccionados ({selectedDriverIds.length})
                     </button>
@@ -193,7 +193,7 @@ function LiquidacionRepartidoresAdmin() {
                         </tr>
                     </thead>
                     <tbody>
-                        {loading ? (
+                        {loading && drivers.length === 0 ? (
                             <tr><td colSpan="6" style={{ textAlign: 'center', padding: '24px' }}>Cargando datos...</td></tr>
                         ) : drivers.length === 0 ? (
                             <tr><td colSpan="6" style={{ textAlign: 'center', padding: '24px', color: '#64748b' }}>No hay pagos pendientes de repartidores.</td></tr>
@@ -210,8 +210,8 @@ function LiquidacionRepartidoresAdmin() {
                                     <td style={{ padding: '12px 16px', fontWeight: '600' }}>{d.nombre} {d.apellido}</td>
                                     <td style={{ padding: '12px 16px' }}>{d.cedula || 'N/A'}</td>
                                     <td style={{ padding: '12px 16px' }}>{d.total_pedidos_pendientes}</td>
-                                    <td style={{ padding: '12px 16px', color: '#16a34a', fontWeight: 'bold' }}>${Number(d.total_usd).toFixed(2)}</td>
-                                    <td style={{ padding: '12px 16px', fontWeight: 'bold' }}>{(Number(d.total_usd) * tasaBs).toFixed(2)} Bs.</td>
+                                    <td style={{ padding: '12px 16px', color: '#16a34a', fontWeight: 'bold' }}>${Number(d.total_usd || 0).toFixed(2)}</td>
+                                    <td style={{ padding: '12px 16px', fontWeight: 'bold' }}>{(Number(d.total_usd || 0) * tasaBs).toFixed(2)} Bs.</td>
                                 </tr>
                             ))
                         )}
@@ -238,8 +238,20 @@ function LiquidacionRepartidoresAdmin() {
                         />
 
                         <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                            <button onClick={() => setShowModal(false)} style={{ padding: '8px 16px', border: 'none', background: '#e2e8f0', borderRadius: '6px', cursor: 'pointer' }}>Cancelar</button>
-                            <button onClick={handleConfirmarPago} style={{ padding: '8px 16px', border: 'none', background: '#16a34a', color: '#fff', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>Confirmar y Pagar</button>
+                            <button 
+                                onClick={() => { setShowModal(false); setNumeroReferencia(''); }} 
+                                disabled={loading} 
+                                style={{ padding: '8px 16px', border: 'none', background: '#e2e8f0', borderRadius: '6px', cursor: 'pointer' }}
+                            >
+                                Cancelar
+                            </button>
+                            <button 
+                                onClick={handleConfirmarPago} 
+                                disabled={loading} 
+                                style={{ padding: '8px 16px', border: 'none', background: '#16a34a', color: '#fff', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', opacity: loading ? 0.7 : 1 }}
+                            >
+                                {loading ? 'Procesando...' : 'Confirmar y Pagar'}
+                            </button>
                         </div>
                     </div>
                 </div>
