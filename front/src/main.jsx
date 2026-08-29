@@ -16,7 +16,8 @@ import ActiveOrders from './pages/administrador/AdminActiveOrders.jsx';
 import ClientsList from './pages/administrador/AdminClientsList.jsx';
 import DriversMonitor from './pages/administrador/AdminDriversMonitor.jsx';
 import AvailableDrivers from './pages/administrador/AdminAvailableDrivers.jsx';
-import LiquidacionPagos from './pages/administrador/LiquidacionPagos.jsx';
+import LiquidacionPagos from './pages/conductores/LiquidacionPagos.jsx';
+import HistorialPagosRepartidores from './pages/conductores/HistorialPagosRepartidores';
 
 // 💡 IMPORTACIONES DE PROTECCIÓN
 import ProtectedRoute from './components/ProtectedRoute.jsx'; 
@@ -93,7 +94,8 @@ const router = createBrowserRouter([
            { path: "administrador/AdminClientsList", element: <ClientsList/> },
            { path: "administrador/AdminDriversMonitor", element: <DriversMonitor/> },
            { path: "administrador/AdminAvailableDrivers", element: <AvailableDrivers/> },
-           { path: "administrador/LiquidacionPagos", element: <LiquidacionPagos/> }
+           { path: "administrador/LiquidacionPagos", element: <LiquidacionPagos/> },
+           { path: "administrador/HistorialPagosRepartidores", element: <HistorialPagosRepartidores/> }
         ]
       },
       
