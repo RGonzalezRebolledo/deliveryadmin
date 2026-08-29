@@ -25,7 +25,7 @@ function LiquidacionRepartidoresAdmin() {
     const fetchPendientes = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${API_BASE_URL}/admin/liquidaciones/pendientes`, { withCredentials: true });
+            const res = await axios.get(`${API_BASE_URL}/pendientes`, { withCredentials: true });
             setDrivers(res.data);
             setSelectedDriverIds([]);
         } catch (err) {
@@ -118,7 +118,7 @@ function LiquidacionRepartidoresAdmin() {
 
         try {
             setLoading(true);
-            await axios.post(`${API_BASE_URL}/admin/liquidaciones/procesar-pago`, {
+            await axios.post(`${API_BASE_URL}/procesar-pago`, {
                 liquidacionIds,
                 numeroReferencia: numeroReferencia.trim(),
                 tasaPagoBs: tasaBs
