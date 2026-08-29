@@ -39,9 +39,9 @@ const Sidebar = () => {
                     
                     {gestionConductoresOpen && (
                         <div className="submenu-items" style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column' }}>
-                            <Link to="/administrador/AdminDriversMonitor" className="enlace-sidebar">Conductores-Pedidos</Link>
-                            <Link to="/conductores/ResumenDrivers" className="enlace-sidebar">Conductores</Link>
-                            <Link to="/administrador/AdminAvailableDrivers" className="enlace-sidebar">Conductores Activos</Link>
+                            <Link to="/administrador/AdminDriversMonitor" className="enlace-sidebar submenu-link">Conductores-Pedidos</Link>
+                            <Link to="/conductores/ResumenDrivers" className="enlace-sidebar submenu-link">Conductores</Link>
+                            <Link to="/administrador/AdminAvailableDrivers" className="enlace-sidebar submenu-link">Conductores Activos</Link>
                             <Link to="/administrador/LiquidacionPagos" className="enlace-sidebar submenu-link">
                                 CxP a Conductores
                             </Link>
