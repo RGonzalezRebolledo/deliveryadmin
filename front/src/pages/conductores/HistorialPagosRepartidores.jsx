@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import jsPDF from "jspdf";
@@ -25,13 +25,12 @@ function HistorialPagosRepartidores() {
       const res = await axios.get(`${API_BASE_URL}/historial-pagos`, {
         withCredentials: true,
       });
-      setPagos(res.data || []);
+      setPagos(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      Swal.fire(
-        "Error",
-        "No se pudo cargar el historial de pagos realizados",
-        "error"
-      );
+      const msgError =
+        err.response?.data?.message ||
+        "No se pudo cargar el historial de pagos realizados";
+      Swal.fire("Error", msgError, "error");
     } finally {
       setLoading(false);
     }
@@ -44,34 +43,49 @@ function HistorialPagosRepartidores() {
     setFechaFin("");
   };
 
-  // Lógica de Filtrado (Texto + Rango de Fechas)
-  const filteredPagos = pagos.filter((item) => {
-    // 1. Filtro por texto (Nombre, Apellido, Código Repartidor, Número de Referencia)
-    const query = searchTerm.toLowerCase();
-    const nombreCompleto = `${item.nombre || ""} ${item.apellido || ""}`.toLowerCase();
-    const codigoRepartidor = (item.codigo_repartidor || "").toLowerCase();
-    const numRef = (item.numero_referencia || "").toLowerCase();
+  // Formateador auxiliar de fechas en local para evitar desfasajes UTC
+  const getLocalDateString = (dateInput) => {
+    if (!dateInput) return "";
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return "";
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
-    const matchesText =
-      nombreCompleto.includes(query) ||
-      codigoRepartidor.includes(query) ||
-      numRef.includes(query);
+  // Lógica de Filtrado Memozada (Texto + Rango de Fechas)
+  const filteredPagos = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
 
-    // 2. Filtro por Rango de Fechas
-    let matchesDate = true;
-    if (item.fecha_pago) {
-      const fechaPagoStr = new Date(item.fecha_pago).toISOString().split("T")[0];
+    return pagos.filter((item) => {
+      // 1. Filtro por texto
+      const nombreCompleto = `${item.nombre || ""} ${item.apellido || ""}`.toLowerCase();
+      const codigoRepartidor = (item.codigo_repartidor || "").toLowerCase();
+      const numRef = (item.numero_referencia || "").toLowerCase();
 
-      if (fechaInicio && fechaPagoStr < fechaInicio) {
-        matchesDate = false;
+      const matchesText =
+        !query ||
+        nombreCompleto.includes(query) ||
+        codigoRepartidor.includes(query) ||
+        numRef.includes(query);
+
+      // 2. Filtro por Rango de Fechas
+      let matchesDate = true;
+      if (item.fecha_pago) {
+        const fechaPagoStr = getLocalDateString(item.fecha_pago);
+
+        if (fechaInicio && fechaPagoStr < fechaInicio) {
+          matchesDate = false;
+        }
+        if (fechaFin && fechaPagoStr > fechaFin) {
+          matchesDate = false;
+        }
       }
-      if (fechaFin && fechaPagoStr > fechaFin) {
-        matchesDate = false;
-      }
-    }
 
-    return matchesText && matchesDate;
-  });
+      return matchesText && matchesDate;
+    });
+  }, [pagos, searchTerm, fechaInicio, fechaFin]);
 
   // Exportar PDF con los registros filtrados
   const handleExportPDF = () => {
@@ -106,20 +120,23 @@ function HistorialPagosRepartidores() {
     ];
 
     const tableRows = filteredPagos.map((p) => {
-      const fechaFmt = p.fecha_pago
-        ? new Date(p.fecha_pago).toLocaleString("es-VE", {
-            dateStyle: "short",
-            timeStyle: "short",
-          })
-        : "N/A";
+      const fechaObj = p.fecha_pago ? new Date(p.fecha_pago) : null;
+      const fechaFmt =
+        fechaObj && !isNaN(fechaObj.getTime())
+          ? fechaObj.toLocaleString("es-VE", {
+              dateStyle: "short",
+              timeStyle: "short",
+            })
+          : "N/A";
 
       const tasa = Number(p.tasa_pago_bs || 0);
       const usd = Number(p.monto_usd || 0);
-      const montoBsCalculado = tasa > 0 ? usd * tasa : Number(p.monto_bs_original || 0);
+      const montoBsCalculado =
+        tasa > 0 ? usd * tasa : Number(p.monto_bs_original || 0);
 
       return [
         p.codigo_repartidor || "N/A",
-        `${p.nombre || ""} ${p.apellido || ""}`.trim(),
+        `${p.nombre || ""} ${p.apellido || ""}`.trim() || "N/A",
         p.numero_referencia || "N/A",
         fechaFmt,
         `$${usd.toFixed(2)}`,
@@ -133,7 +150,7 @@ function HistorialPagosRepartidores() {
       head: [tableColumn],
       body: tableRows,
       theme: "striped",
-      headStyles: { fillColor: [22, 163, 74] }, // Verde para pagos completados
+      headStyles: { fillColor: [22, 163, 74] },
     });
 
     doc.save(`Historial_Pagos_Conductores_${Date.now()}.pdf`);
@@ -145,7 +162,7 @@ function HistorialPagosRepartidores() {
         {/* CABECERA Y BARRA DE BÚSQUEDA Y FILTROS */}
         <div
           style={{
-            padding: "var(--spacing-lg)",
+            padding: "var(--spacing-lg, 16px)",
             borderBottom: "1px solid #eee",
             backgroundColor: "#fff",
           }}
@@ -159,7 +176,7 @@ function HistorialPagosRepartidores() {
               marginBottom: "15px",
             }}
           >
-            <h2 style={{ color: "var(--color-primary)", margin: 0 }}>
+            <h2 style={{ color: "var(--color-primary, #000)", margin: 0 }}>
               Historial de Pagos Realizados
             </h2>
             <span style={{ fontSize: "0.8rem", color: "#777" }}>
@@ -313,8 +330,11 @@ function HistorialPagosRepartidores() {
                   padding: "8px 14px",
                   fontSize: "0.85rem",
                   borderRadius: "8px",
-                  cursor: filteredPagos.length === 0 ? "not-allowed" : "pointer",
-                  opacity: filteredPagos.length === 0 ? 0.5 : 1,
+                  cursor:
+                    filteredPagos.length === 0 || loading
+                      ? "not-allowed"
+                      : "pointer",
+                  opacity: filteredPagos.length === 0 || loading ? 0.5 : 1,
                   display: "flex",
                   alignItems: "center",
                   gap: "5px",
@@ -358,27 +378,29 @@ function HistorialPagosRepartidores() {
                   </td>
                 </tr>
               ) : (
-                filteredPagos.map((p) => {
+                filteredPagos.map((p, index) => {
                   const tasa = Number(p.tasa_pago_bs || 0);
                   const usd = Number(p.monto_usd || 0);
                   const montoBsCalculado =
                     tasa > 0 ? usd * tasa : Number(p.monto_bs_original || 0);
 
-                  const fechaFormateada = p.fecha_pago
-                    ? new Date(p.fecha_pago).toLocaleString("es-VE", {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      })
-                    : "N/A";
+                  const fechaObj = p.fecha_pago ? new Date(p.fecha_pago) : null;
+                  const fechaFormateada =
+                    fechaObj && !isNaN(fechaObj.getTime())
+                      ? fechaObj.toLocaleString("es-VE", {
+                          dateStyle: "short",
+                          timeStyle: "short",
+                        })
+                      : "N/A";
 
                   return (
-                    <tr key={p.liquidacion_id}>
+                    <tr key={p.liquidacion_id || index}>
                       {/* Código del Repartidor */}
                       <td
                         style={{
                           textAlign: "center",
                           fontWeight: "bold",
-                          color: "var(--color-primary)",
+                          color: "var(--color-primary, #000)",
                           fontSize: "0.85rem",
                         }}
                       >
@@ -393,7 +415,7 @@ function HistorialPagosRepartidores() {
                           color: "#222",
                         }}
                       >
-                        {p.nombre} {p.apellido}
+                        {`${p.nombre || ""} ${p.apellido || ""}`.trim() || "N/A"}
                       </td>
 
                       {/* Referencia */}
