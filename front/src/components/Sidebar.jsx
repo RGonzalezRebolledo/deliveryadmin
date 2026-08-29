@@ -26,7 +26,7 @@ const Sidebar = () => {
                     📊 Dashboard
                 </Link>
                 {/* <Link to="/gestion-usuarios" className="enlace-sidebar">Comercios Afiliados</Link> */}
-                <Link to="/conductores/ResumenDrivers" className="enlace-sidebar">Conductores</Link>
+                
                 <Link to="/administrador/AdminAvailableDrivers" className="enlace-sidebar">Conductores Activos</Link>
                 <Link to="/administrador/AdminClientsList" className="enlace-sidebar">Clientes</Link>
                 <Link to="/administrador/AdminActiveOrders" className="enlace-sidebar">Pedidos</Link>
@@ -40,11 +40,12 @@ const Sidebar = () => {
                     
                     {gestionConductoresOpen && (
                         <div className="submenu-items" style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column' }}>
+                            <Link to="/conductores/ResumenDrivers" className="enlace-sidebar">Conductores</Link>
                             <Link to="/administrador/LiquidacionPagos" className="enlace-sidebar submenu-link">
-                                CxP a conductores
+                                CxP a Conductores
                             </Link>
                             <Link to="/administrador/HistorialPagosRepartidores" className="enlace-sidebar submenu-link">
-                                Historial de Pagos a Conductores
+                                Historial de Pagos
                             </Link>
                         </div>
                     )}
