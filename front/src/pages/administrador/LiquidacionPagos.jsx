@@ -2,21 +2,30 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable'; // Importación correcta para Vite
+import autoTable from 'jspdf-autotable';
+import { useAuth } from '../../hooks/AuthContext'; // Importamos el contexto de autenticación
 
 function LiquidacionRepartidoresAdmin() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    const { exchangeRate } = useAuth(); // Extraemos la tasa del sistema desde el contexto
 
     const [drivers, setDrivers] = useState([]);
     const [selectedDriverIds, setSelectedDriverIds] = useState([]);
     const [loading, setLoading] = useState(false);
     
-    // Tasa BCV / Mercado actual para el cálculo
-    const [tasaBs, setTasaBs] = useState(40.00); 
+    // Tasa por defecto sincronizada con el sistema/BCV
+    const [tasaBs, setTasaBs] = useState(exchangeRate || 40.00); 
 
     // Estado para Modal de Pago
     const [showModal, setShowModal] = useState(false);
     const [numeroReferencia, setNumeroReferencia] = useState('');
+
+    // Actualizar la tasa si el contexto global de Auth la carga dinámicamente
+    useEffect(() => {
+        if (exchangeRate) {
+            setTasaBs(exchangeRate);
+        }
+    }, [exchangeRate]);
 
     useEffect(() => {
         fetchPendientes();
@@ -26,7 +35,13 @@ function LiquidacionRepartidoresAdmin() {
         setLoading(true);
         try {
             const res = await axios.get(`${API_BASE_URL}/pendientes`, { withCredentials: true });
-            setDrivers(res.data || []);
+            
+            // Garantizar que únicamente manejamos registros pendientes
+            const pendientesData = (res.data || []).filter(d => 
+                !d.estatus || d.estatus.toLowerCase() === 'pendiente' || Number(d.total_pedidos_pendientes) > 0
+            );
+            
+            setDrivers(pendientesData);
             setSelectedDriverIds([]);
         } catch (err) {
             Swal.fire('Error', 'No se pudieron cargar las liquidaciones pendientes', 'error');
@@ -65,7 +80,7 @@ function LiquidacionRepartidoresAdmin() {
     const totalUSD = selectedDriversData.reduce((acc, curr) => acc + Number(curr.total_usd || 0), 0);
     const totalBsCalculado = totalUSD * tasaBs;
 
-    // Generación del Reporte PDF
+    // Generación del Reporte PDF con Estatus "PENDIENTE"
     const handleExportPDF = () => {
         if (selectedDriversData.length === 0) {
             Swal.fire('Atención', 'Seleccione al menos un conductor para generar el PDF', 'warning');
@@ -74,39 +89,44 @@ function LiquidacionRepartidoresAdmin() {
 
         const doc = new jsPDF();
 
+        // Encabezado del documento
         doc.setFontSize(16);
         doc.text('Gazzella Express - Relación de Pago a Conductores', 14, 15);
         doc.setFontSize(10);
         doc.text(`Fecha de emisión: ${new Date().toLocaleDateString('es-VE')} ${new Date().toLocaleTimeString('es-VE')}`, 14, 22);
-        doc.text(`Tasa de Cambio Aplicada: ${Number(tasaBs).toFixed(2)} Bs/USD`, 14, 27);
+        doc.text(`Tasa Oficial de Sistema (BCV): ${Number(tasaBs).toFixed(2)} Bs/USD`, 14, 27);
 
-        const tableColumn = ["Conductor", "Cédula", "Teléfono", "Pedidos", "Monto USD", "Monto a Pagar (Bs)"];
+        // Estructura de la tabla (incluye la columna Estatus)
+        const tableColumn = ["Conductor", "Cédula", "Teléfono", "Pedidos", "Monto USD", "Monto (Bs)", "Estatus"];
         const tableRows = selectedDriversData.map(d => [
-            `${d.nombre || ''}`.trim(),
+            `${d.nombre || ''} ${d.apellido || ''}`.trim(),
             d.cedula || 'N/A',
             d.telefono || 'N/A',
             d.total_pedidos_pendientes || 0,
             `$${Number(d.total_usd || 0).toFixed(2)}`,
-            `${(Number(d.total_usd || 0) * tasaBs).toFixed(2)} Bs.`
+            `${(Number(d.total_usd || 0) * tasaBs).toFixed(2)} Bs.`,
+            'PENDIENTE'
         ]);
 
-        // ✅ Uso correcto de autoTable pasando 'doc' como parámetro
         autoTable(doc, {
             startY: 32,
             head: [tableColumn],
             body: tableRows,
             theme: 'striped',
-            headStyles: { fillColor: [249, 115, 22] }
+            headStyles: { fillColor: [249, 115, 22] },
+            columnStyles: {
+                6: { fontStyle: 'bold', textColor: [217, 119, 6] } // Color ambar para resaltar "PENDIENTE"
+            }
         });
 
-        // ✅ Obtener la posición vertical final de la tabla
+        // Posición y cuadro de totales al final de la tabla
         const finalY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : 32) + 10;
         doc.setFontSize(11);
         doc.setFont(undefined, 'bold');
         doc.text(`Total en USD: $${totalUSD.toFixed(2)}`, 14, finalY);
         doc.text(`Total a Transferir (Bs): ${totalBsCalculado.toFixed(2)} Bs.`, 14, finalY + 6);
 
-        doc.save(`Pago_Conductores_${Date.now()}.pdf`);
+        doc.save(`Pago_Conductores_Pendientes_${Date.now()}.pdf`);
     };
 
     // Procesar Confirmación de Pago
@@ -143,16 +163,16 @@ function LiquidacionRepartidoresAdmin() {
                 🛵 Liquidación y Pago a Conductores
             </h2>
 
-            {/* Configuración de Tasa y Acciones Superior */}
+            {/* Configuración de Tasa del Sistema y Acciones Superior */}
             <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#475569' }}>Tasa Bs/USD:</label>
+                    <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#475569' }}>Tasa Sistema (Bs/USD):</label>
                     <input 
                         type="number" 
                         step="0.01" 
                         value={tasaBs} 
                         onChange={(e) => setTasaBs(Number(e.target.value))}
-                        style={{ width: '120px', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                        style={{ width: '130px', padding: '8px', borderRadius: '6px', border: '1px solid #cbd5e1', fontWeight: 'bold' }}
                     />
                 </div>
 
@@ -175,7 +195,7 @@ function LiquidacionRepartidoresAdmin() {
                 </div>
             </div>
 
-            {/* Tabla de Conductores */}
+            {/* Tabla de Conductores con Pagos Pendientes */}
             <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '12px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
                     <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
@@ -192,13 +212,14 @@ function LiquidacionRepartidoresAdmin() {
                             <th style={{ padding: '12px 16px' }}>Pedidos Pendientes</th>
                             <th style={{ padding: '12px 16px' }}>Monto (USD)</th>
                             <th style={{ padding: '12px 16px' }}>Monto a Pagar (Bs)</th>
+                            <th style={{ padding: '12px 16px' }}>Estatus</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading && drivers.length === 0 ? (
-                            <tr><td colSpan="6" style={{ textAlign: 'center', padding: '24px' }}>Cargando datos...</td></tr>
+                            <tr><td colSpan="7" style={{ textAlign: 'center', padding: '24px' }}>Cargando datos...</td></tr>
                         ) : drivers.length === 0 ? (
-                            <tr><td colSpan="6" style={{ textAlign: 'center', padding: '24px', color: '#64748b' }}>No hay pagos pendientes de repartidores.</td></tr>
+                            <tr><td colSpan="7" style={{ textAlign: 'center', padding: '24px', color: '#64748b' }}>No hay pagos pendientes de repartidores.</td></tr>
                         ) : (
                             drivers.map((d) => (
                                 <tr key={d.repartidor_id} style={{ borderBottom: '1px solid #f1f5f9' }}>
@@ -209,11 +230,16 @@ function LiquidacionRepartidoresAdmin() {
                                             onChange={() => handleSelectOne(d.repartidor_id)}
                                         />
                                     </td>
-                                    <td style={{ padding: '12px 16px', fontWeight: '600' }}>{d.nombre}</td>
+                                    <td style={{ padding: '12px 16px', fontWeight: '600' }}>{d.nombre} {d.apellido}</td>
                                     <td style={{ padding: '12px 16px' }}>{d.cedula || 'N/A'}</td>
                                     <td style={{ padding: '12px 16px' }}>{d.total_pedidos_pendientes}</td>
                                     <td style={{ padding: '12px 16px', color: '#16a34a', fontWeight: 'bold' }}>${Number(d.total_usd || 0).toFixed(2)}</td>
                                     <td style={{ padding: '12px 16px', fontWeight: 'bold' }}>{(Number(d.total_usd || 0) * tasaBs).toFixed(2)} Bs.</td>
+                                    <td style={{ padding: '12px 16px' }}>
+                                        <span style={{ background: '#fef3c7', color: '#d97706', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold' }}>
+                                            PENDIENTE
+                                        </span>
+                                    </td>
                                 </tr>
                             ))
                         )}
