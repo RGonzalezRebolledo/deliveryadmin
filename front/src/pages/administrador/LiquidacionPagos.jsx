@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable'; // Importación correcta para Vite
 
 function LiquidacionRepartidoresAdmin() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -82,7 +82,7 @@ function LiquidacionRepartidoresAdmin() {
 
         const tableColumn = ["Conductor", "Cédula", "Teléfono", "Pedidos", "Monto USD", "Monto a Pagar (Bs)"];
         const tableRows = selectedDriversData.map(d => [
-            `${d.nombre || ''} ${d.apellido || ''}`.trim(),
+            `${d.nombre || ''}`.trim(),
             d.cedula || 'N/A',
             d.telefono || 'N/A',
             d.total_pedidos_pendientes || 0,
@@ -90,7 +90,8 @@ function LiquidacionRepartidoresAdmin() {
             `${(Number(d.total_usd || 0) * tasaBs).toFixed(2)} Bs.`
         ]);
 
-        doc.autoTable({
+        // ✅ Uso correcto de autoTable pasando 'doc' como parámetro
+        autoTable(doc, {
             startY: 32,
             head: [tableColumn],
             body: tableRows,
@@ -98,6 +99,7 @@ function LiquidacionRepartidoresAdmin() {
             headStyles: { fillColor: [249, 115, 22] }
         });
 
+        // ✅ Obtener la posición vertical final de la tabla
         const finalY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : 32) + 10;
         doc.setFontSize(11);
         doc.setFont(undefined, 'bold');
@@ -207,7 +209,7 @@ function LiquidacionRepartidoresAdmin() {
                                             onChange={() => handleSelectOne(d.repartidor_id)}
                                         />
                                     </td>
-                                    <td style={{ padding: '12px 16px', fontWeight: '600' }}>{d.nombre} {d.apellido}</td>
+                                    <td style={{ padding: '12px 16px', fontWeight: '600' }}>{d.nombre}</td>
                                     <td style={{ padding: '12px 16px' }}>{d.cedula || 'N/A'}</td>
                                     <td style={{ padding: '12px 16px' }}>{d.total_pedidos_pendientes}</td>
                                     <td style={{ padding: '12px 16px', color: '#16a34a', fontWeight: 'bold' }}>${Number(d.total_usd || 0).toFixed(2)}</td>
