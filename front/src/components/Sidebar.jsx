@@ -25,6 +25,7 @@ const Sidebar = () => {
                 <Link to="/administrador/AdminClientsList" className="enlace-sidebar">Clientes</Link>
                 <Link to="/administrador/AdminActiveOrders" className="enlace-sidebar">Pedidos</Link>
                 <Link to="/administrador/AdminDriversMonitor" className="enlace-sidebar">Conductores-Pedidos</Link>
+                <Link to="/administrador/LiquidacionPagos" className="enlace-sidebar">Relación Pagos</Link>
 
                 {/* 🛡️ Solo para Administrador */}
                 {user?.tipo === 'administrador' && (
