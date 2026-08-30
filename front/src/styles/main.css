@@ -402,14 +402,16 @@ hr {
     padding: var(--spacing-md);
 }
 
-/* El sidebar ocupa un ancho fijo con un diseño de tarjeta flotante */
+/* El sidebar con fondo suave semi-transparente (Efecto Glassmorphism) */
 .sidebar-container {
     width: 260px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.55); /* Fondo suave semi-transparente */
+    backdrop-filter: blur(12px); /* Difuminado traslucido moderno */
+    -webkit-backdrop-filter: blur(12px);
     border-radius: var(--radius-md);
     padding: var(--spacing-lg) var(--spacing-md);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     display: flex;
     flex-direction: column;
     height: calc(100vh - 2 * var(--spacing-md));
@@ -439,10 +441,10 @@ hr {
 
 /* Enlaces base del Sidebar */
 .enlace-sidebar {
-    color: #4b5563;
+    color: #334155;
     text-decoration: none;
     font-size: 0.875rem;
-    font-weight: 500;
+    font-weight: 600;
     padding: 10px 14px;
     border-radius: var(--radius-sm);
     display: flex;
@@ -456,7 +458,7 @@ hr {
 }
 
 .enlace-sidebar:hover {
-    background-color: #fff1f2;
+    background-color: rgba(255, 90, 95, 0.12); /* Fondo suave traslucido al pasar el mouse */
     color: var(--color-primary);
     transform: translateX(4px);
 }
@@ -466,7 +468,7 @@ hr {
     background-color: var(--color-primary);
     color: #ffffff;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(255, 90, 95, 0.25);
+    box-shadow: 0 4px 12px rgba(255, 90, 95, 0.3);
 }
 
 /* Submenús */
@@ -479,7 +481,7 @@ hr {
 .btn-submenu {
     font-family: inherit;
     font-size: 0.875rem;
-    color: #4b5563;
+    color: #334155;
 }
 
 .submenu-items {
@@ -490,18 +492,18 @@ hr {
     margin-bottom: 6px;
     padding-left: 12px;
     margin-left: 14px;
-    border-left: 2px solid #f1f5f9;
+    border-left: 2px solid rgba(0, 0, 0, 0.08); /* Línea guía traslucida */
 }
 
 .submenu-link {
     font-size: 0.825rem;
     padding: 8px 12px;
-    color: #64748b;
+    color: #475569;
     border-radius: var(--radius-sm);
 }
 
 .submenu-link:hover {
-    background-color: #f8fafc;
+    background-color: rgba(255, 255, 255, 0.6);
     color: var(--color-primary);
     border-left: 2px solid var(--color-primary);
     margin-left: -2px;
