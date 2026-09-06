@@ -40,6 +40,10 @@ const AdminClientsList = () => {
         return matchesText && matchesStatus;
     });
 
+    // === CÁLCULO DE CONTEOS DINÁMICOS ===
+    const totalVerified = clients.filter(c => Boolean(c.verificado)).length;
+    const totalUnverified = clients.length - totalVerified;
+
     // Estilos de las etiquetas de estado
     const badgeStyle = {
         padding: "4px 8px",
@@ -90,7 +94,7 @@ const AdminClientsList = () => {
                         }}
                     />
 
-                    {/* FILTRO POR ESTADO DE VERIFICACIÓN */}
+                    {/* FILTRO CON CONTEOS DINÁMICOS EN EL DESPLEGABLE */}
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
@@ -103,16 +107,16 @@ const AdminClientsList = () => {
                             color: "#333",
                             fontWeight: "500",
                             cursor: "pointer",
-                            minWidth: "160px"
+                            minWidth: "180px"
                         }}
                     >
-                        <option value="all">Todos los estados</option>
-                        <option value="verified">Verificados</option>
-                        <option value="unverified">No Verificados</option>
+                        <option value="all">Todos ({clients.length})</option>
+                        <option value="verified">Verificados ({totalVerified})</option>
+                        <option value="unverified">No Verificados ({totalUnverified})</option>
                     </select>
                 </div>
 
-                {/* LÍNEA DE CONTEO */}
+                {/* LÍNEA DE CONTEO DINÁMICA */}
                 <div style={{ 
                     fontSize: "13px", 
                     color: "#666", 
@@ -120,8 +124,10 @@ const AdminClientsList = () => {
                     justifyContent: "space-between",
                     padding: "0 5px" 
                 }}>
-                    <span>Mostrando <b>{filtered.length}</b> clientes</span>
-                    <span>Total registrados: <b>{clients.length}</b></span>
+                    <span>Mostrando <b>{filtered.length}</b> cliente(s)</span>
+                    <span>
+                        Verificados: <b>{totalVerified}</b> | No Verificados: <b>{totalUnverified}</b> | Total: <b>{clients.length}</b>
+                    </span>
                 </div>
             </div>
 
@@ -174,6 +180,7 @@ const AdminClientsList = () => {
 };
 
 export default AdminClientsList;
+
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 
