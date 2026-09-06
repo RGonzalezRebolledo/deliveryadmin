@@ -36,13 +36,19 @@ const AdminClientsList = () => {
         if (statusFilter === "verified") matchesStatus = isVerified === true;
         if (statusFilter === "unverified") matchesStatus = isVerified === false;
 
-        // 3. Filtro por Fecha de Registro
-        let matchesDate = true;
-        if (dateFilter && c.fecha_creacion) {
-            // Convierte la fecha ISO de PostgreSQL a YYYY-MM-DD local
-            const clientDate = new Date(c.fecha_creacion).toISOString().split('T')[0];
-            matchesDate = clientDate === dateFilter;
-        }
+// 3. Filtro por Fecha de Registro
+let matchesDate = true;
+if (dateFilter && c.fecha_creacion) {
+    const d = new Date(c.fecha_creacion);
+    
+    // Formatear a YYYY-MM-DD según la zona horaria local del cliente
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    
+    const clientDate = `${year}-${month}-${day}`;
+    matchesDate = clientDate === dateFilter;
+}
 
         return matchesText && matchesStatus && matchesDate;
     });
