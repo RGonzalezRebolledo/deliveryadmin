@@ -9,6 +9,7 @@ const AdminClientsList = () => {
     const [clients, setClients] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all"); // 'all', 'verified', 'unverified'
+    const [dateFilter, setDateFilter] = useState(""); // Formato YYYY-MM-DD
 
     useEffect(() => {
         const fetchClients = async () => {
@@ -22,29 +23,42 @@ const AdminClientsList = () => {
         fetchClients();
     }, []);
 
-    // Lógica combinada de filtrado: Texto + Estado de Verificación
+    // Lógica combinada: Texto + Estado + Fecha
     const filtered = clients.filter(c => {
+        // 1. Filtro de Texto (Nombre o Email)
         const matchesText = 
             (c.nombre && c.nombre.toLowerCase().includes(searchTerm.toLowerCase())) || 
             (c.email && c.email.toLowerCase().includes(searchTerm.toLowerCase()));
 
+        // 2. Filtro de Estado
         const isVerified = Boolean(c.verificado);
-
         let matchesStatus = true;
-        if (statusFilter === "verified") {
-            matchesStatus = isVerified === true;
-        } else if (statusFilter === "unverified") {
-            matchesStatus = isVerified === false;
+        if (statusFilter === "verified") matchesStatus = isVerified === true;
+        if (statusFilter === "unverified") matchesStatus = isVerified === false;
+
+        // 3. Filtro por Fecha de Registro
+        let matchesDate = true;
+        if (dateFilter && c.fecha_creacion) {
+            // Convierte la fecha ISO de PostgreSQL a YYYY-MM-DD local
+            const clientDate = new Date(c.fecha_creacion).toISOString().split('T')[0];
+            matchesDate = clientDate === dateFilter;
         }
 
-        return matchesText && matchesStatus;
+        return matchesText && matchesStatus && matchesDate;
     });
 
-    // === CÁLCULO DE CONTEOS DINÁMICOS ===
+    // Resetear todos los filtros
+    const handleResetFilters = () => {
+        setSearchTerm("");
+        setStatusFilter("all");
+        setDateFilter("");
+    };
+
+    // Cálculos de conteo
     const totalVerified = clients.filter(c => Boolean(c.verificado)).length;
     const totalUnverified = clients.length - totalVerified;
 
-    // Estilos de las etiquetas de estado
+    // Estilos para Badges
     const badgeStyle = {
         padding: "4px 8px",
         borderRadius: "12px",
@@ -71,21 +85,23 @@ const AdminClientsList = () => {
             <div style={{ padding: "20px", backgroundColor: "#fff", borderBottom: "1px solid #eee" }}>
                 <h2 style={{ color: "var(--color-primary)", marginBottom: "15px" }}>Directorio de Clientes</h2>
                 
-                {/* CONTENEDOR DE FILTROS: BUSCADOR Y DESPLEGABLE */}
+                {/* CONTENEDOR DE FILTROS MULTIPLES */}
                 <div style={{ 
                     display: "flex", 
                     gap: "10px", 
                     marginBottom: "12px", 
-                    flexWrap: "wrap" 
+                    flexWrap: "wrap",
+                    alignItems: "center"
                 }}>
+                    {/* Buscador de texto */}
                     <input 
                         type="text" 
-                        placeholder="Buscar cliente por nombre o email..." 
+                        placeholder="Buscar por nombre o email..." 
                         className="search-input"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ 
-                            flex: "1 1 250px", 
+                            flex: "1 1 200px", 
                             padding: "10px", 
                             borderRadius: "8px", 
                             border: "1px solid #ddd",
@@ -94,7 +110,7 @@ const AdminClientsList = () => {
                         }}
                     />
 
-                    {/* FILTRO CON CONTEOS DINÁMICOS EN EL DESPLEGABLE */}
+                    {/* Selector de Estado */}
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
@@ -107,16 +123,53 @@ const AdminClientsList = () => {
                             color: "#333",
                             fontWeight: "500",
                             cursor: "pointer",
-                            minWidth: "180px"
+                            minWidth: "160px"
                         }}
                     >
                         <option value="all">Todos ({clients.length})</option>
                         <option value="verified">Verificados ({totalVerified})</option>
                         <option value="unverified">No Verificados ({totalUnverified})</option>
                     </select>
+
+                    {/* Selector de Fecha */}
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        <input 
+                            type="date" 
+                            value={dateFilter}
+                            onChange={(e) => setDateFilter(e.target.value)}
+                            style={{
+                                padding: "9px 10px",
+                                borderRadius: "8px",
+                                border: "1px solid #ddd",
+                                outline: "none",
+                                backgroundColor: "#fff",
+                                color: "#333",
+                                cursor: "pointer"
+                            }}
+                        />
+                    </div>
+
+                    {/* Botón para limpiar filtros */}
+                    {(searchTerm || statusFilter !== "all" || dateFilter) && (
+                        <button
+                            onClick={handleResetFilters}
+                            style={{
+                                padding: "10px 14px",
+                                borderRadius: "8px",
+                                border: "none",
+                                backgroundColor: "#fee2e2",
+                                color: "#991b1b",
+                                fontWeight: "600",
+                                cursor: "pointer",
+                                fontSize: "13px"
+                            }}
+                        >
+                            Limpiar filtros
+                        </button>
+                    )}
                 </div>
 
-                {/* LÍNEA DE CONTEO DINÁMICA */}
+                {/* LÍNEA DE CONTEO */}
                 <div style={{ 
                     fontSize: "13px", 
                     color: "#666", 
@@ -169,7 +222,7 @@ const AdminClientsList = () => {
                     ) : (
                         <tr>
                             <td colSpan="5" style={{ textAlign: "center", padding: "30px", color: "#999" }}>
-                                No se encontraron clientes que coincidan con la búsqueda o el filtro seleccionado.
+                                No se encontraron clientes con los filtros seleccionados.
                             </td>
                         </tr>
                     )}
