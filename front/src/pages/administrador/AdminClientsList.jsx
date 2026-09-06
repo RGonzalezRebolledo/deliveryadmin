@@ -14,6 +14,7 @@ const AdminClientsList = () => {
             try {
                 const res = await axios.get(`${API_BASE_URL}/admin/clients`, { withCredentials: true });
                 setClients(res.data);
+                console.log("Datos que recibe el cliente:", res.data);
             } catch (error) {
                 console.error("Error al obtener clientes:", error);
             }
@@ -103,12 +104,12 @@ const AdminClientsList = () => {
                                 <td>{c.telefono || 'N/A'}</td>
                                 {/* NUEVA CELDA CON LÓGICA DE VERIFICACIÓN */}
                                 <td style={{ textAlign: "center" }}>
-                                    {c.verificado ? (
-                                        <span style={verifiedStyle}>Verificado</span>
-                                    ) : (
-                                        <span style={notVerifiedStyle}>No Verificado</span>
-                                    )}
-                                </td>
+    {(c.verificado === true || c.verificado === 'true' || c.verificado === 't' || c.verificado === 1) ? (
+        <span style={verifiedStyle}>Verificado</span>
+    ) : (
+        <span style={notVerifiedStyle}>No Verificado</span>
+    )}
+</td>
                                 <td style={{ textAlign: "center" }}>
                                     {new Date(c.fecha_creacion).toLocaleDateString()}
                                 </td>
