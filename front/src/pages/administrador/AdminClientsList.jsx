@@ -1,5 +1,3 @@
-// Ruta: ruta/a/tu/AdminClientsList.jsx
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -12,9 +10,11 @@ const AdminClientsList = () => {
     useEffect(() => {
         const fetchClients = async () => {
             try {
-                const res = await axios.get(`${API_BASE_URL}/admin/clients`, { withCredentials: true });
+                // Parámetro dinámico _t para romper el caché HTTP
+                const res = await axios.get(`${API_BASE_URL}/admin/clients?_t=${Date.now()}`, { 
+                    withCredentials: true 
+                });
                 setClients(res.data);
-                console.log("Datos que recibe el cliente:", res.data);
             } catch (error) {
                 console.error("Error al obtener clientes:", error);
             }
@@ -23,29 +23,30 @@ const AdminClientsList = () => {
     }, []);
 
     const filtered = clients.filter(c => 
-        c.nombre.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        c.email.toLowerCase().includes(searchTerm.toLowerCase())
+        (c.nombre && c.nombre.toLowerCase().includes(searchTerm.toLowerCase())) || 
+        (c.email && c.email.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    // Estilos para las etiquetas de estado
+    // Estilos de los Badges
     const badgeStyle = {
         padding: "4px 8px",
         borderRadius: "12px",
         fontSize: "12px",
         fontWeight: "bold",
-        textTransform: "uppercase"
+        textTransform: "uppercase",
+        display: "inline-block"
     };
 
     const verifiedStyle = {
         ...badgeStyle,
-        backgroundColor: "#d1fae5", // Verde claro
-        color: "#065f46"            // Verde oscuro
+        backgroundColor: "#d1fae5",
+        color: "#065f46"
     };
 
     const notVerifiedStyle = {
         ...badgeStyle,
-        backgroundColor: "#f3f4f6", // Gris claro
-        color: "#1f293b"            // Gris oscuro
+        backgroundColor: "#f3f4f6",
+        color: "#1f293b"
     };
 
     return (
@@ -66,11 +67,10 @@ const AdminClientsList = () => {
                         borderRadius: '8px', 
                         border: '1px solid #ddd',
                         outline: 'none',
-                        boxSizing: 'border-box' // Asegura que el padding no afecte el ancho total
+                        boxSizing: 'border-box'
                     }}
                 />
 
-                {/* LÍNEA DE CONTEO */}
                 <div style={{ 
                     fontSize: "13px", 
                     color: "#666", 
@@ -89,35 +89,38 @@ const AdminClientsList = () => {
                         <th style={{ textAlign: "center" }}>Nombre</th>
                         <th style={{ textAlign: "center" }}>Email</th>
                         <th style={{ textAlign: "center" }}>Teléfono</th>
-                        <th style={{ textAlign: "center" }}>Estado</th> {/* <--- NUEVA CABECERA */}
+                        <th style={{ textAlign: "center" }}>Estado</th>
                         <th style={{ textAlign: "center" }}>Registro</th>
                     </tr>
                 </thead>
                 <tbody>
                     {filtered.length > 0 ? (
-                        filtered.map(c => (
-                            <tr key={c.id}>
-                                <td style={{ fontWeight: 'bold', color: 'var(--color-primary)' }}>
-                                    {c.nombre}
-                                </td>
-                                <td>{c.email}</td>
-                                <td>{c.telefono || 'N/A'}</td>
-                                {/* NUEVA CELDA CON LÓGICA DE VERIFICACIÓN */}
-                                <td style={{ textAlign: "center" }}>
-    {(c.verificado === true || c.verificado === 'true' || c.verificado === 't' || c.verificado === 1) ? (
-        <span style={verifiedStyle}>Verificado</span>
-    ) : (
-        <span style={notVerifiedStyle}>No Verificado</span>
-    )}
-</td>
-                                <td style={{ textAlign: "center" }}>
-                                    {new Date(c.fecha_creacion).toLocaleDateString()}
-                                </td>
-                            </tr>
-                        ))
+                        filtered.map(c => {
+                            // Evaluación booleana limpia
+                            const isVerified = Boolean(c.verificado);
+
+                            return (
+                                <tr key={c.id}>
+                                    <td style={{ fontWeight: 'bold', color: 'var(--color-primary)' }}>
+                                        {c.nombre}
+                                    </td>
+                                    <td>{c.email}</td>
+                                    <td>{c.telefono || 'N/A'}</td>
+                                    <td style={{ textAlign: "center" }}>
+                                        {isVerified ? (
+                                            <span style={verifiedStyle}>Verificado</span>
+                                        ) : (
+                                            <span style={notVerifiedStyle}>No Verificado</span>
+                                        )}
+                                    </td>
+                                    <td style={{ textAlign: "center" }}>
+                                        {c.fecha_creacion ? new Date(c.fecha_creacion).toLocaleDateString() : 'N/A'}
+                                    </td>
+                                </tr>
+                            );
+                        })
                     ) : (
                         <tr>
-                            {/* Actualizado colSpan a 5 */}
                             <td colSpan="5" style={{ textAlign: "center", padding: "30px", color: "#999" }}>
                                 No se encontraron clientes que coincidan con la búsqueda.
                             </td>
