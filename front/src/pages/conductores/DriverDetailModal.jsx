@@ -48,19 +48,24 @@ const DriverDetailModal = ({ driver, onClose }) => {
       : 'Foráneo / Aliado';
   };
 
-  // Función helper para formatear el número de WhatsApp con código de país (+58)
+  // Función helper para formatear el número de WhatsApp con mensaje preescrito
   const getWhatsAppUrl = (phone) => {
     if (!phone) return null;
     let cleanNumber = phone.replace(/\D/g, ''); // Remueve cualquier caracter que no sea número
     
-    // Si empieza con 0 (ej: 04121234567), se reemplaza por el código internacional de Venezuela (584121234567)
+    // Si empieza con 0, se reemplaza por el código internacional (+58)
     if (cleanNumber.startsWith('0')) {
       cleanNumber = '58' + cleanNumber.slice(1);
     } else if (!cleanNumber.startsWith('58')) {
       cleanNumber = '58' + cleanNumber;
     }
 
-    return `https://wa.me/${cleanNumber}`;
+    // Mensaje predeterminado codificado para URL
+    const defaultMessage = encodeURIComponent(
+      'Hola en los proximos días te estaremos contactando para el proceso de verificación y registro'
+    );
+
+    return `https://wa.me/${cleanNumber}?text=${defaultMessage}`;
   };
 
   const whatsappUrl = getWhatsAppUrl(driver.telefono);
