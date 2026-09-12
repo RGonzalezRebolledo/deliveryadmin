@@ -72,10 +72,10 @@ const DriverDetailModal = ({ driver, onClose }) => {
 
     if (hasCompletedSystemVerification) {
       // Caso 1: El usuario ya se verificó por el sistema
-      rawMessage = 'Hola en los proximos días te estaremos contactando para el proceso de verificación y registro';
+      rawMessage = 'Hola en los proximos días te estaremos contactando para el proceso de revisión y registro';
     } else {
       // Caso 2: El usuario NO se ha verificado en el sistema
-      rawMessage = 'Hola tu usuario no ha sido verificado, hacer culminar el proceso de verificacion, posteriormente te estaremos contactando para la verificacion y el registro. Cualquier duda puedes consultarnos';
+      rawMessage = 'Hola tu usuario no ha sido verificado, debes culminar el proceso de verificacion, posteriormente te estaremos contactando para la revisión y el registro. Cualquier duda puedes consultarnos';
     }
 
     return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(rawMessage)}`;
