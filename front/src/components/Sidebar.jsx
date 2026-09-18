@@ -6,47 +6,33 @@ const Sidebar = () => {
     const { user } = useAuth();
     const location = useLocation();
     
-    // Estado para controlar si el Sidebar está recogido/colapsado
     const [isCollapsed, setIsCollapsed] = useState(true);
-
-    // Estados para controlar desplegables internos
     const [configOpen, setConfigOpen] = useState(false);
     const [gestionConductoresOpen, setGestionConductoresOpen] = useState(false);
 
-    const toggleSidebar = () => {
-        setIsCollapsed(!isCollapsed);
-    };
-
-    // Repliega el sidebar al hacer clic en un enlace
-    const handleLinkClick = () => {
-        setIsCollapsed(true);
-    };
-
-    const toggleConfig = () => {
-        setConfigOpen(!configOpen);
-    };
-
-    const toggleGestionConductores = () => {
-        setGestionConductoresOpen(!gestionConductoresOpen);
-    };
+    const toggleSidebar = () => setIsCollapsed(!isCollapsed);
+    const handleLinkClick = () => setIsCollapsed(true);
+    const toggleConfig = () => setConfigOpen(!configOpen);
+    const toggleGestionConductores = () => setGestionConductoresOpen(!gestionConductoresOpen);
 
     const isActive = (path) => location.pathname === path ? 'active' : '';
 
     return (
         <aside className={`sidebar-container ${isCollapsed ? 'collapsed' : 'expanded'}`}>
-            {/* Pestaña Flotante Roja */}
+            {/* Pestaña Flotante Perfectamente Encajada */}
             <button 
                 className="sidebar-toggle-btn" 
                 onClick={toggleSidebar}
+                type="button"
                 aria-label={isCollapsed ? 'Desplegar menú' : 'Plegar menú'}
             >
                 <svg 
                     className={`toggle-icon ${isCollapsed ? '' : 'rotated'}`}
-                    width="22" 
-                    height="22" 
+                    width="18" 
+                    height="18" 
                     viewBox="0 0 24 24" 
                     fill="none" 
-                    stroke="currentColor" 
+                    stroke="#FF5A5F" 
                     strokeWidth="3" 
                     strokeLinecap="round" 
                     strokeLinejoin="round"
@@ -84,9 +70,8 @@ const Sidebar = () => {
                     <span>📦 Pedidos En Curso</span>
                 </Link>
 
-                {/* --- SECCIÓN GESTIÓN DE CONDUCTORES CON SUBMENÚ --- */}
                 <div className="submenu-container">
-                    <button onClick={toggleGestionConductores} className="enlace-sidebar btn-submenu">
+                    <button onClick={toggleGestionConductores} className="enlace-sidebar btn-submenu" type="button">
                         <span>💳 Gestión Conductores</span>
                         <svg 
                             className={`sidebar-chevron-svg ${gestionConductoresOpen ? 'open' : ''}`} 
@@ -105,48 +90,17 @@ const Sidebar = () => {
                     
                     {gestionConductoresOpen && (
                         <div className="submenu-items">
-                            <Link 
-                                to="/administrador/AdminDriversMonitor" 
-                                className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminDriversMonitor')}`}
-                                onClick={handleLinkClick}
-                            >
-                                Conductores-Pedidos
-                            </Link>
-                            <Link 
-                                to="/conductores/ResumenDrivers" 
-                                className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`}
-                                onClick={handleLinkClick}
-                            >
-                                Conductores
-                            </Link>
-                            <Link 
-                                to="/administrador/AdminAvailableDrivers" 
-                                className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminAvailableDrivers')}`}
-                                onClick={handleLinkClick}
-                            >
-                                Conductores Activos
-                            </Link>
-                            <Link 
-                                to="/administrador/LiquidacionPagos" 
-                                className={`enlace-sidebar submenu-link ${isActive('/administrador/LiquidacionPagos')}`}
-                                onClick={handleLinkClick}
-                            >
-                                CxP a Conductores
-                            </Link>
-                            <Link 
-                                to="/administrador/HistorialPagosRepartidores" 
-                                className={`enlace-sidebar submenu-link ${isActive('/administrador/HistorialPagosRepartidores')}`}
-                                onClick={handleLinkClick}
-                            >
-                                Historial de Pagos
-                            </Link>
+                            <Link to="/administrador/AdminDriversMonitor" className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminDriversMonitor')}`} onClick={handleLinkClick}>Conductores-Pedidos</Link>
+                            <Link to="/conductores/ResumenDrivers" className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`} onClick={handleLinkClick}>Conductores</Link>
+                            <Link to="/administrador/AdminAvailableDrivers" className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminAvailableDrivers')}`} onClick={handleLinkClick}>Conductores Activos</Link>
+                            <Link to="/administrador/LiquidacionPagos" className={`enlace-sidebar submenu-link ${isActive('/administrador/LiquidacionPagos')}`} onClick={handleLinkClick}>CxP a Conductores</Link>
+                            <Link to="/administrador/HistorialPagosRepartidores" className={`enlace-sidebar submenu-link ${isActive('/administrador/HistorialPagosRepartidores')}`} onClick={handleLinkClick}>Historial de Pagos</Link>
                         </div>
                     )}
                 </div>
 
-                {/* --- SECCIÓN CONFIGURACIÓN CON SUBMENÚ --- */}
                 <div className="submenu-container">
-                    <button onClick={toggleConfig} className="enlace-sidebar btn-submenu">
+                    <button onClick={toggleConfig} className="enlace-sidebar btn-submenu" type="button">
                         <span>⚙️ Configuración</span>
                         <svg 
                             className={`sidebar-chevron-svg ${configOpen ? 'open' : ''}`} 
@@ -165,24 +119,11 @@ const Sidebar = () => {
                     
                     {configOpen && (
                         <div className="submenu-items">
-                            <Link 
-                                to="/typevehicle" 
-                                className={`enlace-sidebar submenu-link ${isActive('/typevehicle')}`}
-                                onClick={handleLinkClick}
-                            >
-                                Tipo Vehículos
-                            </Link>
-                            <Link 
-                                to="/typeService" 
-                                className={`enlace-sidebar submenu-link ${isActive('/typeService')}`}
-                                onClick={handleLinkClick}
-                            >
-                                Tipo Servicio
-                            </Link>
+                            <Link to="/typevehicle" className={`enlace-sidebar submenu-link ${isActive('/typevehicle')}`} onClick={handleLinkClick}>Tipo Vehículos</Link>
+                            <Link to="/typeService" className={`enlace-sidebar submenu-link ${isActive('/typeService')}`} onClick={handleLinkClick}>Tipo Servicio</Link>
                         </div>
                     )}
                 </div>
-
             </div>
         </aside>
     );
