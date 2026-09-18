@@ -335,18 +335,32 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                         </div>
                     </div>
 
-                    {/* SECCIÓN DE FOTOS (3 Columnas con soporte para cámara directa) */}
+                    {/* SECCIÓN DE FOTOS (Con opciones para Cámara y Dispositivo) */}
                     <div style={photoSectionStyle}>
                         {/* Foto Perfil */}
                         <div style={photoColumnStyle}>
                             <label style={labelStyle}>Foto Perfil</label>
-                            <input 
-                                type="file" 
-                                accept="image/*" 
-                                capture="environment"
-                                style={fileInputStyle} 
-                                onChange={(e) => handleImageUpload(e.target.files[0], 'foto')} 
-                            />
+                            <div style={uploadButtonsContainerStyle}>
+                                <label style={uploadButtonStyle}>
+                                    📷 Cámara
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        capture="environment"
+                                        style={{ display: 'none' }} 
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'foto')} 
+                                    />
+                                </label>
+                                <label style={uploadButtonStyle}>
+                                    📁 Galería
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        style={{ display: 'none' }} 
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'foto')} 
+                                    />
+                                </label>
+                            </div>
                             <div style={previewBoxStyle}>
                                 {uploading.perfil ? <span style={loaderStyle}>...</span> :
                                  formData.foto ? <img src={formData.foto} style={imgStyle} alt="Perfil" /> : '📷'}
@@ -356,13 +370,27 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                         {/* Foto Vehículo */}
                         <div style={photoColumnStyle}>
                             <label style={labelStyle}>Foto Vehículo</label>
-                            <input 
-                                type="file" 
-                                accept="image/*" 
-                                capture="environment"
-                                style={fileInputStyle} 
-                                onChange={(e) => handleImageUpload(e.target.files[0], 'foto_vehiculo')} 
-                            />
+                            <div style={uploadButtonsContainerStyle}>
+                                <label style={uploadButtonStyle}>
+                                    📷 Cámara
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        capture="environment"
+                                        style={{ display: 'none' }} 
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'foto_vehiculo')} 
+                                    />
+                                </label>
+                                <label style={uploadButtonStyle}>
+                                    📁 Galería
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        style={{ display: 'none' }} 
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'foto_vehiculo')} 
+                                    />
+                                </label>
+                            </div>
                             <div style={previewBoxStyle}>
                                 {uploading.vehiculo ? <span style={loaderStyle}>...</span> :
                                  formData.foto_vehiculo ? <img src={formData.foto_vehiculo} style={imgStyle} alt="Vehículo" /> : '🚲'}
@@ -372,13 +400,27 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                         {/* Foto Documento */}
                         <div style={photoColumnStyle}>
                             <label style={labelStyle}>Foto C.I / Doc</label>
-                            <input 
-                                type="file" 
-                                accept="image/*" 
-                                capture="environment"
-                                style={fileInputStyle} 
-                                onChange={(e) => handleImageUpload(e.target.files[0], 'foto_documento')} 
-                            />
+                            <div style={uploadButtonsContainerStyle}>
+                                <label style={uploadButtonStyle}>
+                                    📷 Cámara
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        capture="environment"
+                                        style={{ display: 'none' }} 
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'foto_documento')} 
+                                    />
+                                </label>
+                                <label style={uploadButtonStyle}>
+                                    📁 Galería
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        style={{ display: 'none' }} 
+                                        onChange={(e) => handleImageUpload(e.target.files[0], 'foto_documento')} 
+                                    />
+                                </label>
+                            </div>
                             <div style={previewBoxStyle}>
                                 {uploading.documento ? <span style={loaderStyle}>...</span> :
                                  formData.foto_documento ? <img src={formData.foto_documento} style={imgStyle} alt="Documento" /> : '🪪'}
@@ -419,7 +461,8 @@ const labelStyle = { display: 'block', fontSize: '0.7rem', fontWeight: '800', ma
 const inputStyle = { padding: '12px', borderRadius: '10px', border: '1px solid #ddd', fontSize: '0.95rem', outline: 'none', width: '100%', boxSizing: 'border-box' };
 const photoSectionStyle = { display: 'flex', gap: '10px', width: '100%', boxSizing: 'border-box' };
 const photoColumnStyle = { flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' };
-const fileInputStyle = { fontSize: '0.65rem', width: '100%', marginBottom: '5px' };
+const uploadButtonsContainerStyle = { display: 'flex', gap: '4px', marginBottom: '6px' };
+const uploadButtonStyle = { flex: 1, padding: '6px 4px', backgroundColor: '#f0f2f5', border: '1px solid #ccc', borderRadius: '6px', fontSize: '0.65rem', textAlign: 'center', cursor: 'pointer', fontWeight: 'bold', color: '#444', display: 'block', whiteSpace: 'nowrap' };
 const previewBoxStyle = { width: '100%', height: '100px', backgroundColor: '#fcfcfc', borderRadius: '12px', border: '2px dashed #eee', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', color: '#ddd', fontSize: '1.8rem', boxSizing: 'border-box' };
 const imgStyle = { width: '100%', height: '100%', objectFit: 'cover' };
 const loaderStyle = { fontSize: '0.75rem', color: '#ff4d4d', fontWeight: 'bold' };
