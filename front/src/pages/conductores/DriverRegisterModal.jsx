@@ -321,7 +321,7 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                             <label style={labelStyle}>Número de Cuenta Bancaria (20 dígitos)</label>
                             <input
                                 type="text"
-                                placeholder="01020000000000000000"
+                                placeholder="00000000000000000000"
                                 maxLength={20}
                                 value={formData.numero_cuenta}
                                 onChange={handleNumeroCuentaChange}
@@ -335,12 +335,18 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                         </div>
                     </div>
 
-                    {/* SECCIÓN DE FOTOS (3 Columnas) */}
+                    {/* SECCIÓN DE FOTOS (3 Columnas con soporte para cámara directa) */}
                     <div style={photoSectionStyle}>
                         {/* Foto Perfil */}
                         <div style={photoColumnStyle}>
                             <label style={labelStyle}>Foto Perfil</label>
-                            <input type="file" accept="image/*" style={fileInputStyle} onChange={(e) => handleImageUpload(e.target.files[0], 'foto')} />
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                capture="environment"
+                                style={fileInputStyle} 
+                                onChange={(e) => handleImageUpload(e.target.files[0], 'foto')} 
+                            />
                             <div style={previewBoxStyle}>
                                 {uploading.perfil ? <span style={loaderStyle}>...</span> :
                                  formData.foto ? <img src={formData.foto} style={imgStyle} alt="Perfil" /> : '📷'}
@@ -350,7 +356,13 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                         {/* Foto Vehículo */}
                         <div style={photoColumnStyle}>
                             <label style={labelStyle}>Foto Vehículo</label>
-                            <input type="file" accept="image/*" style={fileInputStyle} onChange={(e) => handleImageUpload(e.target.files[0], 'foto_vehiculo')} />
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                capture="environment"
+                                style={fileInputStyle} 
+                                onChange={(e) => handleImageUpload(e.target.files[0], 'foto_vehiculo')} 
+                            />
                             <div style={previewBoxStyle}>
                                 {uploading.vehiculo ? <span style={loaderStyle}>...</span> :
                                  formData.foto_vehiculo ? <img src={formData.foto_vehiculo} style={imgStyle} alt="Vehículo" /> : '🚲'}
@@ -360,7 +372,13 @@ const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
                         {/* Foto Documento */}
                         <div style={photoColumnStyle}>
                             <label style={labelStyle}>Foto C.I / Doc</label>
-                            <input type="file" accept="image/*" style={fileInputStyle} onChange={(e) => handleImageUpload(e.target.files[0], 'foto_documento')} />
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                capture="environment"
+                                style={fileInputStyle} 
+                                onChange={(e) => handleImageUpload(e.target.files[0], 'foto_documento')} 
+                            />
                             <div style={previewBoxStyle}>
                                 {uploading.documento ? <span style={loaderStyle}>...</span> :
                                  formData.foto_documento ? <img src={formData.foto_documento} style={imgStyle} alt="Documento" /> : '🪪'}
@@ -410,13 +428,39 @@ const btnCancelStyle = { backgroundColor: 'transparent', border: '1px solid #ddd
 
 export default DriverRegisterModal;
 
-
 // import React, { useEffect, useState } from 'react';
 // import axios from 'axios';
 // import Swal from 'sweetalert2';
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // const IMGBB_API_KEY = import.meta.env.VITE_IMGBB_API_KEY;
+
+// // Arreglo de bancos de Venezuela
+// const VENEZUELA_BANKS = [
+//     { code: '0102', name: 'Banco de Venezuela' },
+//     { code: '0104', name: 'Venezolano de Crédito' },
+//     { code: '0105', name: 'Banco Mercantil' },
+//     { code: '0108', name: 'Banco Provincial' },
+//     { code: '0114', name: 'Bancaribe' },
+//     { code: '0115', name: 'Banco Exterior' },
+//     { code: '0128', name: 'Banco Caroní' },
+//     { code: '0134', name: 'Banesco' },
+//     { code: '0137', name: 'Banco Sofitasa' },
+//     { code: '0138', name: 'Banco Plaza' },
+//     { code: '0151', name: 'BFC Banco Fondo Común' },
+//     { code: '0156', name: '100% Banco' },
+//     { code: '0157', name: 'DelSur' },
+//     { code: '0163', name: 'Banco del Tesoro' },
+//     { code: '0166', name: 'Banco Agrícola de Venezuela' },
+//     { code: '0168', name: 'Bancrecer' },
+//     { code: '0169', name: 'Mi Banco' },
+//     { code: '0171', name: 'Banco Activo' },
+//     { code: '0172', name: 'Bancamiga' },
+//     { code: '0174', name: 'Banplus' },
+//     { code: '0175', name: 'Banco Bicentenario' },
+//     { code: '0177', name: 'Banco de la Fuerza Armada Nacional Bolivariana (BANFANB)' },
+//     { code: '0191', name: 'Banco Nacional de Crédito (BNC)' }
+// ];
 
 // const DriverRegisterModal = ({ driver, onClose, onSuccess }) => {
 //     console.log("1. PROP DRIVER RECIBIDO:", driver);
@@ -445,7 +489,9 @@ export default DriverRegisterModal;
 //         foto: data?.foto || data?.foto_perfil || '',
 //         foto_vehiculo: data?.foto_vehiculo || '',
 //         tipo_conductor: normalizeConductorType(data?.tipo_conductor || data?.tipo || data?.tipo_repartidor),
-//         foto_documento: data?.foto_documento || data?.foto_cedula || data?.foto_doc || data?.documento_foto || ''
+//         foto_documento: data?.foto_documento || data?.foto_cedula || data?.foto_doc || data?.documento_foto || '',
+//         codigo_banco: data?.codigo_banco || '',
+//         numero_cuenta: data?.numero_cuenta || ''
 //     });
 
 //     const [formData, setFormData] = useState(() => buildInitialFormData(driver));
@@ -506,6 +552,22 @@ export default DriverRegisterModal;
 //         }));
 //     };
 
+//     // Manejador del número de cuenta con autodetección de banco emisor
+//     const handleNumeroCuentaChange = (e) => {
+//         const val = e.target.value.replace(/\D/g, '').slice(0, 20); // solo dígitos, máx 20
+//         const prefix = val.substring(0, 4);
+
+//         setFormData(prev => {
+//             const matchedBank = VENEZUELA_BANKS.find(b => b.code === prefix);
+//             return {
+//                 ...prev,
+//                 numero_cuenta: val,
+//                 // Si el prefijo coincide con un banco existente, actualiza automáticamente el select
+//                 codigo_banco: matchedBank ? matchedBank.code : prev.codigo_banco
+//             };
+//         });
+//     };
+
 //     const handleImageUpload = async (file, field) => {
 //         if (!file) return;
 
@@ -543,6 +605,15 @@ export default DriverRegisterModal;
 
 //         if (!formData.foto || !formData.foto_vehiculo || !formData.foto_documento) {
 //             return Swal.fire({ icon: 'warning', title: 'Atención', text: 'Sube las 3 fotos requeridas (Perfil, Vehículo y Documento).' });
+//         }
+
+//         // Validación de la cuenta bancaria de 20 dígitos
+//         if (formData.numero_cuenta && formData.numero_cuenta.length !== 20) {
+//             return Swal.fire({
+//                 icon: 'warning',
+//                 title: 'Cuenta bancaria inválida',
+//                 text: 'El número de cuenta bancaria debe contener exactamente 20 dígitos.'
+//             });
 //         }
 
 //         const { vehicleDescript, ...payload } = formData;
@@ -651,6 +722,49 @@ export default DriverRegisterModal;
 //                         </select>
 //                     </div>
 
+//                     {/* SECCIÓN DATOS BANCARIOS */}
+//                     <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+//                         <div>
+//                             <label style={labelStyle}>Banco del Conductor</label>
+//                             <select
+//                                 value={formData.codigo_banco}
+//                                 onChange={(e) => setFormData(prev => ({ ...prev, codigo_banco: e.target.value }))}
+//                                 disabled={loading}
+//                                 style={{
+//                                     ...inputStyle,
+//                                     color: formData.codigo_banco ? '#0f172a' : '#64748b',
+//                                     cursor: loading ? 'not-allowed' : 'pointer'
+//                                 }}
+//                             >
+//                                 <option value="" disabled hidden>
+//                                     Seleccione Banco Emisor
+//                                 </option>
+//                                 {VENEZUELA_BANKS.map((bank) => (
+//                                     <option key={bank.code} value={bank.code} style={{ color: '#0f172a' }}>
+//                                         {bank.code} - {bank.name}
+//                                     </option>
+//                                 ))}
+//                             </select>
+//                         </div>
+
+//                         <div>
+//                             <label style={labelStyle}>Número de Cuenta Bancaria (20 dígitos)</label>
+//                             <input
+//                                 type="text"
+//                                 placeholder="00000000000000000000"
+//                                 maxLength={20}
+//                                 value={formData.numero_cuenta}
+//                                 onChange={handleNumeroCuentaChange}
+//                                 style={inputStyle}
+//                             />
+//                             {formData.numero_cuenta && formData.numero_cuenta.length !== 20 && (
+//                                 <span style={{ color: '#e74c3c', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
+//                                     Faltan {20 - formData.numero_cuenta.length} dígitos ({formData.numero_cuenta.length}/20)
+//                                 </span>
+//                             )}
+//                         </div>
+//                     </div>
+
 //                     {/* SECCIÓN DE FOTOS (3 Columnas) */}
 //                     <div style={photoSectionStyle}>
 //                         {/* Foto Perfil */}
@@ -725,3 +839,4 @@ export default DriverRegisterModal;
 // const btnCancelStyle = { backgroundColor: 'transparent', border: '1px solid #ddd', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', color: '#999' };
 
 // export default DriverRegisterModal;
+

@@ -46,7 +46,7 @@ const Sidebar = () => {
                     to="/administrador/AdminActiveOrders" 
                     className={`enlace-sidebar ${isActive('/administrador/AdminActiveOrders')}`}
                 >
-                    <span>📦 Pedidos</span>
+                    <span>📦 Pedidos En Curso</span>
                 </Link>
 
                 {/* --- SECCIÓN GESTIÓN DE CONDUCTORES CON SUBMENÚ --- */}
