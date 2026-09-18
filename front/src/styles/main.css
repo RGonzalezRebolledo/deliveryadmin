@@ -688,70 +688,68 @@ button {
     color: white;
     border-radius: var(--radius-sm);
 }
+/* ========================================================= */
+/* 8. SIDEBAR DESPLEGABLE / COLAPSABLE FIJO */
+/* ========================================================= */
 
-/* Contenedor Principal del Sidebar */
 .sidebar-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
     width: 260px;
-    background-color: #ffffff;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff !important;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-    /* IMPORTANTE: Permite que el botón flotante sobresalga hacia la derecha */
-    overflow: visible !important; 
+    z-index: 9999;
+    overflow: visible !important; /* Mantiene la pestaña flotante expuesta */
 }
 
-/* Estado Plegado: Se oculta hacia la izquierda */
+/* Control de despliegue */
 .sidebar-container.collapsed {
     transform: translateX(-100%);
 }
 
-/* Estado Desplegado */
 .sidebar-container.expanded {
     transform: translateX(0);
 }
 
-/* Menú interno: aquí sí controlas el scroll interno sin cortar el botón externo */
+/* Menú con scroll independiente */
 .sidebar-menu {
     width: 100%;
     height: 100%;
     overflow-y: auto;
-    padding: 20px 15px;
+    padding: 24px 16px;
     box-sizing: border-box;
 }
 
-/* Botón Flotante con forma de Pestaña Elegante */
+/* Botón flotante tipo pestaña con alto contraste */
 .sidebar-toggle-btn {
     position: absolute;
-    top: 25px;
-    right: -36px; /* Posiciona la pestaña exactamente en el borde derecho */
-    width: 36px;
-    height: 48px;
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-left: none; /* Se integra visualmente con el sidebar */
+    top: 18px;
+    right: -42px; /* Hace sobresalir el botón hacia la derecha */
+    width: 42px;
+    height: 44px;
+    background-color: #FF5A5F !important; /* Rojo primario corporativo */
+    border: none;
     border-radius: 0 10px 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 4px 2px 8px rgba(0, 0, 0, 0.12);
-    color: #ff4d4d; /* Color activo visible */
-    z-index: 1001;
+    box-shadow: 4px 2px 10px rgba(0, 0, 0, 0.2);
+    color: #ffffff !important;
+    z-index: 10000;
     outline: none;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .sidebar-toggle-btn:hover {
-    background-color: #fff5f5;
-    color: #e63939;
+    background-color: #e04b4f !important;
 }
 
-/* Rotación limpia del icono de flecha */
 .sidebar-toggle-btn .toggle-icon {
+    stroke: #ffffff !important; /* Asegura el color blanco de la flecha */
     transition: transform 0.3s ease;
 }
 

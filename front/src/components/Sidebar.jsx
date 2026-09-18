@@ -6,10 +6,10 @@ const Sidebar = () => {
     const { user } = useAuth();
     const location = useLocation();
     
-    // Estado para controlar el colapso del Sidebar
+    // Estado para controlar si el Sidebar está recogido/colapsado
     const [isCollapsed, setIsCollapsed] = useState(true);
 
-    // Estados para controlar los submenús
+    // Estados para controlar desplegables internos
     const [configOpen, setConfigOpen] = useState(false);
     const [gestionConductoresOpen, setGestionConductoresOpen] = useState(false);
 
@@ -17,7 +17,7 @@ const Sidebar = () => {
         setIsCollapsed(!isCollapsed);
     };
 
-    // Función para replegar el sidebar al hacer clic en un enlace
+    // Repliega el sidebar al hacer clic en un enlace
     const handleLinkClick = () => {
         setIsCollapsed(true);
     };
@@ -30,31 +30,30 @@ const Sidebar = () => {
         setGestionConductoresOpen(!gestionConductoresOpen);
     };
 
-    // Helper para marcar la ruta activa
     const isActive = (path) => location.pathname === path ? 'active' : '';
 
     return (
         <aside className={`sidebar-container ${isCollapsed ? 'collapsed' : 'expanded'}`}>
-  {/* Botón Flotante Tipo Pestaña */}
-  <button 
-            className="sidebar-toggle-btn" 
-            onClick={toggleSidebar}
-            aria-label={isCollapsed ? 'Desplegar menú' : 'Plegar menú'}
-        >
-            <svg 
-                className={`toggle-icon ${isCollapsed ? '' : 'rotated'}`}
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2.5" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
+            {/* Pestaña Flotante Roja */}
+            <button 
+                className="sidebar-toggle-btn" 
+                onClick={toggleSidebar}
+                aria-label={isCollapsed ? 'Desplegar menú' : 'Plegar menú'}
             >
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-        </button>
+                <svg 
+                    className={`toggle-icon ${isCollapsed ? '' : 'rotated'}`}
+                    width="22" 
+                    height="22" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="3" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                >
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
 
             <div className="sidebar-menu">
                 <h3 className="sidebar-title">
@@ -190,7 +189,6 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
 
 // import React, { useState } from 'react';
 // import { Link, useLocation } from 'react-router-dom';
