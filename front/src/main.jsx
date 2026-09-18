@@ -8,7 +8,7 @@ import Layout from './pages/public/Layout.jsx';
 import Home from './pages/public/Home.jsx'; 
 import Login from './pages/public/Login.jsx';
 import Register from './pages/public/Register.jsx';
-import DashboardAdmin from './pages/administrador/DashboardAdmin.jsx';
+import DashboardAdmin from './pages/administrador/DashboardAdmin.jsx'
 import TypeVehicle from './pages/utils/TypeVehicle.jsx';
 import TypeService from './pages/utils/TypeService.jsx';
 import ResumenDrivers from './pages/conductores/ResumenDrivers.jsx';
@@ -18,7 +18,6 @@ import DriversMonitor from './pages/administrador/AdminDriversMonitor.jsx';
 import AvailableDrivers from './pages/administrador/AdminAvailableDrivers.jsx';
 import LiquidacionPagos from './pages/conductores/LiquidacionPagos.jsx';
 import HistorialPagosRepartidores from './pages/conductores/HistorialPagosRepartidores';
-
 
 // 💡 IMPORTACIONES DE PROTECCIÓN
 import ProtectedRoute from './components/ProtectedRoute.jsx'; 
