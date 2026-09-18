@@ -6,9 +6,21 @@ const Sidebar = () => {
     const { user } = useAuth();
     const location = useLocation();
     
-    // Estados para controlar la visibilidad de los submenús
+    // Estado para controlar el colapso del Sidebar
+    const [isCollapsed, setIsCollapsed] = useState(true);
+
+    // Estados para controlar los submenús
     const [configOpen, setConfigOpen] = useState(false);
     const [gestionConductoresOpen, setGestionConductoresOpen] = useState(false);
+
+    const toggleSidebar = () => {
+        setIsCollapsed(!isCollapsed);
+    };
+
+    // Función para replegar el sidebar al hacer clic en un enlace
+    const handleLinkClick = () => {
+        setIsCollapsed(true);
+    };
 
     const toggleConfig = () => {
         setConfigOpen(!configOpen);
@@ -22,7 +34,28 @@ const Sidebar = () => {
     const isActive = (path) => location.pathname === path ? 'active' : '';
 
     return (
-        <aside className="sidebar-container">
+        <aside className={`sidebar-container ${isCollapsed ? 'collapsed' : 'expanded'}`}>
+            {/* Botón Flotante con Flecha */}
+            <button 
+                className="sidebar-toggle-btn" 
+                onClick={toggleSidebar}
+                aria-label={isCollapsed ? 'Desplegar menú' : 'Plegar menú'}
+            >
+                <svg 
+                    width="20" 
+                    height="20" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    style={{ transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.3s ease' }}
+                >
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+
             <div className="sidebar-menu">
                 <h3 className="sidebar-title">
                     Panel {user?.tipo}
@@ -31,6 +64,7 @@ const Sidebar = () => {
                 <Link 
                     to={user?.tipo === 'administrador' ? '/dashboardAdmin' : '/dashboardSupervisor'} 
                     className={`enlace-sidebar ${isActive('/dashboardAdmin')} ${isActive('/dashboardSupervisor')}`}
+                    onClick={handleLinkClick}
                 >
                     <span>📊 Dashboard</span>
                 </Link>
@@ -38,6 +72,7 @@ const Sidebar = () => {
                 <Link 
                     to="/administrador/AdminClientsList" 
                     className={`enlace-sidebar ${isActive('/administrador/AdminClientsList')}`}
+                    onClick={handleLinkClick}
                 >
                     <span>👥 Clientes</span>
                 </Link>
@@ -45,6 +80,7 @@ const Sidebar = () => {
                 <Link 
                     to="/administrador/AdminActiveOrders" 
                     className={`enlace-sidebar ${isActive('/administrador/AdminActiveOrders')}`}
+                    onClick={handleLinkClick}
                 >
                     <span>📦 Pedidos En Curso</span>
                 </Link>
@@ -73,30 +109,35 @@ const Sidebar = () => {
                             <Link 
                                 to="/administrador/AdminDriversMonitor" 
                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminDriversMonitor')}`}
+                                onClick={handleLinkClick}
                             >
                                 Conductores-Pedidos
                             </Link>
                             <Link 
                                 to="/conductores/ResumenDrivers" 
                                 className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`}
+                                onClick={handleLinkClick}
                             >
                                 Conductores
                             </Link>
                             <Link 
                                 to="/administrador/AdminAvailableDrivers" 
                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminAvailableDrivers')}`}
+                                onClick={handleLinkClick}
                             >
                                 Conductores Activos
                             </Link>
                             <Link 
                                 to="/administrador/LiquidacionPagos" 
                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/LiquidacionPagos')}`}
+                                onClick={handleLinkClick}
                             >
                                 CxP a Conductores
                             </Link>
                             <Link 
                                 to="/administrador/HistorialPagosRepartidores" 
                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/HistorialPagosRepartidores')}`}
+                                onClick={handleLinkClick}
                             >
                                 Historial de Pagos
                             </Link>
@@ -128,12 +169,14 @@ const Sidebar = () => {
                             <Link 
                                 to="/typevehicle" 
                                 className={`enlace-sidebar submenu-link ${isActive('/typevehicle')}`}
+                                onClick={handleLinkClick}
                             >
                                 Tipo Vehículos
                             </Link>
                             <Link 
                                 to="/typeService" 
                                 className={`enlace-sidebar submenu-link ${isActive('/typeService')}`}
+                                onClick={handleLinkClick}
                             >
                                 Tipo Servicio
                             </Link>
@@ -147,6 +190,157 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
+
+// import React, { useState } from 'react';
+// import { Link, useLocation } from 'react-router-dom';
+// import { useAuth } from '../hooks/AuthContext';
+
+// const Sidebar = () => {
+//     const { user } = useAuth();
+//     const location = useLocation();
+    
+//     // Estados para controlar la visibilidad de los submenús
+//     const [configOpen, setConfigOpen] = useState(false);
+//     const [gestionConductoresOpen, setGestionConductoresOpen] = useState(false);
+
+//     const toggleConfig = () => {
+//         setConfigOpen(!configOpen);
+//     };
+
+//     const toggleGestionConductores = () => {
+//         setGestionConductoresOpen(!gestionConductoresOpen);
+//     };
+
+//     // Helper para marcar la ruta activa
+//     const isActive = (path) => location.pathname === path ? 'active' : '';
+
+//     return (
+//         <aside className="sidebar-container">
+//             <div className="sidebar-menu">
+//                 <h3 className="sidebar-title">
+//                     Panel {user?.tipo}
+//                 </h3>
+                
+//                 <Link 
+//                     to={user?.tipo === 'administrador' ? '/dashboardAdmin' : '/dashboardSupervisor'} 
+//                     className={`enlace-sidebar ${isActive('/dashboardAdmin')} ${isActive('/dashboardSupervisor')}`}
+//                 >
+//                     <span>📊 Dashboard</span>
+//                 </Link>
+
+//                 <Link 
+//                     to="/administrador/AdminClientsList" 
+//                     className={`enlace-sidebar ${isActive('/administrador/AdminClientsList')}`}
+//                 >
+//                     <span>👥 Clientes</span>
+//                 </Link>
+
+//                 <Link 
+//                     to="/administrador/AdminActiveOrders" 
+//                     className={`enlace-sidebar ${isActive('/administrador/AdminActiveOrders')}`}
+//                 >
+//                     <span>📦 Pedidos En Curso</span>
+//                 </Link>
+
+//                 {/* --- SECCIÓN GESTIÓN DE CONDUCTORES CON SUBMENÚ --- */}
+//                 <div className="submenu-container">
+//                     <button onClick={toggleGestionConductores} className="enlace-sidebar btn-submenu">
+//                         <span>💳 Gestión Conductores</span>
+//                         <svg 
+//                             className={`sidebar-chevron-svg ${gestionConductoresOpen ? 'open' : ''}`} 
+//                             width="16" 
+//                             height="16" 
+//                             viewBox="0 0 24 24" 
+//                             fill="none" 
+//                             stroke="currentColor" 
+//                             strokeWidth="2.5" 
+//                             strokeLinecap="round" 
+//                             strokeLinejoin="round"
+//                         >
+//                             <polyline points="6 9 12 15 18 9"></polyline>
+//                         </svg>
+//                     </button>
+                    
+//                     {gestionConductoresOpen && (
+//                         <div className="submenu-items">
+//                             <Link 
+//                                 to="/administrador/AdminDriversMonitor" 
+//                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminDriversMonitor')}`}
+//                             >
+//                                 Conductores-Pedidos
+//                             </Link>
+//                             <Link 
+//                                 to="/conductores/ResumenDrivers" 
+//                                 className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`}
+//                             >
+//                                 Conductores
+//                             </Link>
+//                             <Link 
+//                                 to="/administrador/AdminAvailableDrivers" 
+//                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminAvailableDrivers')}`}
+//                             >
+//                                 Conductores Activos
+//                             </Link>
+//                             <Link 
+//                                 to="/administrador/LiquidacionPagos" 
+//                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/LiquidacionPagos')}`}
+//                             >
+//                                 CxP a Conductores
+//                             </Link>
+//                             <Link 
+//                                 to="/administrador/HistorialPagosRepartidores" 
+//                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/HistorialPagosRepartidores')}`}
+//                             >
+//                                 Historial de Pagos
+//                             </Link>
+//                         </div>
+//                     )}
+//                 </div>
+
+//                 {/* --- SECCIÓN CONFIGURACIÓN CON SUBMENÚ --- */}
+//                 <div className="submenu-container">
+//                     <button onClick={toggleConfig} className="enlace-sidebar btn-submenu">
+//                         <span>⚙️ Configuración</span>
+//                         <svg 
+//                             className={`sidebar-chevron-svg ${configOpen ? 'open' : ''}`} 
+//                             width="16" 
+//                             height="16" 
+//                             viewBox="0 0 24 24" 
+//                             fill="none" 
+//                             stroke="currentColor" 
+//                             strokeWidth="2.5" 
+//                             strokeLinecap="round" 
+//                             strokeLinejoin="round"
+//                         >
+//                             <polyline points="6 9 12 15 18 9"></polyline>
+//                         </svg>
+//                     </button>
+                    
+//                     {configOpen && (
+//                         <div className="submenu-items">
+//                             <Link 
+//                                 to="/typevehicle" 
+//                                 className={`enlace-sidebar submenu-link ${isActive('/typevehicle')}`}
+//                             >
+//                                 Tipo Vehículos
+//                             </Link>
+//                             <Link 
+//                                 to="/typeService" 
+//                                 className={`enlace-sidebar submenu-link ${isActive('/typeService')}`}
+//                             >
+//                                 Tipo Servicio
+//                             </Link>
+//                         </div>
+//                     )}
+//                 </div>
+
+//             </div>
+//         </aside>
+//     );
+// };
+
+// export default Sidebar;
 
 // import React, { useState } from 'react';
 // import { Link } from 'react-router-dom';
