@@ -689,7 +689,7 @@ button {
     border-radius: var(--radius-sm);
 }
 
-
+/* Contenedor Principal del Sidebar */
 .sidebar-container {
     position: fixed;
     top: 0;
@@ -697,12 +697,14 @@ button {
     height: 100vh;
     width: 260px;
     background-color: #ffffff;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out;
-    z-index: 100;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    /* IMPORTANTE: Permite que el botón flotante sobresalga hacia la derecha */
+    overflow: visible !important; 
 }
 
-/* Estado Plegado (Recogido a la izquierda) */
+/* Estado Plegado: Se oculta hacia la izquierda */
 .sidebar-container.collapsed {
     transform: translateX(-100%);
 }
@@ -712,25 +714,47 @@ button {
     transform: translateX(0);
 }
 
-/* Botón de Flecha Flotante */
+/* Menú interno: aquí sí controlas el scroll interno sin cortar el botón externo */
+.sidebar-menu {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px 15px;
+    box-sizing: border-box;
+}
+
+/* Botón Flotante con forma de Pestaña Elegante */
 .sidebar-toggle-btn {
     position: absolute;
-    top: 20px;
-    right: -40px;
-    width: 40px;
-    height: 40px;
+    top: 25px;
+    right: -36px; /* Posiciona la pestaña exactamente en el borde derecho */
+    width: 36px;
+    height: 48px;
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
-    border-left: none;
-    border-radius: 0 8px 8px 0;
+    border-left: none; /* Se integra visualmente con el sidebar */
+    border-radius: 0 10px 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 4px 0 6px rgba(0, 0, 0, 0.05);
-    color: #333;
+    box-shadow: 4px 2px 8px rgba(0, 0, 0, 0.12);
+    color: #ff4d4d; /* Color activo visible */
+    z-index: 1001;
+    outline: none;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .sidebar-toggle-btn:hover {
-    background-color: #f8fafc;
+    background-color: #fff5f5;
+    color: #e63939;
+}
+
+/* Rotación limpia del icono de flecha */
+.sidebar-toggle-btn .toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+.sidebar-toggle-btn .toggle-icon.rotated {
+    transform: rotate(180deg);
 }

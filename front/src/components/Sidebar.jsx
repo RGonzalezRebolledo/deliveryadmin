@@ -35,26 +35,26 @@ const Sidebar = () => {
 
     return (
         <aside className={`sidebar-container ${isCollapsed ? 'collapsed' : 'expanded'}`}>
-            {/* Botón Flotante con Flecha */}
-            <button 
-                className="sidebar-toggle-btn" 
-                onClick={toggleSidebar}
-                aria-label={isCollapsed ? 'Desplegar menú' : 'Plegar menú'}
+  {/* Botón Flotante Tipo Pestaña */}
+  <button 
+            className="sidebar-toggle-btn" 
+            onClick={toggleSidebar}
+            aria-label={isCollapsed ? 'Desplegar menú' : 'Plegar menú'}
+        >
+            <svg 
+                className={`toggle-icon ${isCollapsed ? '' : 'rotated'}`}
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
             >
-                <svg 
-                    width="20" 
-                    height="20" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2.5" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                    style={{ transform: isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.3s ease' }}
-                >
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-            </button>
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
 
             <div className="sidebar-menu">
                 <h3 className="sidebar-title">
