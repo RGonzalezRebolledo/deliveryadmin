@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import DriverDetailModal from "./DriverDetailModal";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -79,6 +81,46 @@ const DriverTipe = () => {
     setShowViewModal(true);
   };
 
+  // Función para exportar la lista filtrada a PDF
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(16);
+    doc.text("Reporte de Conductores", 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Total registros: ${filteredDrivers.length}`, 14, 22);
+
+    const tableColumn = [
+      "Código",
+      "Nombre",
+      "Email",
+      "Tipo Conductor",
+      "Vehículo",
+      "Fecha Registro",
+      "Estatus"
+    ];
+
+    const tableRows = filteredDrivers.map((d) => [
+      d.codigo_conductor || "--",
+      d.nombre || "--",
+      d.email || "--",
+      d.tipo_conductor || d.tipo || "--",
+      d.tipo_vehiculo || d.vehiculo || "--",
+      formatDate(d.fecha_creacion),
+      !d.repartidor_id ? "PENDIENTE" : (d.is_active || "--").toUpperCase()
+    ]);
+
+    doc.autoTable({
+      startY: 26,
+      head: [tableColumn],
+      body: tableRows,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [44, 62, 80] }
+    });
+
+    doc.save(`reporte_conductores_${new Date().toISOString().slice(0, 10)}.pdf`);
+  };
+
   return (
     <div className="content-area">
       {/* MODAL DE VISTA DETALLADA */}
@@ -111,10 +153,32 @@ const DriverTipe = () => {
             <h2 style={{ color: "var(--color-primary)", margin: 0 }}>
               Consulta de Conductores
             </h2>
-            <span style={{ fontSize: "0.8rem", color: "#777" }}>
-              Mostrando <strong>{filteredDrivers.length}</strong> de{" "}
-              {drivers.length}
-            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+              <span style={{ fontSize: "0.8rem", color: "#777" }}>
+                Mostrando <strong>{filteredDrivers.length}</strong> de{" "}
+                {drivers.length}
+              </span>
+              <button
+                onClick={exportToPDF}
+                disabled={filteredDrivers.length === 0}
+                style={{
+                  backgroundColor: "#e74c3c",
+                  color: "#fff",
+                  border: "none",
+                  padding: "8px 14px",
+                  borderRadius: "6px",
+                  fontWeight: "bold",
+                  cursor: filteredDrivers.length === 0 ? "not-allowed" : "pointer",
+                  fontSize: "0.85rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  opacity: filteredDrivers.length === 0 ? 0.6 : 1
+                }}
+              >
+                📄 Exportar PDF
+              </button>
+            </div>
           </div>
 
           {/* CONTROLES DE FILTRADO Y BÚSQUEDA */}
@@ -206,6 +270,7 @@ const DriverTipe = () => {
           <table className="admin-table">
             <thead>
               <tr>
+                <th style={{ textAlign: "center" }}>Foto</th>
                 <th style={{ textAlign: "center" }}>Código</th>
                 <th style={{ textAlign: "center" }}>Nombre</th>
                 <th style={{ textAlign: "center" }}>Email</th>
@@ -219,6 +284,7 @@ const DriverTipe = () => {
               {filteredDrivers.map((d) => {
                 const esNuevo = !d.repartidor_id;
                 const esSuspendido = d.is_active === "suspendido";
+                const fotoUrl = d.foto || d.foto_perfil;
 
                 return (
                   <tr
@@ -227,6 +293,43 @@ const DriverTipe = () => {
                     style={{ cursor: "pointer" }}
                     className="clickable-row"
                   >
+                    {/* FOTO DE PERFIL */}
+                    <td style={{ textAlign: "center", width: "60px" }}>
+                      {fotoUrl ? (
+                        <img
+                          src={fotoUrl}
+                          alt={d.nombre}
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                            border: "1px solid #ccc",
+                            display: "block",
+                            margin: "0 auto"
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: "40px",
+                            height: "40px",
+                            borderRadius: "50%",
+                            backgroundColor: "#eee",
+                            color: "#888",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "0.8rem",
+                            fontWeight: "bold",
+                            margin: "0 auto"
+                          }}
+                        >
+                          {d.nombre ? d.nombre.charAt(0).toUpperCase() : "👤"}
+                        </div>
+                      )}
+                    </td>
+
                     {/* CÓDIGO */}
                     <td
                       style={{
