@@ -89,15 +89,51 @@ const Sidebar = () => {
                     </button>
                     
                     {gestionConductoresOpen && (
-                        <div className="submenu-items">
-                            <Link to="/administrador/AdminDriversMonitor" className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminDriversMonitor')}`} onClick={handleLinkClick}>Conductores-Pedidos</Link>
-                            <Link to="/conductores/ResumenDrivers" className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`} onClick={handleLinkClick}>Conductores</Link>
-                            <Link to="/conductores/ResumenType" className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`} onClick={handleLinkClick}>Conductores Tipo</Link>
-                            <Link to="/administrador/AdminAvailableDrivers" className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminAvailableDrivers')}`} onClick={handleLinkClick}>Conductores Activos</Link>
-                            <Link to="/administrador/LiquidacionPagos" className={`enlace-sidebar submenu-link ${isActive('/administrador/LiquidacionPagos')}`} onClick={handleLinkClick}>CxP a Conductores</Link>
-                            <Link to="/administrador/HistorialPagosRepartidores" className={`enlace-sidebar submenu-link ${isActive('/administrador/HistorialPagosRepartidores')}`} onClick={handleLinkClick}>Historial de Pagos</Link>
-                        </div>
-                    )}
+    <div className="submenu-items">
+        <Link 
+            to="/administrador/AdminDriversMonitor" 
+            className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminDriversMonitor')}`} 
+            onClick={handleLinkClick}
+        >
+            Conductores-Pedidos
+        </Link>
+        <Link 
+            to="/conductores/ResumenDrivers" 
+            className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`} 
+            onClick={handleLinkClick}
+        >
+            Conductores
+        </Link>
+        <Link 
+            to="/conductores/ResumenType" 
+            className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenType')}`} 
+            onClick={handleLinkClick}
+        >
+            Conductores Tipo
+        </Link>
+        <Link 
+            to="/administrador/AdminAvailableDrivers" 
+            className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminAvailableDrivers')}`} 
+            onClick={handleLinkClick}
+        >
+            Conductores Activos
+        </Link>
+        <Link 
+            to="/administrador/LiquidacionPagos" 
+            className={`enlace-sidebar submenu-link ${isActive('/administrador/LiquidacionPagos')}`} 
+            onClick={handleLinkClick}
+        >
+            CxP a Conductores
+        </Link>
+        <Link 
+            to="/administrador/HistorialPagosRepartidores" 
+            className={`enlace-sidebar submenu-link ${isActive('/administrador/HistorialPagosRepartidores')}`} 
+            onClick={handleLinkClick}
+        >
+            Historial de Pagos
+        </Link>
+    </div>
+)}
                 </div>
 
                 <div className="submenu-container">
