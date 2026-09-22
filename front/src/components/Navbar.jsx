@@ -1,15 +1,11 @@
-// Archivo: Navbar.jsx
 import React from 'react';
 import { useAuth } from '../hooks/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom'; // 💡 Importar useLocation
-import logogazella from '/logo.png';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/navbar.css';
 
 const Navbar = () => {
     const { user, isAuthenticated, logout, loading } = useAuth();
     const navigate = useNavigate();
-    
-    // 💡 1. Obtener la ubicación actual
     const location = useLocation();
 
     const handleLogout = () => {
@@ -17,35 +13,42 @@ const Navbar = () => {
         navigate('/'); 
     };
 
-    const handlelogin = () => {
+    const handleLogin = () => {
         navigate('/public/login');
     };
 
-    // 💡 2. Definir si estamos en la página de login
     const isLoginPage = location.pathname === '/public/login';
 
     if (loading) {
         return (
-            <nav className="navbar" style={{ marginBottom: 15 }}>
-                <img src={logogazella} alt="gazella" className="navbar-logo"/>
+            <nav className="navbar">
+                <div className="navbar-brand">Gazzella Express</div>
             </nav>
         );
     }
     
     return (
-        <nav className="navbar" style={{ marginBottom: 15 }} > 
-            <img src={logogazella} alt="gazella" className="navbar-logo"/>
+        <nav className="navbar"> 
+            <div className="navbar-brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+                Gazzella Express
+            </div>
 
             {isAuthenticated && user ? (
                 <div className="user-info">
-                    <span>{user.nombre} ({user.tipo})</span>
-                    <button onClick={handleLogout}>Cerrar Sesión</button>
+                    <div className="user-badge">
+                        <span className="user-name">{user.nombre}</span>
+                        <span className="user-role">{user.tipo}</span>
+                    </div>
+                    <button className="btn-logout" onClick={handleLogout}>
+                        Cerrar Sesión
+                    </button>
                 </div>
             ) : (
-                /* 💡 3. Solo mostrar el div/botón si NO estamos en la página de login */
                 !isLoginPage && (
                     <div className="user-info">
-                        <button onClick={handlelogin}>Iniciar Sesion</button>
+                        <button className="btn-login" onClick={handleLogin}>
+                            Iniciar Sesión
+                        </button>
                     </div>
                 )
             )}
@@ -54,6 +57,64 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+// // Archivo: Navbar.jsx
+// import React from 'react';
+// import { useAuth } from '../hooks/AuthContext';
+// import { useNavigate, useLocation } from 'react-router-dom'; // 💡 Importar useLocation
+// import logogazella from '/logo.png';
+// import '../styles/navbar.css';
+
+// const Navbar = () => {
+//     const { user, isAuthenticated, logout, loading } = useAuth();
+//     const navigate = useNavigate();
+    
+//     // 💡 1. Obtener la ubicación actual
+//     const location = useLocation();
+
+//     const handleLogout = () => {
+//         logout(); 
+//         navigate('/'); 
+//     };
+
+//     const handlelogin = () => {
+//         navigate('/public/login');
+//     };
+
+//     // 💡 2. Definir si estamos en la página de login
+//     const isLoginPage = location.pathname === '/public/login';
+
+//     if (loading) {
+//         return (
+//             <nav className="navbar" style={{ marginBottom: 15 }}>
+//                 <img src={logogazella} alt="gazella" className="navbar-logo"/>
+//             </nav>
+//         );
+//     }
+    
+//     return (
+//         <nav className="navbar" style={{ marginBottom: 15 }} > 
+//             <img src={logogazella} alt="gazella" className="navbar-logo"/>
+
+//             {isAuthenticated && user ? (
+//                 <div className="user-info">
+//                     <span>{user.nombre} ({user.tipo})</span>
+//                     <button onClick={handleLogout}>Cerrar Sesión</button>
+//                 </div>
+//             ) : (
+//                 /* 💡 3. Solo mostrar el div/botón si NO estamos en la página de login */
+//                 !isLoginPage && (
+//                     <div className="user-info">
+//                         <button onClick={handlelogin}>Iniciar Sesion</button>
+//                     </div>
+//                 )
+//             )}
+//         </nav>
+//     );
+// };
+
+// export default Navbar;
 
 
 // // Archivo: Navbar.jsx
