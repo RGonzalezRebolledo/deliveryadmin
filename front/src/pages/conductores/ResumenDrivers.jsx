@@ -34,17 +34,20 @@ const AdminDriverVerification = () => {
     fetchDrivers();
   }, []);
 
+  // FILTRADO: SOLO MOSTRAR CONDUCTORES QUE NO TIENEN UN CÓDIGO ASIGNADO
   const filteredDrivers = drivers.filter((d) => {
+    const tieneCodigo = Boolean(d.codigo_conductor && d.codigo_conductor.trim() !== "");
+    if (tieneCodigo) return false;
+
     const query = searchTerm.toLowerCase();
     const estatusReal = !d.repartidor_id
       ? "pendiente"
-      : d.is_active.toLowerCase();
+      : (d.is_active ? d.is_active.toLowerCase() : "pendiente");
 
-    // Búsqueda por nombre, email o código de conductor
+    // Búsqueda por nombre o email
     const coincideBusqueda =
       (d.nombre && d.nombre.toLowerCase().includes(query)) ||
-      (d.email && d.email.toLowerCase().includes(query)) ||
-      (d.codigo_conductor && d.codigo_conductor.toLowerCase().includes(query));
+      (d.email && d.email.toLowerCase().includes(query));
 
     const coincideEstatus =
       statusFilter === "todos" || estatusReal === statusFilter;
@@ -137,11 +140,10 @@ const AdminDriverVerification = () => {
             }}
           >
             <h2 style={{ color: "var(--color-primary)", margin: 0 }}>
-              Gestión de Conductores
+              Gestión de Conductores (Sin Código)
             </h2>
             <span style={{ fontSize: "0.8rem", color: "#777" }}>
-              Mostrando <strong>{filteredDrivers.length}</strong> de{" "}
-              {drivers.length}
+              Mostrando <strong>{filteredDrivers.length}</strong> pendientes de código
             </span>
           </div>
 
@@ -149,7 +151,7 @@ const AdminDriverVerification = () => {
             <div style={{ position: "relative", flex: 3 }}>
               <input
                 type="text"
-                placeholder="Buscar por código, nombre o email..."
+                placeholder="Buscar por nombre o email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{
@@ -262,12 +264,12 @@ const AdminDriverVerification = () => {
 
                     <td style={{ fontSize: "0.85rem" }}>{d.email}</td>
 
-                    {/* NUEVA CELDA: FECHA DE REGISTRO */}
+                    {/* FECHA DE REGISTRO */}
                     <td style={{ textAlign: "center", fontSize: "0.85rem", color: "#555" }}>
                       {formatDate(d.fecha_creacion)}
                     </td>
 
-                    {/* CELDA DE ESTATUS + INDICADOR DE VERIFICACIÓN */}
+                    {/* ESTATUS + INDICADOR DE VERIFICACIÓN */}
                     <td style={{ textAlign: "center", width: "1%" }}>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "3px" }}>
                         <span
@@ -385,7 +387,7 @@ const AdminDriverVerification = () => {
 
         {filteredDrivers.length === 0 && (
           <div style={{ padding: "40px", textAlign: "center", color: "#999" }}>
-            No se encontraron conductores.
+            No se encontraron conductores sin código.
           </div>
         )}
       </div>
@@ -394,6 +396,7 @@ const AdminDriverVerification = () => {
 };
 
 export default AdminDriverVerification;
+
 
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
@@ -409,7 +412,7 @@ export default AdminDriverVerification;
 //   const [loading, setLoading] = useState(true);
 //   const [showModal, setShowModal] = useState(false);
 //   const [selectedDriver, setSelectedDriver] = useState(null);
-  
+
 //   // ESTADOS PARA LA VISTA DE DETALLE (SOLO LECTURA)
 //   const [showViewModal, setShowViewModal] = useState(false);
 //   const [driverToView, setDriverToView] = useState(null);
@@ -477,6 +480,19 @@ export default AdminDriverVerification;
 //     } catch (error) {
 //       alert(error.response?.data?.error || "Error al procesar la solicitud");
 //     }
+//   };
+
+//   // Función para dar formato legible a la fecha
+//   const formatDate = (dateString) => {
+//     if (!dateString) return "--";
+//     const date = new Date(dateString);
+//     return date.toLocaleDateString("es-ES", {
+//       day: "2-digit",
+//       month: "2-digit",
+//       year: "numeric",
+//       hour: "2-digit",
+//       minute: "2-digit",
+//     });
 //   };
 
 //   return (
@@ -594,6 +610,7 @@ export default AdminDriverVerification;
 //                 <th style={{ textAlign: "center" }}>Código</th>
 //                 <th style={{ textAlign: "center" }}>Nombre</th>
 //                 <th style={{ textAlign: "center" }}>Email</th>
+//                 <th style={{ textAlign: "center" }}>Fecha Registro</th>
 //                 <th style={{ textAlign: "center" }}>Estatus</th>
 //                 <th style={{ textAlign: "center" }}>Acción</th>
 //               </tr>
@@ -610,6 +627,7 @@ export default AdminDriverVerification;
 //                     <td style={{ textAlign: "center", fontWeight: "bold", color: "var(--color-primary)" }}>
 //                       {d.codigo_conductor || "--"}
 //                     </td>
+
 //                     <td style={{ textAlign: "center" }}>
 //                       <button
 //                         onClick={() => {
@@ -641,26 +659,54 @@ export default AdminDriverVerification;
 //                         {d.nombre}
 //                       </button>
 //                     </td>
+
 //                     <td style={{ fontSize: "0.85rem" }}>{d.email}</td>
 
+//                     {/* NUEVA CELDA: FECHA DE REGISTRO */}
+//                     <td style={{ textAlign: "center", fontSize: "0.85rem", color: "#555" }}>
+//                       {formatDate(d.fecha_creacion)}
+//                     </td>
+
+//                     {/* CELDA DE ESTATUS + INDICADOR DE VERIFICACIÓN */}
 //                     <td style={{ textAlign: "center", width: "1%" }}>
-//                       <span
-//                         style={{
-//                           padding: "4px 4px",
-//                           borderRadius: "5px",
-//                           fontSize: "11px",
-//                           fontWeight: "bold",
-//                           width: "100px",
-//                           display: "inline-block",
-//                           textAlign: "center",
-//                           textTransform: "uppercase",
-//                           border: "1px solid #ccc",
-//                           backgroundColor: esNuevo ? "#f0f0f0" : esSuspendido ? "#ffebee" : "#e8f5e9",
-//                           color: esNuevo ? "#666" : esSuspendido ? "#c62828" : "#2e7d32",
-//                         }}
-//                       >
-//                         {esNuevo ? "PENDIENTE" : d.is_active}
-//                       </span>
+//                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "3px" }}>
+//                         <span
+//                           style={{
+//                             padding: "4px 4px",
+//                             borderRadius: "5px",
+//                             fontSize: "11px",
+//                             fontWeight: "bold",
+//                             width: "110px",
+//                             display: "inline-block",
+//                             textAlign: "center",
+//                             textTransform: "uppercase",
+//                             border: "1px solid #ccc",
+//                             backgroundColor: esNuevo ? "#f0f0f0" : esSuspendido ? "#ffebee" : "#e8f5e9",
+//                             color: esNuevo ? "#666" : esSuspendido ? "#c62828" : "#2e7d32",
+//                           }}
+//                         >
+//                           {esNuevo ? "PENDIENTE" : d.is_active}
+//                         </span>
+
+//                         {/* SUB-BADGE: ESTADO DE VERIFICACIÓN SI ES PENDIENTE */}
+//                         {esNuevo && (
+//                           <span
+//                             style={{
+//                               fontSize: "9px",
+//                               fontWeight: "bold",
+//                               padding: "2px 6px",
+//                               borderRadius: "4px",
+//                               backgroundColor: d.verificado ? "#e3f2fd" : "#fff3e0",
+//                               color: d.verificado ? "#1565c0" : "#e65100",
+//                               border: d.verificado ? "1px solid #90caf9" : "1px solid #ffe0b2",
+//                               width: "110px",
+//                               boxSizing: "border-box"
+//                             }}
+//                           >
+//                             {d.verificado ? "✓ VERIFICADO" : "POR VERIFICAR"}
+//                           </span>
+//                         )}
+//                       </div>
 //                     </td>
 
 //                     <td style={{ textAlign: "center", width: "1%" }}>
@@ -748,3 +794,4 @@ export default AdminDriverVerification;
 // };
 
 // export default AdminDriverVerification;
+
