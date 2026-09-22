@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
@@ -14,6 +13,7 @@ const DriverTipe = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [tipoConductorFilter, setTipoConductorFilter] = useState("todos");
   const [tipoVehiculoFilter, setTipoVehiculoFilter] = useState("todos");
+  const [statusFilter, setStatusFilter] = useState("todos"); // Filtro de Estatus (Activo/Suspendido)
   const [loading, setLoading] = useState(true);
 
   // Estados para modales
@@ -99,7 +99,17 @@ const DriverTipe = () => {
       tipoVehiculoFilter === "todos" ||
       String(d.tipo_vehiculo_id) === String(tipoVehiculoFilter);
 
-    return coincideBusqueda && coincideTipoConductor && coincideTipoVehiculo;
+    // Coincidencia por Estatus (Solo Activo o Suspendido)
+    const estatusReal = (d.is_active || "").toLowerCase();
+    const coincideEstatus =
+      statusFilter === "todos" || estatusReal === statusFilter;
+
+    return (
+      coincideBusqueda &&
+      coincideTipoConductor &&
+      coincideTipoVehiculo &&
+      coincideEstatus
+    );
   });
 
   // Formateador de fecha
@@ -242,7 +252,7 @@ const DriverTipe = () => {
           {/* CONTROLES DE FILTRADO Y BÚSQUEDA */}
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             {/* Campo de Búsqueda */}
-            <div style={{ position: "relative", flex: "1 1 250px" }}>
+            <div style={{ position: "relative", flex: "1 1 220px" }}>
               <input
                 type="text"
                 placeholder="Buscar por código, nombre o email..."
@@ -283,7 +293,7 @@ const DriverTipe = () => {
               value={tipoConductorFilter}
               onChange={(e) => setTipoConductorFilter(e.target.value)}
               style={{
-                flex: "1 1 180px",
+                flex: "1 1 160px",
                 padding: "10px",
                 borderRadius: "8px",
                 border: "1px solid #ddd",
@@ -303,7 +313,7 @@ const DriverTipe = () => {
               value={tipoVehiculoFilter}
               onChange={(e) => setTipoVehiculoFilter(e.target.value)}
               style={{
-                flex: "1 1 180px",
+                flex: "1 1 160px",
                 padding: "10px",
                 borderRadius: "8px",
                 border: "1px solid #ddd",
@@ -319,6 +329,26 @@ const DriverTipe = () => {
                   {v.descript}
                 </option>
               ))}
+            </select>
+
+            {/* Filtro Estatus (Solo Activo / Suspendido) */}
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{
+                flex: "1 1 160px",
+                padding: "10px",
+                borderRadius: "8px",
+                border: "1px solid #ddd",
+                fontSize: "0.9rem",
+                outline: "none",
+                backgroundColor: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              <option value="todos">Todos los Estatus</option>
+              <option value="activo">Activos</option>
+              <option value="suspendido">Suspendidos</option>
             </select>
           </div>
         </div>

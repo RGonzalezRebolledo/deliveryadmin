@@ -8,7 +8,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const AdminDriverVerification = () => {
   const [drivers, setDrivers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("todos");
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState(null);
@@ -40,19 +39,13 @@ const AdminDriverVerification = () => {
     if (tieneCodigo) return false;
 
     const query = searchTerm.toLowerCase();
-    const estatusReal = !d.repartidor_id
-      ? "pendiente"
-      : (d.is_active ? d.is_active.toLowerCase() : "pendiente");
 
     // Búsqueda por nombre o email
     const coincideBusqueda =
       (d.nombre && d.nombre.toLowerCase().includes(query)) ||
       (d.email && d.email.toLowerCase().includes(query));
 
-    const coincideEstatus =
-      statusFilter === "todos" || estatusReal === statusFilter;
-
-    return coincideBusqueda && coincideEstatus;
+    return coincideBusqueda;
   });
 
   const handleAction = async (driver, actionType) => {
@@ -148,7 +141,7 @@ const AdminDriverVerification = () => {
           </div>
 
           <div style={{ display: "flex", gap: "10px" }}>
-            <div style={{ position: "relative", flex: 3 }}>
+            <div style={{ position: "relative", flex: 1 }}>
               <input
                 type="text"
                 placeholder="Buscar por nombre o email..."
@@ -161,6 +154,7 @@ const AdminDriverVerification = () => {
                   border: "1px solid #ddd",
                   fontSize: "0.9rem",
                   outline: "none",
+                  boxSizing: "border-box"
                 }}
               />
               {searchTerm && (
@@ -182,26 +176,6 @@ const AdminDriverVerification = () => {
                 </button>
               )}
             </div>
-
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              style={{
-                flex: 1,
-                padding: "10px",
-                borderRadius: "8px",
-                border: "1px solid #ddd",
-                fontSize: "0.9rem",
-                outline: "none",
-                backgroundColor: "#fff",
-                cursor: "pointer",
-              }}
-            >
-              <option value="todos">Todos los estatus</option>
-              <option value="activo">Activos</option>
-              <option value="suspendido">Suspendidos</option>
-              <option value="pendiente">Pendientes</option>
-            </select>
           </div>
         </div>
 
