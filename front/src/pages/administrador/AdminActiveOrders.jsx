@@ -25,26 +25,26 @@ const AdminActiveOrders = () => {
     }, []);
 
     // Función para liberar y reiniciar los conductores descartados de un pedido
-    const handleResetRejected = async (orderId) => {
-        if (!window.confirm(`¿Deseas reiniciar la lista de conductores rechazados para el Pedido #${orderId}? Volverá a ofrecerse a todos los conductores disponibles respetando la cola.`)) {
-            return;
-        }
+    // const handleResetRejected = async (orderId) => {
+    //     if (!window.confirm(`¿Deseas reiniciar la lista de conductores rechazados para el Pedido #${orderId}? Volverá a ofrecerse a todos los conductores disponibles respetando la cola.`)) {
+    //         return;
+    //     }
 
-        setResettingId(orderId);
-        try {
-            await axios.put(
-                `${API_BASE_URL}/admin/reset-rejected-drivers/${orderId}`,
-                {},
-                { withCredentials: true }
-            );
-            alert(`✅ Pedido #${orderId} liberado con éxito. Se reanudó la búsqueda de repartidores.`);
-            fetchOrders();
-        } catch (error) {
-            alert(error.response?.data?.error || "Error al reiniciar el pedido.");
-        } finally {
-            setResettingId(null);
-        }
-    };
+    //     setResettingId(orderId);
+    //     try {
+    //         await axios.put(
+    //             `${API_BASE_URL}/admin/reset-rejected-drivers/${orderId}`,
+    //             {},
+    //             { withCredentials: true }
+    //         );
+    //         alert(`✅ Pedido #${orderId} liberado con éxito. Se reanudó la búsqueda de repartidores.`);
+    //         fetchOrders();
+    //     } catch (error) {
+    //         alert(error.response?.data?.error || "Error al reiniciar el pedido.");
+    //     } finally {
+    //         setResettingId(null);
+    //     }
+    // };
 
     // Función para definir los colores del estatus
     const getStatusStyles = (status) => {
@@ -77,7 +77,7 @@ const AdminActiveOrders = () => {
     return (
         <div className="admin-table-container">
             <div style={{ padding: "20px", borderBottom: "1px solid #eee", backgroundColor: "#fff" }}>
-                <h2 style={{ color: "var(--color-primary)", marginBottom: "15px" }}>Pedidos en Curso</h2>
+                <h2 style={{ color: "var(--color-primary)", marginBottom: "15px" }}>Servicios en Curso</h2>
                 
                 {/* BARRA DE BÚSQUEDA Y FILTRO */}
                 <div style={{ display: "flex", gap: "10px", marginBottom: "12px", flexWrap: "wrap" }}>
@@ -123,7 +123,7 @@ const AdminActiveOrders = () => {
                     justifyContent: "space-between",
                     padding: "0 5px"
                 }}>
-                    <span>Mostrando <b>{filteredOrders.length}</b> pedidos en la lista</span>
+                    <span>Mostrando <b>{filteredOrders.length}</b> servicios en la lista</span>
                     <span>Total activos: <b>{orders.length}</b></span>
                 </div>
             </div>
@@ -132,14 +132,14 @@ const AdminActiveOrders = () => {
                 <table className="admin-table">
                     <thead>
                         <tr>
-                            <th style={{ textAlign: "center" }}>ID Pedido</th>
+                            <th style={{ textAlign: "center" }}>ID Servicio</th>
                             <th style={{ textAlign: "center" }}>Vehículo</th>
                             <th style={{ textAlign: "center" }}>Cliente</th>
                             <th style={{ textAlign: "center" }}>Estatus</th>
                             <th style={{ textAlign: "center" }}>Monto</th>
                             <th style={{ textAlign: "center" }}>Código</th>
-                            <th style={{ textAlign: "center" }}>Repartidor</th>
-                            <th style={{ textAlign: "center" }}>Acción</th>
+                            <th style={{ textAlign: "center" }}>Conductor</th>
+                            {/* <th style={{ textAlign: "center" }}>Acción</th> */}
                         </tr>
                     </thead>
                     <tbody>
@@ -197,11 +197,11 @@ const AdminActiveOrders = () => {
                                             color: o.repartidor_nombre ? '#2e7d32' : '#d32f2f',
                                             fontWeight: o.repartidor_nombre ? "bold" : "normal"
                                         }}>
-                                            {o.repartidor_nombre || 'Buscando repartidor...'}
+                                            {o.repartidor_nombre || 'Buscando Conductor...'}
                                         </td>
 
                                         {/* BOTÓN DE ACCIÓN / LIBERAR PEDIDO */}
-                                        <td style={{ textAlign: "center", width: "1%" }}>
+                                        {/* <td style={{ textAlign: "center", width: "1%" }}>
                                             {esPendiente ? (
                                                 <button
                                                     onClick={() => handleResetRejected(o.id)}
@@ -220,12 +220,12 @@ const AdminActiveOrders = () => {
                                                     }}
                                                     title="Limpiar rechazados para volver a ofrecer este servicio a todos los conductores disponibles"
                                                 >
-                                                    {resettingId === o.id ? "Liberando..." : "🔄 Reasignar a Todos"}
+                                                    {resettingId === o.id ? "Liberando..." : "🔄 Reasignar"}
                                                 </button>
                                             ) : (
                                                 <span style={{ fontSize: "0.75rem", color: "#aaa" }}>--</span>
                                             )}
-                                        </td>
+                                        </td> */}
                                     </tr>
                                 );
                             })
