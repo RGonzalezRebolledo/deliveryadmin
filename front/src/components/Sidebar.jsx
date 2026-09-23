@@ -102,14 +102,14 @@ const Sidebar = () => {
             className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`} 
             onClick={handleLinkClick}
         >
-            Conductores
+            Conductores General
         </Link>
         <Link 
             to="/conductores/ResumenType" 
             className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenType')}`} 
             onClick={handleLinkClick}
         >
-            Conductores Tipo
+            Conductores Registrados
         </Link>
         <Link 
             to="/administrador/AdminAvailableDrivers" 
