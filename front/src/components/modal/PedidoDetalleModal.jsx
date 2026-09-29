@@ -93,21 +93,18 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
             </span>
           </div>
 
+          {/* Botón X limpio sin circulo ni borde */}
           <button
             onClick={onClose}
             style={{
-              background: "#e2e8f0",
+              background: "transparent",
               border: "none",
-              width: "32px",
-              height: "32px",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              fontSize: "1.25rem",
               cursor: "pointer",
-              color: "#475569",
-              fontWeight: "bold",
-              transition: "all 0.2s",
+              color: "#64748b",
+              fontWeight: "600",
+              padding: "4px",
+              lineHeight: 1,
             }}
           >
             ✕
@@ -117,14 +114,14 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
         {/* Cuerpo del Modal */}
         <div style={{ padding: "20px 24px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "20px" }}>
           
-          {/* Tarjeta Resumen Financiero */}
+          {/* Tarjeta Resumen Financiero (Sin nro_recibo) */}
           <div
             style={{
               backgroundColor: "#f8fafc",
               borderRadius: "12px",
               padding: "16px 20px",
               display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
+              gridTemplateColumns: "1fr 1fr",
               gap: "16px",
               border: "1px solid #e2e8f0",
               textAlign: "left",
@@ -146,15 +143,6 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
               <strong style={{ color: "#0f172a", fontSize: "1.3rem", display: "block", marginTop: "2px" }}>
                 {Number(pedido.total || 0).toFixed(2)} Bs.
               </strong>
-            </div>
-
-            <div>
-              <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 600, textTransform: "uppercase" }}>
-                Nro. Recibo
-              </span>
-              <span style={{ color: "#334155", fontSize: "1.1rem", fontWeight: 600, display: "block", marginTop: "2px" }}>
-                {pedido.nro_recibo || "N/A"}
-              </span>
             </div>
           </div>
 
