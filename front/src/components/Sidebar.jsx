@@ -9,11 +9,13 @@ const Sidebar = () => {
     const [isCollapsed, setIsCollapsed] = useState(true);
     const [configOpen, setConfigOpen] = useState(false);
     const [gestionConductoresOpen, setGestionConductoresOpen] = useState(false);
+    const [serviciosOpen, setServiciosOpen] = useState(false); // Estado para el submenú de Servicios
 
     const toggleSidebar = () => setIsCollapsed(!isCollapsed);
     const handleLinkClick = () => setIsCollapsed(true);
     const toggleConfig = () => setConfigOpen(!configOpen);
     const toggleGestionConductores = () => setGestionConductoresOpen(!gestionConductoresOpen);
+    const toggleServicios = () => setServiciosOpen(!serviciosOpen);
 
     const isActive = (path) => location.pathname === path ? 'active' : '';
 
@@ -62,14 +64,46 @@ const Sidebar = () => {
                     <span>👥 Clientes</span>
                 </Link>
 
-                <Link 
-                    to="/administrador/AdminActiveOrders" 
-                    className={`enlace-sidebar ${isActive('/administrador/AdminActiveOrders')}`}
-                    onClick={handleLinkClick}
-                >
-                    <span>📦 Pedidos En Curso</span>
-                </Link>
+                {/* Submenú Servicios */}
+                <div className="submenu-container">
+                    <button onClick={toggleServicios} className="enlace-sidebar btn-submenu" type="button">
+                        <span>📦 Servicios</span>
+                        <svg 
+                            className={`sidebar-chevron-svg ${serviciosOpen ? 'open' : ''}`} 
+                            width="16" 
+                            height="16" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="2.5" 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round"
+                        >
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    
+                    {serviciosOpen && (
+                        <div className="submenu-items">
+                            <Link 
+                                to="/administrador/AdminActiveOrders" 
+                                className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminActiveOrders')}`} 
+                                onClick={handleLinkClick}
+                            >
+                                Servicios En Curso
+                            </Link>
+                            <Link 
+                                to="/administrador/ServiciosRealizados" 
+                                className={`enlace-sidebar submenu-link ${isActive('/administrador/ServiciosRealizados')}`} 
+                                onClick={handleLinkClick}
+                            >
+                                Servicios Realizados
+                            </Link>
+                        </div>
+                    )}
+                </div>
 
+                {/* Submenú Gestión Conductores */}
                 <div className="submenu-container">
                     <button onClick={toggleGestionConductores} className="enlace-sidebar btn-submenu" type="button">
                         <span>💳 Gestión Conductores</span>
@@ -89,53 +123,54 @@ const Sidebar = () => {
                     </button>
                     
                     {gestionConductoresOpen && (
-    <div className="submenu-items">
-        <Link 
-            to="/administrador/AdminDriversMonitor" 
-            className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminDriversMonitor')}`} 
-            onClick={handleLinkClick}
-        >
-            Conductores-Pedidos
-        </Link>
-        <Link 
-            to="/conductores/ResumenDrivers" 
-            className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`} 
-            onClick={handleLinkClick}
-        >
-            Conductores General
-        </Link>
-        <Link 
-            to="/conductores/ResumenType" 
-            className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenType')}`} 
-            onClick={handleLinkClick}
-        >
-            Conductores Registrados
-        </Link>
-        <Link 
-            to="/administrador/AdminAvailableDrivers" 
-            className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminAvailableDrivers')}`} 
-            onClick={handleLinkClick}
-        >
-            Conductores Activos
-        </Link>
-        <Link 
-            to="/administrador/LiquidacionPagos" 
-            className={`enlace-sidebar submenu-link ${isActive('/administrador/LiquidacionPagos')}`} 
-            onClick={handleLinkClick}
-        >
-            CxP a Conductores
-        </Link>
-        <Link 
-            to="/administrador/HistorialPagosRepartidores" 
-            className={`enlace-sidebar submenu-link ${isActive('/administrador/HistorialPagosRepartidores')}`} 
-            onClick={handleLinkClick}
-        >
-            Historial de Pagos
-        </Link>
-    </div>
-)}
+                        <div className="submenu-items">
+                            <Link 
+                                to="/administrador/AdminDriversMonitor" 
+                                className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminDriversMonitor')}`} 
+                                onClick={handleLinkClick}
+                            >
+                                Conductores-Pedidos
+                            </Link>
+                            <Link 
+                                to="/conductores/ResumenDrivers" 
+                                className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`} 
+                                onClick={handleLinkClick}
+                            >
+                                Conductores General
+                            </Link>
+                            <Link 
+                                to="/conductores/ResumenType" 
+                                className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenType')}`} 
+                                onClick={handleLinkClick}
+                            >
+                                Conductores Registrados
+                            </Link>
+                            <Link 
+                                to="/administrador/AdminAvailableDrivers" 
+                                className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminAvailableDrivers')}`} 
+                                onClick={handleLinkClick}
+                            >
+                                Conductores Activos
+                            </Link>
+                            <Link 
+                                to="/administrador/LiquidacionPagos" 
+                                className={`enlace-sidebar submenu-link ${isActive('/administrador/LiquidacionPagos')}`} 
+                                onClick={handleLinkClick}
+                            >
+                                CxP a Conductores
+                            </Link>
+                            <Link 
+                                to="/administrador/HistorialPagosRepartidores" 
+                                className={`enlace-sidebar submenu-link ${isActive('/administrador/HistorialPagosRepartidores')}`} 
+                                onClick={handleLinkClick}
+                            >
+                                Historial de Pagos
+                            </Link>
+                        </div>
+                    )}
                 </div>
 
+                {/* Submenú Configuración */}
                 <div className="submenu-container">
                     <button onClick={toggleConfig} className="enlace-sidebar btn-submenu" type="button">
                         <span>⚙️ Configuración</span>
@@ -168,6 +203,7 @@ const Sidebar = () => {
 
 export default Sidebar;
 
+
 // import React, { useState } from 'react';
 // import { Link, useLocation } from 'react-router-dom';
 // import { useAuth } from '../hooks/AuthContext';
@@ -175,314 +211,165 @@ export default Sidebar;
 // const Sidebar = () => {
 //     const { user } = useAuth();
 //     const location = useLocation();
-    
-//     // Estados para controlar la visibilidad de los submenús
+
+//     const [isCollapsed, setIsCollapsed] = useState(true);
 //     const [configOpen, setConfigOpen] = useState(false);
 //     const [gestionConductoresOpen, setGestionConductoresOpen] = useState(false);
 
-//     const toggleConfig = () => {
-//         setConfigOpen(!configOpen);
-//     };
+//     const toggleSidebar = () => setIsCollapsed(!isCollapsed);
+//     const handleLinkClick = () => setIsCollapsed(true);
+//     const toggleConfig = () => setConfigOpen(!configOpen);
+//     const toggleGestionConductores = () => setGestionConductoresOpen(!gestionConductoresOpen);
 
-//     const toggleGestionConductores = () => {
-//         setGestionConductoresOpen(!gestionConductoresOpen);
-//     };
-
-//     // Helper para marcar la ruta activa
 //     const isActive = (path) => location.pathname === path ? 'active' : '';
 
 //     return (
-//         <aside className="sidebar-container">
+//         <aside className={`sidebar-container ${isCollapsed ? 'collapsed' : 'expanded'}`}>
+//             {/* Pestaña Flotante Perfectamente Encajada */}
+//             <button
+//                 className="sidebar-toggle-btn"
+//                 onClick={toggleSidebar}
+//                 type="button"
+//                 aria-label={isCollapsed ? 'Desplegar menú' : 'Plegar menú'}
+//             >
+//                 <svg
+//                     className={`toggle-icon ${isCollapsed ? '' : 'rotated'}`}
+//                     width="18"
+//                     height="18"
+//                     viewBox="0 0 24 24"
+//                     fill="none"
+//                     stroke="#FF5A5F"
+//                     strokeWidth="3"
+//                     strokeLinecap="round"
+//                     strokeLinejoin="round"
+//                 >
+//                     <polyline points="9 18 15 12 9 6"></polyline>
+//                 </svg>
+//             </button>
+
 //             <div className="sidebar-menu">
 //                 <h3 className="sidebar-title">
 //                     Panel {user?.tipo}
 //                 </h3>
-                
-//                 <Link 
-//                     to={user?.tipo === 'administrador' ? '/dashboardAdmin' : '/dashboardSupervisor'} 
+
+//                 <Link
+//                     to={user?.tipo === 'administrador' ? '/dashboardAdmin' : '/dashboardSupervisor'}
 //                     className={`enlace-sidebar ${isActive('/dashboardAdmin')} ${isActive('/dashboardSupervisor')}`}
+//                     onClick={handleLinkClick}
 //                 >
 //                     <span>📊 Dashboard</span>
 //                 </Link>
 
-//                 <Link 
-//                     to="/administrador/AdminClientsList" 
+//                 <Link
+//                     to="/administrador/AdminClientsList"
 //                     className={`enlace-sidebar ${isActive('/administrador/AdminClientsList')}`}
+//                     onClick={handleLinkClick}
 //                 >
 //                     <span>👥 Clientes</span>
 //                 </Link>
 
-//                 <Link 
-//                     to="/administrador/AdminActiveOrders" 
+//                 <Link
+//                     to="/administrador/AdminActiveOrders"
 //                     className={`enlace-sidebar ${isActive('/administrador/AdminActiveOrders')}`}
+//                     onClick={handleLinkClick}
 //                 >
-//                     <span>📦 Pedidos En Curso</span>
+//                     <span>📦 Servicios En Curso</span>
 //                 </Link>
 
-//                 {/* --- SECCIÓN GESTIÓN DE CONDUCTORES CON SUBMENÚ --- */}
 //                 <div className="submenu-container">
-//                     <button onClick={toggleGestionConductores} className="enlace-sidebar btn-submenu">
+//                     <button onClick={toggleGestionConductores} className="enlace-sidebar btn-submenu" type="button">
 //                         <span>💳 Gestión Conductores</span>
-//                         <svg 
-//                             className={`sidebar-chevron-svg ${gestionConductoresOpen ? 'open' : ''}`} 
-//                             width="16" 
-//                             height="16" 
-//                             viewBox="0 0 24 24" 
-//                             fill="none" 
-//                             stroke="currentColor" 
-//                             strokeWidth="2.5" 
-//                             strokeLinecap="round" 
+//                         <svg
+//                             className={`sidebar-chevron-svg ${gestionConductoresOpen ? 'open' : ''}`}
+//                             width="16"
+//                             height="16"
+//                             viewBox="0 0 24 24"
+//                             fill="none"
+//                             stroke="currentColor"
+//                             strokeWidth="2.5"
+//                             strokeLinecap="round"
 //                             strokeLinejoin="round"
 //                         >
 //                             <polyline points="6 9 12 15 18 9"></polyline>
 //                         </svg>
 //                     </button>
-                    
+
 //                     {gestionConductoresOpen && (
-//                         <div className="submenu-items">
-//                             <Link 
-//                                 to="/administrador/AdminDriversMonitor" 
-//                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminDriversMonitor')}`}
-//                             >
-//                                 Conductores-Pedidos
-//                             </Link>
-//                             <Link 
-//                                 to="/conductores/ResumenDrivers" 
-//                                 className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`}
-//                             >
-//                                 Conductores
-//                             </Link>
-//                             <Link 
-//                                 to="/administrador/AdminAvailableDrivers" 
-//                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminAvailableDrivers')}`}
-//                             >
-//                                 Conductores Activos
-//                             </Link>
-//                             <Link 
-//                                 to="/administrador/LiquidacionPagos" 
-//                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/LiquidacionPagos')}`}
-//                             >
-//                                 CxP a Conductores
-//                             </Link>
-//                             <Link 
-//                                 to="/administrador/HistorialPagosRepartidores" 
-//                                 className={`enlace-sidebar submenu-link ${isActive('/administrador/HistorialPagosRepartidores')}`}
-//                             >
-//                                 Historial de Pagos
-//                             </Link>
-//                         </div>
-//                     )}
+//     <div className="submenu-items">
+//         <Link
+//             to="/administrador/AdminDriversMonitor"
+//             className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminDriversMonitor')}`}
+//             onClick={handleLinkClick}
+//         >
+//             Conductores-Pedidos
+//         </Link>
+//         <Link
+//             to="/conductores/ResumenDrivers"
+//             className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenDrivers')}`}
+//             onClick={handleLinkClick}
+//         >
+//             Conductores General
+//         </Link>
+//         <Link
+//             to="/conductores/ResumenType"
+//             className={`enlace-sidebar submenu-link ${isActive('/conductores/ResumenType')}`}
+//             onClick={handleLinkClick}
+//         >
+//             Conductores Registrados
+//         </Link>
+//         <Link
+//             to="/administrador/AdminAvailableDrivers"
+//             className={`enlace-sidebar submenu-link ${isActive('/administrador/AdminAvailableDrivers')}`}
+//             onClick={handleLinkClick}
+//         >
+//             Conductores Activos
+//         </Link>
+//         <Link
+//             to="/administrador/LiquidacionPagos"
+//             className={`enlace-sidebar submenu-link ${isActive('/administrador/LiquidacionPagos')}`}
+//             onClick={handleLinkClick}
+//         >
+//             CxP a Conductores
+//         </Link>
+//         <Link
+//             to="/administrador/HistorialPagosRepartidores"
+//             className={`enlace-sidebar submenu-link ${isActive('/administrador/HistorialPagosRepartidores')}`}
+//             onClick={handleLinkClick}
+//         >
+//             Historial de Pagos
+//         </Link>
+//     </div>
+// )}
 //                 </div>
 
-//                 {/* --- SECCIÓN CONFIGURACIÓN CON SUBMENÚ --- */}
 //                 <div className="submenu-container">
-//                     <button onClick={toggleConfig} className="enlace-sidebar btn-submenu">
+//                     <button onClick={toggleConfig} className="enlace-sidebar btn-submenu" type="button">
 //                         <span>⚙️ Configuración</span>
-//                         <svg 
-//                             className={`sidebar-chevron-svg ${configOpen ? 'open' : ''}`} 
-//                             width="16" 
-//                             height="16" 
-//                             viewBox="0 0 24 24" 
-//                             fill="none" 
-//                             stroke="currentColor" 
-//                             strokeWidth="2.5" 
-//                             strokeLinecap="round" 
+//                         <svg
+//                             className={`sidebar-chevron-svg ${configOpen ? 'open' : ''}`}
+//                             width="16"
+//                             height="16"
+//                             viewBox="0 0 24 24"
+//                             fill="none"
+//                             stroke="currentColor"
+//                             strokeWidth="2.5"
+//                             strokeLinecap="round"
 //                             strokeLinejoin="round"
 //                         >
 //                             <polyline points="6 9 12 15 18 9"></polyline>
 //                         </svg>
 //                     </button>
-                    
+
 //                     {configOpen && (
 //                         <div className="submenu-items">
-//                             <Link 
-//                                 to="/typevehicle" 
-//                                 className={`enlace-sidebar submenu-link ${isActive('/typevehicle')}`}
-//                             >
-//                                 Tipo Vehículos
-//                             </Link>
-//                             <Link 
-//                                 to="/typeService" 
-//                                 className={`enlace-sidebar submenu-link ${isActive('/typeService')}`}
-//                             >
-//                                 Tipo Servicio
-//                             </Link>
+//                             <Link to="/typevehicle" className={`enlace-sidebar submenu-link ${isActive('/typevehicle')}`} onClick={handleLinkClick}>Tipo Vehículos</Link>
+//                             <Link to="/typeService" className={`enlace-sidebar submenu-link ${isActive('/typeService')}`} onClick={handleLinkClick}>Tipo Servicio</Link>
 //                         </div>
 //                     )}
 //                 </div>
-
 //             </div>
 //         </aside>
 //     );
 // };
 
 // export default Sidebar;
-
-// import React, { useState } from 'react';
-// import { Link } from 'react-router-dom';
-// import { useAuth } from '../hooks/AuthContext';
-
-// const Sidebar = () => {
-//     const { user } = useAuth();
-    
-//     // Estados para controlar la visibilidad de los submenús
-//     const [configOpen, setConfigOpen] = useState(false);
-//     const [gestionConductoresOpen, setGestionConductoresOpen] = useState(false);
-
-//     const toggleConfig = () => {
-//         setConfigOpen(!configOpen);
-//     };
-
-//     const toggleGestionConductores = () => {
-//         setGestionConductoresOpen(!gestionConductoresOpen);
-//     };
-
-//     return (
-//         <aside className="sidebar-container">
-//             <div className="sidebar-menu">
-//                 <h3 className="sidebar-title">Panel {user?.tipo}</h3>
-                
-//                 <Link to={user?.tipo === 'administrador' ? '/dashboardAdmin' : '/dashboardSupervisor'} className="enlace-sidebar">
-//                     📊 Dashboard
-//                 </Link>
-//                 {/* <Link to="/gestion-usuarios" className="enlace-sidebar">Comercios Afiliados</Link> */}
-            
-//                 <Link to="/administrador/AdminClientsList" className="enlace-sidebar">Clientes</Link>
-//                 <Link to="/administrador/AdminActiveOrders" className="enlace-sidebar">Pedidos</Link>
-                
-
-//                 {/* --- SECCIÓN GESTIÓN DE CONDUCTORES CON SUBMENÚ --- */}
-//                 <div className="submenu-container">
-//                     <button onClick={toggleGestionConductores} className="enlace-sidebar btn-submenu">
-//                         💳 Gestión de Conductores {gestionConductoresOpen ? '▲' : '▼'}
-//                     </button>
-                    
-//                     {gestionConductoresOpen && (
-//                         <div className="submenu-items" style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column' }}>
-//                             <Link to="/administrador/AdminDriversMonitor" className="enlace-sidebar submenu-link">Conductores-Pedidos</Link>
-//                             <Link to="/conductores/ResumenDrivers" className="enlace-sidebar submenu-link">Conductores</Link>
-//                             <Link to="/administrador/AdminAvailableDrivers" className="enlace-sidebar submenu-link">Conductores Activos</Link>
-//                             <Link to="/administrador/LiquidacionPagos" className="enlace-sidebar submenu-link">
-//                                 CxP a Conductores
-//                             </Link>
-//                             <Link to="/administrador/HistorialPagosRepartidores" className="enlace-sidebar submenu-link">
-//                                 Historial de Pagos
-//                             </Link>
-//                         </div>
-//                     )}
-//                 </div>
-//                 {/* ------------------------------------------------ */}
-
-//                 {/* 🛡️ Solo para Administrador */}
-//                 {user?.tipo === 'administrador' && (
-//                     <>
-//                         {/* <Link to="/gestion-usuarios" className="enlace-sidebar">👥 Usuarios</Link>
-//                         <Link to="/reportes-financieros" className="enlace-sidebar">💰 Finanzas</Link> */}
-//                     </>
-//                 )}
-
-//                 {/* <Link to="/pedidos" className="enlace-sidebar">📦 Gestión de Pedidos</Link>
-//                 <Link to="/profile" className="enlace-sidebar">👤 Mi Perfil</Link> */}
-
-//                 {/* --- SECCIÓN CONFIGURACIÓN CON SUBMENÚ --- */}
-//                 <div className="submenu-container">
-//                     <button onClick={toggleConfig} className="enlace-sidebar btn-submenu">
-//                         ⚙️ Configuración {configOpen ? '▲' : '▼'}
-//                     </button>
-                    
-//                     {configOpen && (
-//                         <div className="submenu-items" style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column' }}>
-//                             <Link to="/typevehicle" className="enlace-sidebar submenu-link"> Tipo Vehiculos</Link>
-//                             <Link to="/typeService" className="enlace-sidebar submenu-link"> Tipo Servicio</Link>
-
-//                             {/* Submenú condicional dentro de configuración */}
-//                             {user?.tipo === 'administrador' && (
-//                                 <>
-//                                     {/* <Link to="/config/tarifas" className="enlace-sidebar submenu-link">💵 Tarifas de Envío</Link>
-//                                     <Link to="/config/zonas" className="enlace-sidebar submenu-link">📍 Zonas de Entrega</Link> */}
-//                                 </>
-//                             )}
-//                         </div>
-//                     )}
-//                 </div>
-//                 {/* ------------------------------------------ */}
-
-//             </div>
-//         </aside>
-//     );
-// };
-
-// export default Sidebar;
-
-// import React, { useState } from 'react';
-// import { Link } from 'react-router-dom';
-// import { useAuth } from '../hooks/AuthContext';
-
-// const Sidebar = () => {
-//     const { user } = useAuth();
-//     // Estado para controlar la visibilidad del submenú
-//     const [configOpen, setConfigOpen] = useState(false);
-
-//     const toggleConfig = () => {
-//         setConfigOpen(!configOpen);
-//     };
-
-//     return (
-//         <aside className="sidebar-container">
-//             <div className="sidebar-menu">
-//                 <h3 className="sidebar-title">Panel {user?.tipo}</h3>
-                
-//                 <Link to={user?.tipo === 'administrador' ? '/dashboardAdmin' : '/dashboardSupervisor'} className="enlace-sidebar">
-//                     📊 Dashboard
-//                 </Link>
-//                 {/* <Link to="/gestion-usuarios" className="enlace-sidebar">Comercios Afiliados</Link> */}
-//                 <Link to="/conductores/ResumenDrivers" className="enlace-sidebar">Conductores</Link>
-//                 <Link to="/administrador/AdminAvailableDrivers" className="enlace-sidebar">Conductores Activos</Link>
-//                 <Link to="/administrador/AdminClientsList" className="enlace-sidebar">Clientes</Link>
-//                 <Link to="/administrador/AdminActiveOrders" className="enlace-sidebar">Pedidos</Link>
-//                 <Link to="/administrador/AdminDriversMonitor" className="enlace-sidebar">Conductores-Pedidos</Link>
-//                 <Link to="/administrador/LiquidacionPagos" className="enlace-sidebar">CxP a conductores</Link>
-//                 <Link to="/administrador/HistorialPagosRepartidores" className="enlace-sidebar">Historial de Pagos a Conductores</Link>
-
-//                 {/* 🛡️ Solo para Administrador */}
-//                 {user?.tipo === 'administrador' && (
-//                     <>
-//                         {/* <Link to="/gestion-usuarios" className="enlace-sidebar">👥 Usuarios</Link>
-//                         <Link to="/reportes-financieros" className="enlace-sidebar">💰 Finanzas</Link> */}
-//                     </>
-//                 )}
-
-//                 {/* <Link to="/pedidos" className="enlace-sidebar">📦 Gestión de Pedidos</Link>
-//                 <Link to="/profile" className="enlace-sidebar">👤 Mi Perfil</Link> */}
-
-//                 {/* --- SECCIÓN CONFIGURACIÓN CON SUBMENÚ --- */}
-//                 <div className="submenu-container">
-//                     <button onClick={toggleConfig} className="enlace-sidebar btn-submenu">
-//                         ⚙️ Configuración {configOpen ? '▲' : '▼'}
-//                     </button>
-                    
-//                     {configOpen && (
-//                         <div className="submenu-items" style={{ paddingLeft: '20px', display: 'flex', flexDirection: 'column' }}>
-//                             <Link to="/typevehicle" className="enlace-sidebar submenu-link"> Tipo  Vehiculos</Link>
-//                             <Link to="/typeService" className="enlace-sidebar submenu-link"> Tipo Servicio</Link>
-
-//                             {/* Submenú condicional dentro de configuración */}
-//                             {user?.tipo === 'administrador' && (
-//                                 <>
-//                                     {/* <Link to="/config/tarifas" className="enlace-sidebar submenu-link">💵 Tarifas de Envío</Link>
-//                                     <Link to="/config/zonas" className="enlace-sidebar submenu-link">📍 Zonas de Entrega</Link> */}
-//                                 </>
-//                             )}
-//                         </div>
-//                     )}
-//                 </div>
-//                 {/* ------------------------------------------ */}
-
-//             </div>
-//         </aside>
-//     );
-// };
-
-// export default Sidebar;
-
-

@@ -19,6 +19,7 @@ import AvailableDrivers from './pages/administrador/AdminAvailableDrivers.jsx';
 import LiquidacionPagos from './pages/conductores/LiquidacionPagos.jsx';
 import HistorialPagosRepartidores from './pages/conductores/HistorialPagosRepartidores';
 import DriverType from './pages/conductores/DriverTipe.jsx';
+import ListaServiciosRealizados from './pages/administrador/ServiciosRealizados.jsx';
 
 // 💡 IMPORTACIONES DE PROTECCIÓN
 import ProtectedRoute from './components/ProtectedRoute.jsx'; 
@@ -97,7 +98,8 @@ const router = createBrowserRouter([
            { path: "administrador/AdminDriversMonitor", element: <DriversMonitor/> },
            { path: "administrador/AdminAvailableDrivers", element: <AvailableDrivers/> },
            { path: "administrador/LiquidacionPagos", element: <LiquidacionPagos/> },
-           { path: "administrador/HistorialPagosRepartidores", element: <HistorialPagosRepartidores/> }
+           { path: "administrador/HistorialPagosRepartidores", element: <HistorialPagosRepartidores/> },
+           { path: "administrador/ServiciosRealizados", element: <ListaServiciosRealizados/> }
         ]
       },
       
