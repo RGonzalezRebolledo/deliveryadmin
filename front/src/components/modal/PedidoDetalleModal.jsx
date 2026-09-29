@@ -218,22 +218,31 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
             </div>
           </div>
 
-          {/* Información Adicional */}
-          <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", backgroundColor: "#fff" }}>
-            <h4 style={{ margin: "0 0 12px 0", fontSize: "0.9rem", color: "#0f172a", display: "flex", alignItems: "center", gap: "6px" }}>
-              ℹ️ <span>Detalles del Servicio</span>
-            </h4>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", fontSize: "0.85rem", color: "#334155" }}>
-              <div><span style={{ color: "#64748b", display: "block" }}>Servicio</span> <strong>{pedido.tipo_servicio || "Estándar"}</strong></div>
-              <div><span style={{ color: "#64748b", display: "block" }}>Vehículo</span> <strong>{pedido.tipo_vehiculo || "N/A"}</strong></div>
-              <div><span style={{ color: "#64748b", display: "block" }}>Pago Confirmado</span> <strong>{pedido.pago_confirmado ? "Sí" : "No"}</strong></div>
-              {pedido.fecha_entrega && (
-                <div style={{ gridColumn: "span 3", marginTop: "4px" }}>
-                  <span style={{ color: "#64748b" }}>Fecha de Entrega:</span> <strong>{formatDate(pedido.fecha_entrega)}</strong>
-                </div>
-              )}
-            </div>
-          </div>
+ {/* Información Adicional */}
+<div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", backgroundColor: "#fff" }}>
+  <h4 style={{ margin: "0 0 12px 0", fontSize: "0.9rem", color: "#0f172a", display: "flex", alignItems: "center", gap: "6px" }}>
+    ℹ️ <span>Detalles del Servicio</span>
+  </h4>
+  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", fontSize: "0.85rem", color: "#334155" }}>
+    <div>
+      <span style={{ color: "#64748b", display: "block" }}>Servicio</span> 
+      <strong>{pedido.tipo_servicio || "No especificado"}</strong>
+    </div>
+    <div>
+      <span style={{ color: "#64748b", display: "block" }}>Vehículo</span> 
+      <strong>{pedido.tipo_vehiculo || "No especificado"}</strong>
+    </div>
+    <div>
+      <span style={{ color: "#64748b", display: "block" }}>Pago Confirmado</span> 
+      <strong>{pedido.pago_confirmado ? "Sí" : "No"}</strong>
+    </div>
+    {pedido.fecha_entrega && (
+      <div style={{ gridColumn: "span 3", marginTop: "4px" }}>
+        <span style={{ color: "#64748b" }}>Fecha de Entrega:</span> <strong>{formatDate(pedido.fecha_entrega)}</strong>
+      </div>
+    )}
+  </div>
+</div>
 
         </div>
 
