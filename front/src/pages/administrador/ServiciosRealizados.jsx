@@ -24,12 +24,14 @@ function ListaServiciosRealizados() {
   const fetchServicios = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE_URL}/pedidos/servicios-realizados`, {
+      const res = await axios.get(`${API_BASE_URL}/servicios-realizados`, {
         withCredentials: true,
       });
       setPedidos(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      const msgError = err.response?.data?.message || "No se pudo cargar la lista de servicios";
+      const msgError =
+        err.response?.data?.message ||
+        "No se pudo cargar la lista de servicios";
       Swal.fire("Error", msgError, "error");
     } finally {
       setLoading(false);
@@ -57,7 +59,9 @@ function ListaServiciosRealizados() {
 
     return pedidos.filter((item) => {
       const clienteNombre = (item.cliente_nombre || "").toLowerCase();
-      const nroRecibo = (item.nro_recibo || String(item.pedido_id)).toLowerCase();
+      const nroRecibo = (
+        item.nro_recibo || String(item.pedido_id)
+      ).toLowerCase();
 
       const matchesText =
         !query || clienteNombre.includes(query) || nroRecibo.includes(query);
@@ -84,16 +88,28 @@ function ListaServiciosRealizados() {
     doc.text("Gazzella Express - Reporte de Servicios Realizados", 14, 15);
     doc.setFontSize(10);
     doc.text(
-      `Fecha de reporte: ${new Date().toLocaleDateString("es-VE")} ${new Date().toLocaleTimeString("es-VE")}`,
+      `Fecha de reporte: ${new Date().toLocaleDateString(
+        "es-VE"
+      )} ${new Date().toLocaleTimeString("es-VE")}`,
       14,
       22
     );
 
-    const tableColumn = ["Pedido #", "Cliente", "Repartidor", "Fecha", "Monto (USD)", "Estatus"];
+    const tableColumn = [
+      "Pedido #",
+      "Cliente",
+      "Repartidor",
+      "Fecha",
+      "Monto (USD)",
+      "Estatus",
+    ];
 
     const tableRows = filteredPedidos.map((p) => {
       const fechaObj = p.fecha_pedido ? new Date(p.fecha_pedido) : null;
-      const fechaFmt = fechaObj && !isNaN(fechaObj.getTime()) ? fechaObj.toLocaleString("es-VE") : "N/A";
+      const fechaFmt =
+        fechaObj && !isNaN(fechaObj.getTime())
+          ? fechaObj.toLocaleString("es-VE")
+          : "N/A";
 
       return [
         p.nro_recibo || p.pedido_id,
@@ -120,17 +136,48 @@ function ListaServiciosRealizados() {
     <div className="content-area">
       <div className="admin-table-container">
         {/* Cabecera y Filtros */}
-        <div style={{ padding: "var(--spacing-lg, 16px)", borderBottom: "1px solid #eee", backgroundColor: "#fff" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-            <h2 style={{ color: "var(--color-primary, #000)", margin: 0 }}>Servicios Realizados</h2>
+        <div
+          style={{
+            padding: "var(--spacing-lg, 16px)",
+            borderBottom: "1px solid #eee",
+            backgroundColor: "#fff",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "15px",
+            }}
+          >
+            <h2 style={{ color: "var(--color-primary, #000)", margin: 0 }}>
+              Servicios Realizados
+            </h2>
             <span style={{ fontSize: "0.8rem", color: "#777" }}>
-              Mostrando <strong>{filteredPedidos.length}</strong> de {pedidos.length} pedidos
+              Mostrando <strong>{filteredPedidos.length}</strong> de{" "}
+              {pedidos.length} pedidos
             </span>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px", alignItems: "end" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "10px",
+              alignItems: "end",
+            }}
+          >
             <div>
-              <label style={{ fontSize: "0.75rem", fontWeight: "bold", color: "#555", display: "block", marginBottom: "4px" }}>
+              <label
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: "bold",
+                  color: "#555",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
                 Buscar:
               </label>
               <input
@@ -138,31 +185,71 @@ function ListaServiciosRealizados() {
                 placeholder="Nro. pedido o Nombre cliente..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", fontSize: "0.85rem", outline: "none", boxSizing: "border-box" }}
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  border: "1px solid #ddd",
+                  fontSize: "0.85rem",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
               />
             </div>
 
             <div>
-              <label style={{ fontSize: "0.75rem", fontWeight: "bold", color: "#555", display: "block", marginBottom: "4px" }}>
+              <label
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: "bold",
+                  color: "#555",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
                 Desde:
               </label>
               <input
                 type="date"
                 value={fechaInicio}
                 onChange={(e) => setFechaInicio(e.target.value)}
-                style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", fontSize: "0.85rem", outline: "none", boxSizing: "border-box" }}
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  border: "1px solid #ddd",
+                  fontSize: "0.85rem",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
               />
             </div>
 
             <div>
-              <label style={{ fontSize: "0.75rem", fontWeight: "bold", color: "#555", display: "block", marginBottom: "4px" }}>
+              <label
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: "bold",
+                  color: "#555",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
                 Hasta:
               </label>
               <input
                 type="date"
                 value={fechaFin}
                 onChange={(e) => setFechaFin(e.target.value)}
-                style={{ width: "100%", padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", fontSize: "0.85rem", outline: "none", boxSizing: "border-box" }}
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  border: "1px solid #ddd",
+                  fontSize: "0.85rem",
+                  outline: "none",
+                  boxSizing: "border-box",
+                }}
               />
             </div>
 
@@ -170,7 +257,15 @@ function ListaServiciosRealizados() {
               {(searchTerm || fechaInicio || fechaFin) && (
                 <button
                   onClick={handleClearFilters}
-                  style={{ padding: "8px 12px", fontSize: "0.85rem", borderRadius: "8px", border: "1px solid #ddd", backgroundColor: "#f5f5f5", color: "#555", cursor: "pointer" }}
+                  style={{
+                    padding: "8px 12px",
+                    fontSize: "0.85rem",
+                    borderRadius: "8px",
+                    border: "1px solid #ddd",
+                    backgroundColor: "#f5f5f5",
+                    color: "#555",
+                    cursor: "pointer",
+                  }}
                 >
                   Limpiar
                 </button>
@@ -180,7 +275,21 @@ function ListaServiciosRealizados() {
                 className="btn-secondary"
                 onClick={handleExportPDF}
                 disabled={filteredPedidos.length === 0 || loading}
-                style={{ padding: "8px 14px", fontSize: "0.85rem", borderRadius: "8px", cursor: filteredPedidos.length === 0 || loading ? "not-allowed" : "pointer", opacity: filteredPedidos.length === 0 || loading ? 0.5 : 1, display: "flex", alignItems: "center", gap: "5px", flexGrow: 1, justifyContent: "center" }}
+                style={{
+                  padding: "8px 14px",
+                  fontSize: "0.85rem",
+                  borderRadius: "8px",
+                  cursor:
+                    filteredPedidos.length === 0 || loading
+                      ? "not-allowed"
+                      : "pointer",
+                  opacity: filteredPedidos.length === 0 || loading ? 0.5 : 1,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  flexGrow: 1,
+                  justifyContent: "center",
+                }}
               >
                 📄 PDF
               </button>
@@ -205,21 +314,53 @@ function ListaServiciosRealizados() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "#666" }}>
+                  <td
+                    colSpan="7"
+                    style={{
+                      textAlign: "center",
+                      padding: "30px",
+                      color: "#666",
+                    }}
+                  >
                     Cargando servicios realizados...
                   </td>
                 </tr>
               ) : (
                 filteredPedidos.map((p) => {
-                  const fechaObj = p.fecha_pedido ? new Date(p.fecha_pedido) : null;
-                  const fechaFormateada = fechaObj && !isNaN(fechaObj.getTime()) ? fechaObj.toLocaleString("es-VE", { dateStyle: "short", timeStyle: "short" }) : "N/A";
+                  const fechaObj = p.fecha_pedido
+                    ? new Date(p.fecha_pedido)
+                    : null;
+                  const fechaFormateada =
+                    fechaObj && !isNaN(fechaObj.getTime())
+                      ? fechaObj.toLocaleString("es-VE", {
+                          dateStyle: "short",
+                          timeStyle: "short",
+                        })
+                      : "N/A";
 
                   return (
-                    <tr key={p.pedido_id} style={{ cursor: "pointer" }} onClick={() => setSelectedPedido(p)}>
-                      <td style={{ textAlign: "center", fontWeight: "bold", color: "var(--color-primary, #000)", fontSize: "0.85rem" }}>
+                    <tr
+                      key={p.pedido_id}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setSelectedPedido(p)}
+                    >
+                      <td
+                        style={{
+                          textAlign: "center",
+                          fontWeight: "bold",
+                          color: "var(--color-primary, #000)",
+                          fontSize: "0.85rem",
+                        }}
+                      >
                         {p.nro_recibo || `#${p.pedido_id}`}
                       </td>
-                      <td style={{ textAlign: "center", fontWeight: "bold", color: "#222" }}>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          fontWeight: "bold",
+                          color: "#222",
+                        }}
+                      >
                         {p.cliente_nombre || "N/A"}
                       </td>
                       <td style={{ textAlign: "center", color: "#555" }}>
@@ -228,7 +369,13 @@ function ListaServiciosRealizados() {
                       <td style={{ textAlign: "center", fontSize: "0.85rem" }}>
                         {fechaFormateada}
                       </td>
-                      <td style={{ textAlign: "center", color: "#16a34a", fontWeight: "bold" }}>
+                      <td
+                        style={{
+                          textAlign: "center",
+                          color: "#16a34a",
+                          fontWeight: "bold",
+                        }}
+                      >
                         ${Number(p.total_dolar || 0).toFixed(2)}
                       </td>
                       <td style={{ textAlign: "center" }}>
@@ -240,15 +387,31 @@ function ListaServiciosRealizados() {
                             fontWeight: "bold",
                             display: "inline-block",
                             textTransform: "uppercase",
-                            backgroundColor: p.estado === "entregado" || p.estado === "finalizado" ? "#f0fdf4" : "#fff7ed",
-                            color: p.estado === "entregado" || p.estado === "finalizado" ? "#166534" : "#c2410c",
-                            border: `1px solid ${p.estado === "entregado" || p.estado === "finalizado" ? "#bbf7d0" : "#ffedd5"}`,
+                            backgroundColor:
+                              p.estado === "entregado" ||
+                              p.estado === "finalizado"
+                                ? "#f0fdf4"
+                                : "#fff7ed",
+                            color:
+                              p.estado === "entregado" ||
+                              p.estado === "finalizado"
+                                ? "#166534"
+                                : "#c2410c",
+                            border: `1px solid ${
+                              p.estado === "entregado" ||
+                              p.estado === "finalizado"
+                                ? "#bbf7d0"
+                                : "#ffedd5"
+                            }`,
                           }}
                         >
                           {p.estado}
                         </span>
                       </td>
-                      <td style={{ textAlign: "center" }} onClick={(e) => e.stopPropagation()}>
+                      <td
+                        style={{ textAlign: "center" }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <button
                           onClick={() => setSelectedPedido(p)}
                           style={{
@@ -275,7 +438,8 @@ function ListaServiciosRealizados() {
 
         {!loading && filteredPedidos.length === 0 && (
           <div style={{ padding: "40px", textAlign: "center", color: "#999" }}>
-            No se encontraron servicios realizados con los criterios seleccionados.
+            No se encontraron servicios realizados con los criterios
+            seleccionados.
           </div>
         )}
       </div>
