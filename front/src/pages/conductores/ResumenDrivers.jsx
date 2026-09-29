@@ -33,20 +33,22 @@ const AdminDriverVerification = () => {
     fetchDrivers();
   }, []);
 
-  // FILTRADO: SOLO MOSTRAR CONDUCTORES QUE NO TIENEN UN CÓDIGO ASIGNADO
-  const filteredDrivers = drivers.filter((d) => {
-    const tieneCodigo = Boolean(d.codigo_conductor && d.codigo_conductor.trim() !== "");
-    if (tieneCodigo) return false;
+  // FILTRADO Y ORDENAMIENTO (De mayor a menor por fecha)
+  const filteredDrivers = drivers
+    .filter((d) => {
+      const tieneCodigo = Boolean(d.codigo_conductor && d.codigo_conductor.trim() !== "");
+      if (tieneCodigo) return false;
 
-    const query = searchTerm.toLowerCase();
+      const query = searchTerm.toLowerCase();
 
-    // Búsqueda por nombre o email
-    const coincideBusqueda =
-      (d.nombre && d.nombre.toLowerCase().includes(query)) ||
-      (d.email && d.email.toLowerCase().includes(query));
+      // Búsqueda por nombre o email
+      const coincideBusqueda =
+        (d.nombre && d.nombre.toLowerCase().includes(query)) ||
+        (d.email && d.email.toLowerCase().includes(query));
 
-    return coincideBusqueda;
-  });
+      return coincideBusqueda;
+    })
+    .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion));
 
   const handleAction = async (driver, actionType) => {
     const confirmMsg =
@@ -127,7 +129,7 @@ const AdminDriverVerification = () => {
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
+              justifySpaceBetween: "space-between",
               alignItems: "center",
               marginBottom: "15px",
             }}
@@ -183,7 +185,6 @@ const AdminDriverVerification = () => {
           <table className="admin-table">
             <thead>
               <tr>
-                <th style={{ textAlign: "center" }}>Código</th>
                 <th style={{ textAlign: "center" }}>Nombre</th>
                 <th style={{ textAlign: "center" }}>Email</th>
                 <th style={{ textAlign: "center" }}>Fecha Registro</th>
@@ -199,11 +200,6 @@ const AdminDriverVerification = () => {
 
                 return (
                   <tr key={d.usuario_id}>
-                    {/* CELDA DE CÓDIGO DE CONDUCTOR */}
-                    <td style={{ textAlign: "center", fontWeight: "bold", color: "var(--color-primary)" }}>
-                      {d.codigo_conductor || "--"}
-                    </td>
-
                     <td style={{ textAlign: "center" }}>
                       <button
                         onClick={() => {
@@ -371,7 +367,6 @@ const AdminDriverVerification = () => {
 
 export default AdminDriverVerification;
 
-
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 // import DriverRegisterModal from "./DriverRegisterModal";
@@ -382,11 +377,10 @@ export default AdminDriverVerification;
 // const AdminDriverVerification = () => {
 //   const [drivers, setDrivers] = useState([]);
 //   const [searchTerm, setSearchTerm] = useState("");
-//   const [statusFilter, setStatusFilter] = useState("todos");
 //   const [loading, setLoading] = useState(true);
 //   const [showModal, setShowModal] = useState(false);
 //   const [selectedDriver, setSelectedDriver] = useState(null);
-
+  
 //   // ESTADOS PARA LA VISTA DE DETALLE (SOLO LECTURA)
 //   const [showViewModal, setShowViewModal] = useState(false);
 //   const [driverToView, setDriverToView] = useState(null);
@@ -408,22 +402,19 @@ export default AdminDriverVerification;
 //     fetchDrivers();
 //   }, []);
 
+//   // FILTRADO: SOLO MOSTRAR CONDUCTORES QUE NO TIENEN UN CÓDIGO ASIGNADO
 //   const filteredDrivers = drivers.filter((d) => {
-//     const query = searchTerm.toLowerCase();
-//     const estatusReal = !d.repartidor_id
-//       ? "pendiente"
-//       : d.is_active.toLowerCase();
+//     const tieneCodigo = Boolean(d.codigo_conductor && d.codigo_conductor.trim() !== "");
+//     if (tieneCodigo) return false;
 
-//     // Búsqueda por nombre, email o código de conductor
+//     const query = searchTerm.toLowerCase();
+
+//     // Búsqueda por nombre o email
 //     const coincideBusqueda =
 //       (d.nombre && d.nombre.toLowerCase().includes(query)) ||
-//       (d.email && d.email.toLowerCase().includes(query)) ||
-//       (d.codigo_conductor && d.codigo_conductor.toLowerCase().includes(query));
+//       (d.email && d.email.toLowerCase().includes(query));
 
-//     const coincideEstatus =
-//       statusFilter === "todos" || estatusReal === statusFilter;
-
-//     return coincideBusqueda && coincideEstatus;
+//     return coincideBusqueda;
 //   });
 
 //   const handleAction = async (driver, actionType) => {
@@ -511,19 +502,18 @@ export default AdminDriverVerification;
 //             }}
 //           >
 //             <h2 style={{ color: "var(--color-primary)", margin: 0 }}>
-//               Gestión de Conductores
+//               Gestión de Conductores (Sin Código)
 //             </h2>
 //             <span style={{ fontSize: "0.8rem", color: "#777" }}>
-//               Mostrando <strong>{filteredDrivers.length}</strong> de{" "}
-//               {drivers.length}
+//               Mostrando <strong>{filteredDrivers.length}</strong> pendientes de código
 //             </span>
 //           </div>
 
 //           <div style={{ display: "flex", gap: "10px" }}>
-//             <div style={{ position: "relative", flex: 3 }}>
+//             <div style={{ position: "relative", flex: 1 }}>
 //               <input
 //                 type="text"
-//                 placeholder="Buscar por código, nombre o email..."
+//                 placeholder="Buscar por nombre o email..."
 //                 value={searchTerm}
 //                 onChange={(e) => setSearchTerm(e.target.value)}
 //                 style={{
@@ -533,6 +523,7 @@ export default AdminDriverVerification;
 //                   border: "1px solid #ddd",
 //                   fontSize: "0.9rem",
 //                   outline: "none",
+//                   boxSizing: "border-box"
 //                 }}
 //               />
 //               {searchTerm && (
@@ -554,26 +545,6 @@ export default AdminDriverVerification;
 //                 </button>
 //               )}
 //             </div>
-
-//             <select
-//               value={statusFilter}
-//               onChange={(e) => setStatusFilter(e.target.value)}
-//               style={{
-//                 flex: 1,
-//                 padding: "10px",
-//                 borderRadius: "8px",
-//                 border: "1px solid #ddd",
-//                 fontSize: "0.9rem",
-//                 outline: "none",
-//                 backgroundColor: "#fff",
-//                 cursor: "pointer",
-//               }}
-//             >
-//               <option value="todos">Todos los estatus</option>
-//               <option value="activo">Activos</option>
-//               <option value="suspendido">Suspendidos</option>
-//               <option value="pendiente">Pendientes</option>
-//             </select>
 //           </div>
 //         </div>
 
@@ -636,12 +607,12 @@ export default AdminDriverVerification;
 
 //                     <td style={{ fontSize: "0.85rem" }}>{d.email}</td>
 
-//                     {/* NUEVA CELDA: FECHA DE REGISTRO */}
+//                     {/* FECHA DE REGISTRO */}
 //                     <td style={{ textAlign: "center", fontSize: "0.85rem", color: "#555" }}>
 //                       {formatDate(d.fecha_creacion)}
 //                     </td>
 
-//                     {/* CELDA DE ESTATUS + INDICADOR DE VERIFICACIÓN */}
+//                     {/* ESTATUS + INDICADOR DE VERIFICACIÓN */}
 //                     <td style={{ textAlign: "center", width: "1%" }}>
 //                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "3px" }}>
 //                         <span
@@ -759,7 +730,7 @@ export default AdminDriverVerification;
 
 //         {filteredDrivers.length === 0 && (
 //           <div style={{ padding: "40px", textAlign: "center", color: "#999" }}>
-//             No se encontraron conductores.
+//             No se encontraron conductores sin código.
 //           </div>
 //         )}
 //       </div>
@@ -768,4 +739,5 @@ export default AdminDriverVerification;
 // };
 
 // export default AdminDriverVerification;
+
 

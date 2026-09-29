@@ -302,9 +302,9 @@ function ListaServiciosRealizados() {
           <table className="admin-table">
             <thead>
               <tr>
-                <th style={{ textAlign: "center" }}>Nro. Pedido</th>
+                <th style={{ textAlign: "center" }}>Nro. Servicio</th>
                 <th style={{ textAlign: "center" }}>Cliente</th>
-                <th style={{ textAlign: "center" }}>Repartidor</th>
+                <th style={{ textAlign: "center" }}>Conductor</th>
                 <th style={{ textAlign: "center" }}>Fecha y Hora</th>
                 <th style={{ textAlign: "center" }}>Monto (USD)</th>
                 <th style={{ textAlign: "center" }}>Estatus</th>

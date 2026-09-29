@@ -71,7 +71,7 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
               <h3 style={{ margin: 0, color: "#0f172a", fontSize: "1.25rem", fontWeight: 700 }}>
-                Pedido #{pedido.pedido_id || pedido.id}
+                Servicio #{pedido.pedido_id || pedido.id}
               </h3>
               <span
                 style={{
@@ -170,7 +170,7 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
             {/* Sección Repartidor */}
             <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", backgroundColor: "#fff" }}>
               <h4 style={{ margin: "0 0 12px 0", fontSize: "0.9rem", color: "#0f172a", display: "flex", alignItems: "center", gap: "6px" }}>
-                🛵 <span>Repartidor</span>
+                🛵 <span>Conductor</span>
               </h4>
               <div style={{ fontSize: "0.85rem", color: "#334155", display: "flex", flexDirection: "column", gap: "6px" }}>
                 <div><span style={{ color: "#64748b" }}>Nombre:</span> <strong>{pedido.repartidor_nombre || "Sin Asignar"}</strong></div>
@@ -184,7 +184,7 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
           {/* Sección Direcciones */}
           <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", backgroundColor: "#fff" }}>
             <h4 style={{ margin: "0 0 12px 0", fontSize: "0.9rem", color: "#0f172a", display: "flex", alignItems: "center", gap: "6px" }}>
-              📍 <span>Ruta del Pedido</span>
+              📍 <span>Ruta del Servicio</span>
             </h4>
             
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
