@@ -308,7 +308,7 @@ function ListaServiciosRealizados() {
                 <th style={{ textAlign: "center" }}>Fecha y Hora</th>
                 <th style={{ textAlign: "center" }}>Monto (USD)</th>
                 <th style={{ textAlign: "center" }}>Estatus</th>
-                <th style={{ textAlign: "center" }}>Acción</th>
+                {/* <th style={{ textAlign: "center" }}>Acción</th> */}
               </tr>
             </thead>
             <tbody>
@@ -352,7 +352,7 @@ function ListaServiciosRealizados() {
                           fontSize: "0.85rem",
                         }}
                       >
-                        {p.nro_recibo || `#${p.pedido_id}`}
+                        {`#${p.pedido_id}`}
                       </td>
                       <td
                         style={{

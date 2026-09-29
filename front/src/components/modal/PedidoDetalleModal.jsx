@@ -9,6 +9,21 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
     return isNaN(d.getTime()) ? "N/A" : d.toLocaleString("es-VE");
   };
 
+  const getBadgeStyle = (estado) => {
+    switch (estado?.toLowerCase()) {
+      case "entregado":
+      case "finalizado":
+        return { bg: "#dcfce7", color: "#15803d", border: "#bbf7d0" };
+      case "en_camino":
+      case "asignado":
+        return { bg: "#e0f2fe", color: "#0369a1", border: "#bae6fd" };
+      default:
+        return { bg: "#fef3c7", color: "#b45309", border: "#fde68a" };
+    }
+  };
+
+  const badge = getBadgeStyle(pedido.estado);
+
   return (
     <div
       style={{
@@ -17,7 +32,8 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
         left: 0,
         width: "100vw",
         height: "100vh",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(15, 23, 42, 0.6)",
+        backdropFilter: "blur(4px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -28,135 +44,232 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
     >
       <div
         style={{
-          backgroundColor: "#fff",
+          backgroundColor: "#ffffff",
           borderRadius: "16px",
-          maxWidth: "600px",
+          maxWidth: "680px",
           width: "100%",
-          maxHeight: "90vh",
-          overflowY: "auto",
-          padding: "24px",
-          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
+          maxHeight: "85vh",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+          overflow: "hidden",
+          fontFamily: "system-ui, -apple-system, sans-serif",
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Cabecera Modal */}
+        {/* Cabecera del Modal */}
         <div
           style={{
+            padding: "20px 24px",
+            borderBottom: "1px solid #e2e8f0",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            borderBottom: "1px solid #eee",
-            paddingBottom: "12px",
-            marginBottom: "16px",
+            backgroundColor: "#f8fafc",
           }}
         >
           <div>
-            <h3 style={{ margin: 0, color: "#1e293b", fontSize: "1.25rem" }}>
-              Pedido #{pedido.nro_recibo || pedido.pedido_id}
-            </h3>
-            <span style={{ fontSize: "0.8rem", color: "#64748b" }}>
-              Fecha: {formatDate(pedido.fecha_pedido)}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <h3 style={{ margin: 0, color: "#0f172a", fontSize: "1.25rem", fontWeight: 700 }}>
+                Pedido #{pedido.pedido_id || pedido.id}
+              </h3>
+              <span
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: "600",
+                  textTransform: "uppercase",
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  backgroundColor: badge.bg,
+                  color: badge.color,
+                  border: `1px solid ${badge.border}`,
+                }}
+              >
+                {pedido.estado}
+              </span>
+            </div>
+            <span style={{ fontSize: "0.825rem", color: "#64748b", marginTop: "4px", display: "block" }}>
+              Registrado el {formatDate(pedido.fecha_pedido)}
             </span>
           </div>
+
           <button
             onClick={onClose}
             style={{
-              background: "transparent",
+              background: "#e2e8f0",
               border: "none",
-              fontSize: "1.5rem",
+              width: "32px",
+              height: "32px",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               cursor: "pointer",
-              color: "#94a3b8",
+              color: "#475569",
+              fontWeight: "bold",
+              transition: "all 0.2s",
             }}
           >
             ✕
           </button>
         </div>
 
-        {/* Montos y Estatus */}
+        {/* Cuerpo del Modal */}
+        <div style={{ padding: "20px 24px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "20px" }}>
+          
+          {/* Tarjeta Resumen Financiero */}
+          <div
+            style={{
+              backgroundColor: "#f8fafc",
+              borderRadius: "12px",
+              padding: "16px 20px",
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "16px",
+              border: "1px solid #e2e8f0",
+              textAlign: "left",
+            }}
+          >
+            <div>
+              <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 600, textTransform: "uppercase" }}>
+                Total USD
+              </span>
+              <strong style={{ color: "#16a34a", fontSize: "1.3rem", display: "block", marginTop: "2px" }}>
+                ${Number(pedido.total_dolar || 0).toFixed(2)}
+              </strong>
+            </div>
+
+            <div>
+              <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 600, textTransform: "uppercase" }}>
+                Total Bs.
+              </span>
+              <strong style={{ color: "#0f172a", fontSize: "1.3rem", display: "block", marginTop: "2px" }}>
+                {Number(pedido.total || 0).toFixed(2)} Bs.
+              </strong>
+            </div>
+
+            <div>
+              <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 600, textTransform: "uppercase" }}>
+                Nro. Recibo
+              </span>
+              <span style={{ color: "#334155", fontSize: "1.1rem", fontWeight: 600, display: "block", marginTop: "2px" }}>
+                {pedido.nro_recibo || "N/A"}
+              </span>
+            </div>
+          </div>
+
+          {/* Grid Principal: Cliente y Repartidor */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            
+            {/* Sección Cliente */}
+            <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", backgroundColor: "#fff" }}>
+              <h4 style={{ margin: "0 0 12px 0", fontSize: "0.9rem", color: "#0f172a", display: "flex", alignItems: "center", gap: "6px" }}>
+                👤 <span>Cliente</span>
+              </h4>
+              <div style={{ fontSize: "0.85rem", color: "#334155", display: "flex", flexDirection: "column", gap: "6px" }}>
+                <div><span style={{ color: "#64748b" }}>Nombre:</span> <strong>{pedido.cliente_nombre || "N/A"}</strong></div>
+                <div><span style={{ color: "#64748b" }}>Teléfono:</span> {pedido.cliente_telefono || "N/A"}</div>
+                <div><span style={{ color: "#64748b" }}>Email:</span> {pedido.cliente_email || "N/A"}</div>
+              </div>
+            </div>
+
+            {/* Sección Repartidor */}
+            <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", backgroundColor: "#fff" }}>
+              <h4 style={{ margin: "0 0 12px 0", fontSize: "0.9rem", color: "#0f172a", display: "flex", alignItems: "center", gap: "6px" }}>
+                🛵 <span>Repartidor</span>
+              </h4>
+              <div style={{ fontSize: "0.85rem", color: "#334155", display: "flex", flexDirection: "column", gap: "6px" }}>
+                <div><span style={{ color: "#64748b" }}>Nombre:</span> <strong>{pedido.repartidor_nombre || "Sin Asignar"}</strong></div>
+                <div><span style={{ color: "#64748b" }}>Código:</span> {pedido.repartidor_codigo || "N/A"}</div>
+                <div><span style={{ color: "#64748b" }}>Teléfono:</span> {pedido.repartidor_telefono || "N/A"}</div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Sección Direcciones */}
+          <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", backgroundColor: "#fff" }}>
+            <h4 style={{ margin: "0 0 12px 0", fontSize: "0.9rem", color: "#0f172a", display: "flex", alignItems: "center", gap: "6px" }}>
+              📍 <span>Ruta del Pedido</span>
+            </h4>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ padding: "10px 12px", backgroundColor: "#f8fafc", borderRadius: "8px", borderLeft: "4px solid #3b82f6" }}>
+                <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 700, textTransform: "uppercase", display: "block" }}>
+                  Origen ({pedido.municipio_origen || "N/A"})
+                </span>
+                <span style={{ fontSize: "0.875rem", color: "#1e293b", fontWeight: 500 }}>
+                  {pedido.direccion_origen_texto || "Dirección no especificada"}
+                </span>
+                {pedido.direccion_origen_ref && (
+                  <span style={{ fontSize: "0.75rem", color: "#64748b", display: "block", marginTop: "2px" }}>
+                    Ref: {pedido.direccion_origen_ref}
+                  </span>
+                )}
+              </div>
+
+              <div style={{ padding: "10px 12px", backgroundColor: "#f8fafc", borderRadius: "8px", borderLeft: "4px solid #ef4444" }}>
+                <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 700, textTransform: "uppercase", display: "block" }}>
+                  Destino ({pedido.municipio_destino || "N/A"})
+                </span>
+                <span style={{ fontSize: "0.875rem", color: "#1e293b", fontWeight: 500 }}>
+                  {pedido.direccion_destino_texto || "Dirección no especificada"}
+                </span>
+                {pedido.direccion_destino_ref && (
+                  <span style={{ fontSize: "0.75rem", color: "#64748b", display: "block", marginTop: "2px" }}>
+                    Ref: {pedido.direccion_destino_ref}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Información Adicional */}
+          <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", padding: "16px", backgroundColor: "#fff" }}>
+            <h4 style={{ margin: "0 0 12px 0", fontSize: "0.9rem", color: "#0f172a", display: "flex", alignItems: "center", gap: "6px" }}>
+              ℹ️ <span>Detalles del Servicio</span>
+            </h4>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", fontSize: "0.85rem", color: "#334155" }}>
+              <div><span style={{ color: "#64748b", display: "block" }}>Servicio</span> <strong>{pedido.tipo_servicio || "Estándar"}</strong></div>
+              <div><span style={{ color: "#64748b", display: "block" }}>Vehículo</span> <strong>{pedido.tipo_vehiculo || "N/A"}</strong></div>
+              <div><span style={{ color: "#64748b", display: "block" }}>Pago Confirmado</span> <strong>{pedido.pago_confirmado ? "Sí" : "No"}</strong></div>
+              {pedido.fecha_entrega && (
+                <div style={{ gridColumn: "span 3", marginTop: "4px" }}>
+                  <span style={{ color: "#64748b" }}>Fecha de Entrega:</span> <strong>{formatDate(pedido.fecha_entrega)}</strong>
+                </div>
+              )}
+            </div>
+          </div>
+
+        </div>
+
+        {/* Pie del Modal */}
         <div
           style={{
+            padding: "12px 24px",
+            borderTop: "1px solid #e2e8f0",
             backgroundColor: "#f8fafc",
-            borderRadius: "12px",
-            padding: "12px 16px",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-            gap: "12px",
-            marginBottom: "16px",
-            border: "1px solid #e2e8f0",
+            display: "flex",
+            justifyContent: "flex-end",
           }}
         >
-          <div>
-            <span style={{ fontSize: "0.75rem", color: "#64748b", display: "block" }}>Total USD</span>
-            <strong style={{ color: "#16a34a", fontSize: "1.1rem" }}>
-              ${Number(pedido.total_dolar || 0).toFixed(2)}
-            </strong>
-          </div>
-          <div>
-            <span style={{ fontSize: "0.75rem", color: "#64748b", display: "block" }}>Total Bs</span>
-            <strong style={{ color: "#1e293b", fontSize: "1.1rem" }}>
-              {Number(pedido.total || 0).toFixed(2)} Bs.
-            </strong>
-          </div>
-          <div>
-            <span style={{ fontSize: "0.75rem", color: "#64748b", display: "block" }}>Estado</span>
-            <span
-              style={{
-                fontSize: "0.75rem",
-                fontWeight: "bold",
-                textTransform: "uppercase",
-                color: pedido.estado === "entregado" || pedido.estado === "finalizado" ? "#166534" : "#9a3412",
-              }}
-            >
-              {pedido.estado}
-            </span>
-          </div>
+          <button
+            onClick={onClose}
+            style={{
+              padding: "8px 20px",
+              backgroundColor: "#0f172a",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "8px",
+              fontSize: "0.875rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Cerrar
+          </button>
         </div>
 
-        {/* Datos del Cliente */}
-        <div style={{ marginBottom: "16px" }}>
-          <h4 style={{ margin: "0 0 8px 0", fontSize: "0.95rem", color: "#334155" }}>👤 Cliente</h4>
-          <div style={{ fontSize: "0.85rem", color: "#475569", lineHeight: "1.5" }}>
-            <p style={{ margin: 0 }}><strong>Nombre:</strong> {pedido.cliente_nombre || "N/A"}</p>
-            <p style={{ margin: 0 }}><strong>Teléfono:</strong> {pedido.cliente_telefono || "N/A"}</p>
-            <p style={{ margin: 0 }}><strong>Email:</strong> {pedido.cliente_email || "N/A"}</p>
-          </div>
-        </div>
-
-        {/* Datos del Repartidor */}
-        <div style={{ marginBottom: "16px" }}>
-          <h4 style={{ margin: "0 0 8px 0", fontSize: "0.95rem", color: "#334155" }}>🛵 Repartidor</h4>
-          <div style={{ fontSize: "0.85rem", color: "#475569", lineHeight: "1.5" }}>
-            <p style={{ margin: 0 }}><strong>Nombre:</strong> {pedido.repartidor_nombre || "Sin Asignar"}</p>
-            <p style={{ margin: 0 }}><strong>Código:</strong> {pedido.repartidor_codigo || "N/A"}</p>
-            <p style={{ margin: 0 }}><strong>Teléfono:</strong> {pedido.repartidor_telefono || "N/A"}</p>
-          </div>
-        </div>
-
-        {/* Direcciones */}
-        <div style={{ marginBottom: "16px" }}>
-          <h4 style={{ margin: "0 0 8px 0", fontSize: "0.95rem", color: "#334155" }}>📍 Direcciones</h4>
-          <div style={{ fontSize: "0.85rem", color: "#475569", display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div style={{ padding: "8px", backgroundColor: "#f1f5f9", borderRadius: "8px" }}>
-              <strong>Origen ({pedido.municipio_origen || "N/A"}):</strong> {pedido.direccion_origen_texto || "N/A"}
-              {pedido.direccion_origen_ref && <small style={{ display: "block", color: "#64748b" }}>Ref: {pedido.direccion_origen_ref}</small>}
-            </div>
-            <div style={{ padding: "8px", backgroundColor: "#f1f5f9", borderRadius: "8px" }}>
-              <strong>Destino ({pedido.municipio_destino || "N/A"}):</strong> {pedido.direccion_destino_texto || "N/A"}
-              {pedido.direccion_destino_ref && <small style={{ display: "block", color: "#64748b" }}>Ref: {pedido.direccion_destino_ref}</small>}
-            </div>
-          </div>
-        </div>
-
-        {/* Detalles Adicionales */}
-        <div>
-          <h4 style={{ margin: "0 0 8px 0", fontSize: "0.95rem", color: "#334155" }}>ℹ️ Información Adicional</h4>
-          <div style={{ fontSize: "0.85rem", color: "#475569", lineHeight: "1.5" }}>
-            <p style={{ margin: 0 }}><strong>Servicio:</strong> {pedido.tipo_servicio || "Estándar"}</p>
-            <p style={{ margin: 0 }}><strong>Vehículo:</strong> {pedido.tipo_vehiculo || "N/A"}</p>
-            <p style={{ margin: 0 }}><strong>Pago Confirmado:</strong> {pedido.pago_confirmado ? "Sí" : "No"}</p>
-            {pedido.fecha_entrega && <p style={{ margin: 0 }}><strong>Fecha Entrega:</strong> {formatDate(pedido.fecha_entrega)}</p>}
-          </div>
-        </div>
       </div>
     </div>
   );
