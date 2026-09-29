@@ -408,7 +408,7 @@ function ListaServiciosRealizados() {
                           {p.estado}
                         </span>
                       </td>
-                      <td
+                      {/* <td
                         style={{ textAlign: "center" }}
                         onClick={(e) => e.stopPropagation()}
                       >
@@ -427,7 +427,7 @@ function ListaServiciosRealizados() {
                         >
                           Ver Detalle
                         </button>
-                      </td>
+                      </td> */}
                     </tr>
                   );
                 })

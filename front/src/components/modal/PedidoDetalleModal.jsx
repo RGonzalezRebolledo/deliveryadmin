@@ -93,18 +93,24 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
             </span>
           </div>
 
-          {/* Botón X limpio sin circulo ni borde */}
+          {/* Botón X transparente sin ningún borde ni círculo */}
           <button
             onClick={onClose}
             style={{
               background: "transparent",
               border: "none",
-              fontSize: "1.25rem",
+              outline: "none",
+              boxShadow: "none",
+              fontSize: "1.4rem",
               cursor: "pointer",
               color: "#64748b",
-              fontWeight: "600",
-              padding: "4px",
+              fontWeight: "400",
+              padding: "0",
+              margin: "0",
               lineHeight: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             ✕
@@ -114,7 +120,7 @@ const PedidoDetalleModal = ({ pedido, onClose }) => {
         {/* Cuerpo del Modal */}
         <div style={{ padding: "20px 24px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "20px" }}>
           
-          {/* Tarjeta Resumen Financiero (Sin nro_recibo) */}
+          {/* Tarjeta Resumen Financiero */}
           <div
             style={{
               backgroundColor: "#f8fafc",
