@@ -74,36 +74,6 @@ const AdminDriverVerification = () => {
     })
     .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion));
 
-  const handleAction = async (driver, actionType) => {
-    const confirmMsg =
-      actionType === "activar"
-        ? `¿Deseas activar a ${driver.nombre}?`
-        : `¿Estás seguro de suspender a ${driver.nombre}?`;
-
-    if (!window.confirm(confirmMsg)) return;
-
-    try {
-      const endpoint =
-        actionType === "suspender"
-          ? `${API_BASE_URL}/driver/suspend-driver`
-          : `${API_BASE_URL}/driver/activate-driver`;
-
-      await axios.put(
-        endpoint,
-        { usuario_id: driver.usuario_id },
-        { withCredentials: true }
-      );
-      alert(
-        `Conductor ${
-          actionType === "activar" ? "activado" : "suspendido"
-        } con éxito`
-      );
-      fetchDrivers();
-    } catch (error) {
-      alert(error.response?.data?.error || "Error al procesar la solicitud");
-    }
-  };
-
   const formatDate = (dateString) => {
     if (!dateString) return "--";
     const date = new Date(dateString);
@@ -154,18 +124,20 @@ const AdminDriverVerification = () => {
             backgroundColor: "#fff",
           }}
         >
+          {/* HEADER CON FLEXBOX PARA EVITAR QUE SE MONTE EL TEXTO DE CONTEO */}
           <div
             style={{
               display: "flex",
               justify: "space-between",
               alignItems: "center",
               marginBottom: "15px",
+              width: "100%"
             }}
           >
             <h2 style={{ color: "var(--color-primary)", margin: 0 }}>
               Gestión de Conductores (Sin Código)
             </h2>
-            <span style={{ fontSize: "0.8rem", color: "#777" }}>
+            <span style={{ fontSize: "0.85rem", color: "#666", whiteSpace: "nowrap" }}>
               Mostrando <strong>{filteredDrivers.length}</strong> pendientes de código
             </span>
           </div>
@@ -224,7 +196,6 @@ const AdminDriverVerification = () => {
               {filteredDrivers.map((d) => {
                 const esNuevo = !d.repartidor_id;
                 const esSuspendido = d.is_active === "suspendido";
-                const esActivo = d.is_active === "activo";
 
                 return (
                   <tr
@@ -289,6 +260,7 @@ const AdminDriverVerification = () => {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div style={{ display: "flex", gap: "5px", justifyContent: "center" }}>
+                        {/* Botón de Registro solo para cuentas pendientes sin fila en repartidores */}
                         {esNuevo && (
                           <button
                             className="btn-success"
@@ -302,58 +274,7 @@ const AdminDriverVerification = () => {
                           </button>
                         )}
 
-                        {esActivo && (
-                          <button
-                            className="btn-primary"
-                            style={{ fontSize: "0.7rem", padding: "6px 12px", minWidth: "90px", borderRadius: "4px" }}
-                            onClick={() => handleAction(d, "suspender")}
-                          >
-                            Suspender
-                          </button>
-                        )}
-
-                        {esSuspendido && (
-                          <button
-                            style={{
-                              fontSize: "0.7rem",
-                              padding: "6px 12px",
-                              minWidth: "90px",
-                              backgroundColor: "#00BFFF",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: "4px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => handleAction(d, "activar")}
-                          >
-                            Activar
-                          </button>
-                        )}
-
-                        {!esNuevo && (
-                          <button
-                            style={{
-                              fontSize: "0.7rem",
-                              padding: "6px 12px",
-                              minWidth: "90px",
-                              backgroundColor: "#2c3e50",
-                              color: "#fff",
-                              border: "none",
-                              borderRadius: "4px",
-                              fontWeight: "bold",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              setSelectedDriver(d);
-                              setShowModal(true);
-                            }}
-                          >
-                            Editar
-                          </button>
-                        )}
-
-                        {/* BOTÓN: CAMBIAR A CLIENTE */}
+                        {/* Único botón disponible para cambiar rol a Cliente */}
                         <button
                           disabled={loadingChangeId === d.usuario_id}
                           style={{
