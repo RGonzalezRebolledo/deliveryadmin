@@ -124,20 +124,19 @@ const AdminDriverVerification = () => {
             backgroundColor: "#fff",
           }}
         >
-          {/* HEADER CON FLEXBOX PARA EVITAR QUE SE MONTE EL TEXTO DE CONTEO */}
+          {/* HEADER REESTRUCTURADO EN COLUMNA PARA CORREGIR LA ALINEACIÓN VISUAL */}
           <div
             style={{
               display: "flex",
-              justify: "space-between",
-              alignItems: "center",
+              flexDirection: "column",
+              gap: "4px",
               marginBottom: "15px",
-              width: "100%"
             }}
           >
-            <h2 style={{ color: "var(--color-primary)", margin: 0 }}>
+            <h2 style={{ color: "var(--color-primary)", margin: 0, fontSize: "1.5rem" }}>
               Gestión de Conductores (Sin Código)
             </h2>
-            <span style={{ fontSize: "0.85rem", color: "#666", whiteSpace: "nowrap" }}>
+            <span style={{ fontSize: "0.85rem", color: "#666" }}>
               Mostrando <strong>{filteredDrivers.length}</strong> pendientes de código
             </span>
           </div>
@@ -260,7 +259,6 @@ const AdminDriverVerification = () => {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div style={{ display: "flex", gap: "5px", justifyContent: "center" }}>
-                        {/* Botón de Registro solo para cuentas pendientes sin fila en repartidores */}
                         {esNuevo && (
                           <button
                             className="btn-success"
@@ -274,7 +272,6 @@ const AdminDriverVerification = () => {
                           </button>
                         )}
 
-                        {/* Único botón disponible para cambiar rol a Cliente */}
                         <button
                           disabled={loadingChangeId === d.usuario_id}
                           style={{
@@ -313,7 +310,6 @@ const AdminDriverVerification = () => {
 };
 
 export default AdminDriverVerification;
-
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 // import DriverRegisterModal from "./DriverRegisterModal";
