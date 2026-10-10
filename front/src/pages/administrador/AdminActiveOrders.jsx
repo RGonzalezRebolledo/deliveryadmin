@@ -8,6 +8,7 @@ const AdminActiveOrders = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("todos");
     const [loadingId, setLoadingId] = useState(null);
+    const [now, setNow] = useState(new Date());
 
     const fetchOrders = async () => {
         try {
@@ -21,10 +22,53 @@ const AdminActiveOrders = () => {
     useEffect(() => {
         fetchOrders();
         const interval = setInterval(fetchOrders, 10000);
-        return () => clearInterval(interval);
+        // Temporizador secundario de 1s para actualizar los contadores regresivos en vivo
+        const timerInterval = setInterval(() => setNow(new Date()), 1000);
+
+        return () => {
+            clearInterval(interval);
+            clearInterval(timerInterval);
+        };
     }, []);
 
-    // Función para desvincular conductor desde el panel
+    // Función para calcular tiempo transcurrido / restante
+    const renderTimeStatus = (order) => {
+        if (order.estado === "asignado" && order.fecha_limite_confirmacion) {
+            const limit = new Date(order.fecha_limite_confirmacion);
+            const diffMs = limit - now;
+
+            if (diffMs > 0) {
+                const mins = Math.floor(diffMs / 60000);
+                const secs = Math.floor((diffMs % 60000) / 1000);
+                return (
+                    <span style={{ color: "#d97706", fontWeight: "bold", fontSize: "12px" }}>
+                        ⏳ Quedan {mins}:{secs < 10 ? `0${secs}` : secs} min
+                    </span>
+                );
+            } else {
+                return (
+                    <span style={{ color: "#dc2626", fontWeight: "bold", fontSize: "12px" }}>
+                        ⚠️ Expirando...
+                    </span>
+                );
+            }
+        }
+
+        // Si es pendiente o en camino, mostrar tiempo transcurrido desde creación
+        if (order.fecha_pedido) {
+            const created = new Date(order.fecha_pedido);
+            const elapsedMins = Math.floor((now - created) / 60000);
+            return (
+                <span style={{ color: "#4b5563", fontSize: "12px" }}>
+                    ⏱️ Hace {elapsedMins} min
+                </span>
+            );
+        }
+
+        return <span style={{ fontSize: "12px", color: "#aaa" }}>--</span>;
+    };
+
+    // Función para desvincular conductor
     const handleUnassignOrder = async (orderId, driverName) => {
         const confirmMsg = `¿Estás seguro de quitar el servicio #${orderId} del conductor ${driverName || 'asignado'}?\n\nEl servicio volverá a estado PENDIENTE para ser asignado a otro conductor.`;
         
@@ -38,7 +82,7 @@ const AdminActiveOrders = () => {
                 { withCredentials: true }
             );
             alert(`✅ Servicio #${orderId} desvinculado correctamente.`);
-            fetchOrders(); // Recargar tabla
+            fetchOrders();
         } catch (error) {
             console.error("Error al desvincular el servicio:", error);
             const apiError = error.response?.data?.error || "No se pudo desvincular el servicio.";
@@ -48,7 +92,7 @@ const AdminActiveOrders = () => {
         }
     };
 
-    // Estilos del estatus
+    // Estilos de estatus
     const getStatusStyles = (status) => {
         switch ((status || "").toLowerCase()) {
             case 'pendiente':
@@ -138,6 +182,8 @@ const AdminActiveOrders = () => {
                             <th style={{ textAlign: "center" }}>Vehículo</th>
                             <th style={{ textAlign: "center" }}>Cliente</th>
                             <th style={{ textAlign: "center" }}>Estatus</th>
+                            <th style={{ textAlign: "center" }}>Rechazos</th>
+                            <th style={{ textAlign: "center" }}>Tiempo Espera / Confirmación</th>
                             <th style={{ textAlign: "center" }}>Monto</th>
                             <th style={{ textAlign: "center" }}>Código</th>
                             <th style={{ textAlign: "center" }}>Conductor</th>
@@ -149,6 +195,7 @@ const AdminActiveOrders = () => {
                             filteredOrders.map(o => {
                                 const styles = getStatusStyles(o.estado);
                                 const isUnassignable = (o.estado === 'asignado' || o.estado === 'en_camino') && o.repartidor_nombre;
+                                const totalRechazos = o.total_rechazos || 0;
 
                                 return (
                                     <tr key={o.id}>
@@ -181,6 +228,25 @@ const AdminActiveOrders = () => {
                                             }}>
                                                 {(o.estado || "").replace('_', ' ')}
                                             </span>
+                                        </td>
+
+                                        {/* RECHAZOS */}
+                                        <td style={{ textAlign: "center" }}>
+                                            <span style={{
+                                                padding: "3px 8px",
+                                                borderRadius: "12px",
+                                                fontSize: "12px",
+                                                fontWeight: "bold",
+                                                backgroundColor: totalRechazos > 0 ? "#fee2e2" : "#f3f4f6",
+                                                color: totalRechazos > 0 ? "#991b1b" : "#6b7280"
+                                            }}>
+                                                ❌ {totalRechazos}
+                                            </span>
+                                        </td>
+
+                                        {/* TIEMPO DE ESPERA / CONFIRMACIÓN */}
+                                        <td style={{ textAlign: "center" }}>
+                                            {renderTimeStatus(o)}
                                         </td>
 
                                         {/* MONTO */}
@@ -233,7 +299,7 @@ const AdminActiveOrders = () => {
                             })
                         ) : (
                             <tr>
-                                <td colSpan="8" style={{ textAlign: "center", padding: "30px", color: "#999" }}>
+                                <td colSpan="10" style={{ textAlign: "center", padding: "30px", color: "#999" }}>
                                     No se encontraron pedidos con esos criterios.
                                 </td>
                             </tr>
