@@ -22,7 +22,6 @@ const AdminActiveOrders = () => {
     useEffect(() => {
         fetchOrders();
         const interval = setInterval(fetchOrders, 10000);
-        // Temporizador secundario de 1s para actualizar los contadores regresivos en vivo
         const timerInterval = setInterval(() => setNow(new Date()), 1000);
 
         return () => {
@@ -41,31 +40,30 @@ const AdminActiveOrders = () => {
                 const mins = Math.floor(diffMs / 60000);
                 const secs = Math.floor((diffMs % 60000) / 1000);
                 return (
-                    <span style={{ color: "#d97706", fontWeight: "bold", fontSize: "12px" }}>
-                        ⏳ Quedan {mins}:{secs < 10 ? `0${secs}` : secs} min
+                    <span style={{ color: "#d97706", fontWeight: "bold", fontSize: "11px" }}>
+                        ⏳ {mins}:{secs < 10 ? `0${secs}` : secs} min
                     </span>
                 );
             } else {
                 return (
-                    <span style={{ color: "#dc2626", fontWeight: "bold", fontSize: "12px" }}>
+                    <span style={{ color: "#dc2626", fontWeight: "bold", fontSize: "11px" }}>
                         ⚠️ Expirando...
                     </span>
                 );
             }
         }
 
-        // Si es pendiente o en camino, mostrar tiempo transcurrido desde creación
         if (order.fecha_pedido) {
             const created = new Date(order.fecha_pedido);
             const elapsedMins = Math.floor((now - created) / 60000);
             return (
-                <span style={{ color: "#4b5563", fontSize: "12px" }}>
+                <span style={{ color: "#6b7280", fontSize: "11px" }}>
                     ⏱️ Hace {elapsedMins} min
                 </span>
             );
         }
 
-        return <span style={{ fontSize: "12px", color: "#aaa" }}>--</span>;
+        return <span style={{ fontSize: "11px", color: "#aaa" }}>--</span>;
     };
 
     // Función para desvincular conductor
@@ -122,23 +120,26 @@ const AdminActiveOrders = () => {
 
     return (
         <div className="admin-table-container">
-            <div style={{ padding: "20px", borderBottom: "1px solid #eee", backgroundColor: "#fff" }}>
-                <h2 style={{ color: "var(--color-primary)", marginBottom: "15px" }}>Servicios en Curso</h2>
+            <div style={{ padding: "14px 16px", borderBottom: "1px solid #eee", backgroundColor: "#fff" }}>
+                <h3 style={{ color: "var(--color-primary)", marginBottom: "10px", fontSize: "16px", fontWeight: "700" }}>
+                    Servicios en Curso
+                </h3>
                 
                 {/* BARRA DE BÚSQUEDA Y FILTRO */}
-                <div style={{ display: "flex", gap: "10px", marginBottom: "12px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: "8px", marginBottom: "8px", flexWrap: "wrap" }}>
                     <input 
                         type="text" 
-                        placeholder="Buscar por Nro Pedido, Cliente, Vehículo o Código Conductor..." 
+                        placeholder="Buscar por Nro Pedido, Cliente, Vehículo..." 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{
                             flex: 2,
-                            minWidth: "220px",
-                            padding: "10px",
-                            borderRadius: "8px",
+                            minWidth: "200px",
+                            padding: "6px 10px",
+                            borderRadius: "6px",
                             border: "1px solid #ddd",
-                            outline: "none"
+                            outline: "none",
+                            fontSize: "12px"
                         }}
                     />
                     <select 
@@ -146,12 +147,13 @@ const AdminActiveOrders = () => {
                         onChange={(e) => setStatusFilter(e.target.value)}
                         style={{
                             flex: 1,
-                            minWidth: "160px",
-                            padding: "10px",
-                            borderRadius: "8px",
+                            minWidth: "140px",
+                            padding: "6px 10px",
+                            borderRadius: "6px",
                             border: "1px solid #ddd",
                             backgroundColor: "white",
-                            cursor: "pointer"
+                            cursor: "pointer",
+                            fontSize: "12px"
                         }}
                     >
                         <option value="todos">Todos los estatus</option>
@@ -163,31 +165,31 @@ const AdminActiveOrders = () => {
 
                 {/* LÍNEA DE CONTEO */}
                 <div style={{ 
-                    fontSize: "13px", 
+                    fontSize: "11px", 
                     color: "#666", 
                     display: "flex", 
                     justifyContent: "space-between",
-                    padding: "0 5px"
+                    padding: "0 2px"
                 }}>
-                    <span>Mostrando <b>{filteredOrders.length}</b> servicios en la lista</span>
+                    <span>Mostrando <b>{filteredOrders.length}</b> servicios</span>
                     <span>Total activos: <b>{orders.length}</b></span>
                 </div>
             </div>
 
             <div className="overflow-x-auto">
-                <table className="admin-table">
+                <table className="admin-table" style={{ fontSize: "12px" }}>
                     <thead>
                         <tr>
-                            <th style={{ textAlign: "center" }}>ID Servicio</th>
-                            <th style={{ textAlign: "center" }}>Vehículo</th>
-                            <th style={{ textAlign: "center" }}>Cliente</th>
-                            <th style={{ textAlign: "center" }}>Estatus</th>
-                            <th style={{ textAlign: "center" }}>Rechazos</th>
-                            <th style={{ textAlign: "center" }}>Tiempo Espera / Confirmación</th>
-                            <th style={{ textAlign: "center" }}>Monto</th>
-                            <th style={{ textAlign: "center" }}>Código</th>
-                            <th style={{ textAlign: "center" }}>Conductor</th>
-                            <th style={{ textAlign: "center" }}>Acción</th>
+                            <th style={{ textAlign: "center", padding: "8px 10px", fontSize: "11px" }}>ID</th>
+                            <th style={{ textAlign: "center", padding: "8px 10px", fontSize: "11px" }}>Vehículo</th>
+                            <th style={{ textAlign: "center", padding: "8px 10px", fontSize: "11px" }}>Cliente</th>
+                            <th style={{ textAlign: "center", padding: "8px 10px", fontSize: "11px" }}>Estatus</th>
+                            <th style={{ textAlign: "center", padding: "8px 10px", fontSize: "11px" }}>Rechazos</th>
+                            <th style={{ textAlign: "center", padding: "8px 10px", fontSize: "11px" }}>Tiempo</th>
+                            <th style={{ textAlign: "center", padding: "8px 10px", fontSize: "11px" }}>Monto</th>
+                            <th style={{ textAlign: "center", padding: "8px 10px", fontSize: "11px" }}>Código</th>
+                            <th style={{ textAlign: "center", padding: "8px 10px", fontSize: "11px" }}>Conductor</th>
+                            <th style={{ textAlign: "center", padding: "8px 10px", fontSize: "11px" }}>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -198,44 +200,44 @@ const AdminActiveOrders = () => {
                                 const totalRechazos = o.total_rechazos || 0;
 
                                 return (
-                                    <tr key={o.id}>
+                                    <tr key={o.id} style={{ height: "36px" }}>
                                         {/* ID PEDIDO */}
-                                        <td style={{ fontWeight: 'bold', textAlign: "center", color: "var(--color-primary)" }}>
+                                        <td style={{ fontWeight: 'bold', textAlign: "center", color: "var(--color-primary)", padding: "6px 8px" }}>
                                             #{o.id}
                                         </td>
 
                                         {/* TIPO DE VEHÍCULO */}
-                                        <td style={{ textAlign: "center", fontWeight: "600", textTransform: "capitalize" }}>
+                                        <td style={{ textAlign: "center", fontWeight: "600", textTransform: "capitalize", padding: "6px 8px" }}>
                                             {o.tipo_vehiculo || "--"}
                                         </td>
 
                                         {/* CLIENTE */}
-                                        <td style={{ textAlign: "center" }}>{o.cliente_nombre}</td>
+                                        <td style={{ textAlign: "center", padding: "6px 8px" }}>{o.cliente_nombre}</td>
 
                                         {/* ESTATUS */}
-                                        <td style={{ textAlign: "center" }}>
+                                        <td style={{ textAlign: "center", padding: "6px 8px" }}>
                                             <span style={{ 
-                                                padding: '5px 10px', 
-                                                borderRadius: '6px', 
-                                                fontSize: '11px', 
+                                                padding: '3px 8px', 
+                                                borderRadius: '4px', 
+                                                fontSize: '10px', 
                                                 fontWeight: 'bold', 
                                                 backgroundColor: styles.bg, 
                                                 color: styles.color,
                                                 border: `1px solid ${styles.border}`,
                                                 textTransform: 'uppercase',
                                                 display: 'inline-block',
-                                                minWidth: '90px'
+                                                minWidth: '75px'
                                             }}>
                                                 {(o.estado || "").replace('_', ' ')}
                                             </span>
                                         </td>
 
                                         {/* RECHAZOS */}
-                                        <td style={{ textAlign: "center" }}>
+                                        <td style={{ textAlign: "center", padding: "6px 8px" }}>
                                             <span style={{
-                                                padding: "3px 8px",
-                                                borderRadius: "12px",
-                                                fontSize: "12px",
+                                                padding: "2px 6px",
+                                                borderRadius: "10px",
+                                                fontSize: "11px",
                                                 fontWeight: "bold",
                                                 backgroundColor: totalRechazos > 0 ? "#fee2e2" : "#f3f4f6",
                                                 color: totalRechazos > 0 ? "#991b1b" : "#6b7280"
@@ -245,17 +247,17 @@ const AdminActiveOrders = () => {
                                         </td>
 
                                         {/* TIEMPO DE ESPERA / CONFIRMACIÓN */}
-                                        <td style={{ textAlign: "center" }}>
+                                        <td style={{ textAlign: "center", padding: "6px 8px" }}>
                                             {renderTimeStatus(o)}
                                         </td>
 
                                         {/* MONTO */}
-                                        <td style={{ textAlign: "center", fontWeight: "600", color: "#000" }}>
+                                        <td style={{ textAlign: "center", fontWeight: "600", color: "#000", padding: "6px 8px" }}>
                                             ${o.total_dolar} / Bs {o.total}
                                         </td>
 
                                         {/* CÓDIGO CONDUCTOR */}
-                                        <td style={{ textAlign: "center", fontWeight: "bold", color: "#007bff" }}>
+                                        <td style={{ textAlign: "center", fontWeight: "bold", color: "#007bff", padding: "6px 8px" }}>
                                             {o.codigo_conductor || "--"}
                                         </td>
 
@@ -263,13 +265,14 @@ const AdminActiveOrders = () => {
                                         <td style={{ 
                                             textAlign: "center", 
                                             color: o.repartidor_nombre ? '#2e7d32' : '#d32f2f',
-                                            fontWeight: o.repartidor_nombre ? "bold" : "normal"
+                                            fontWeight: o.repartidor_nombre ? "bold" : "normal",
+                                            padding: "6px 8px"
                                         }}>
-                                            {o.repartidor_nombre || 'Buscando Conductor...'}
+                                            {o.repartidor_nombre || 'Buscando...'}
                                         </td>
 
                                         {/* BOTÓN DESVINCULAR */}
-                                        <td style={{ textAlign: "center" }}>
+                                        <td style={{ textAlign: "center", padding: "6px 8px" }}>
                                             {isUnassignable ? (
                                                 <button
                                                     onClick={() => handleUnassignOrder(o.id, o.repartidor_nombre)}
@@ -278,9 +281,9 @@ const AdminActiveOrders = () => {
                                                         backgroundColor: "#dc3545",
                                                         color: "#fff",
                                                         border: "none",
-                                                        padding: "6px 12px",
-                                                        borderRadius: "6px",
-                                                        fontSize: "12px",
+                                                        padding: "4px 8px",
+                                                        borderRadius: "4px",
+                                                        fontSize: "11px",
                                                         fontWeight: "bold",
                                                         cursor: loadingId === o.id ? "not-allowed" : "pointer",
                                                         opacity: loadingId === o.id ? 0.6 : 1,
@@ -288,10 +291,10 @@ const AdminActiveOrders = () => {
                                                     }}
                                                     title="Quitar pedido al conductor y dejarlo disponible"
                                                 >
-                                                    {loadingId === o.id ? "Quitando..." : "Desvincular"}
+                                                    {loadingId === o.id ? "..." : "Desvincular"}
                                                 </button>
                                             ) : (
-                                                <span style={{ fontSize: "12px", color: "#aaa" }}>--</span>
+                                                <span style={{ fontSize: "11px", color: "#aaa" }}>--</span>
                                             )}
                                         </td>
                                     </tr>
@@ -299,7 +302,7 @@ const AdminActiveOrders = () => {
                             })
                         ) : (
                             <tr>
-                                <td colSpan="10" style={{ textAlign: "center", padding: "30px", color: "#999" }}>
+                                <td colSpan="10" style={{ textAlign: "center", padding: "20px", color: "#999", fontSize: "12px" }}>
                                     No se encontraron pedidos con esos criterios.
                                 </td>
                             </tr>
