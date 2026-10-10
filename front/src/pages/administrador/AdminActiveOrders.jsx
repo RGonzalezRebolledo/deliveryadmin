@@ -7,6 +7,7 @@ const AdminActiveOrders = () => {
     const [orders, setOrders] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("todos");
+    const [loadingId, setLoadingId] = useState(null);
 
     const fetchOrders = async () => {
         try {
@@ -23,23 +24,46 @@ const AdminActiveOrders = () => {
         return () => clearInterval(interval);
     }, []);
 
-    // Función para definir los colores del estatus
-    const getStatusStyles = (status) => {
-        switch ((status || "").toLowerCase()) {
-            case 'pendiente':
-                return { bg: '#fff3cd', color: '#856404', border: '#ffeeba' }; // Amarillo/Dorado
-            case 'asignado':
-                return { bg: '#d1ecf1', color: '#0c5460', border: '#bee5eb' }; // Azul claro
-            case 'en_camino':
-                return { bg: '#e1f5fe', color: '#01579b', border: '#b3e5fc' }; // Azul vibrante
-            case 'entregado':
-                return { bg: '#e2e3e5', color: '#383d41', border: '#d6d8db' }; // Gris
-            default:
-                return { bg: '#f8d7da', color: '#721c24', border: '#f5c6cb' }; // Rojo
+    // Función para desvincular conductor desde el panel
+    const handleUnassignOrder = async (orderId, driverName) => {
+        const confirmMsg = `¿Estás seguro de quitar el servicio #${orderId} del conductor ${driverName || 'asignado'}?\n\nEl servicio volverá a estado PENDIENTE para ser asignado a otro conductor.`;
+        
+        if (!window.confirm(confirmMsg)) return;
+
+        setLoadingId(orderId);
+        try {
+            await axios.post(
+                `${API_BASE_URL}/admin/unassign-order`,
+                { pedidoId: orderId },
+                { withCredentials: true }
+            );
+            alert(`✅ Servicio #${orderId} desvinculado correctamente.`);
+            fetchOrders(); // Recargar tabla
+        } catch (error) {
+            console.error("Error al desvincular el servicio:", error);
+            const apiError = error.response?.data?.error || "No se pudo desvincular el servicio.";
+            alert(`⚠️ Error: ${apiError}`);
+        } finally {
+            setLoadingId(null);
         }
     };
 
-    // Lógica de filtrado
+    // Estilos del estatus
+    const getStatusStyles = (status) => {
+        switch ((status || "").toLowerCase()) {
+            case 'pendiente':
+                return { bg: '#fff3cd', color: '#856404', border: '#ffeeba' };
+            case 'asignado':
+                return { bg: '#d1ecf1', color: '#0c5460', border: '#bee5eb' };
+            case 'en_camino':
+                return { bg: '#e1f5fe', color: '#01579b', border: '#b3e5fc' };
+            case 'entregado':
+                return { bg: '#e2e3e5', color: '#383d41', border: '#d6d8db' };
+            default:
+                return { bg: '#f8d7da', color: '#721c24', border: '#f5c6cb' };
+        }
+    };
+
     const filteredOrders = orders.filter(o => {
         const query = searchTerm.toLowerCase();
         const matchesSearch = 
@@ -117,12 +141,14 @@ const AdminActiveOrders = () => {
                             <th style={{ textAlign: "center" }}>Monto</th>
                             <th style={{ textAlign: "center" }}>Código</th>
                             <th style={{ textAlign: "center" }}>Conductor</th>
+                            <th style={{ textAlign: "center" }}>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredOrders.length > 0 ? (
                             filteredOrders.map(o => {
                                 const styles = getStatusStyles(o.estado);
+                                const isUnassignable = (o.estado === 'asignado' || o.estado === 'en_camino') && o.repartidor_nombre;
 
                                 return (
                                     <tr key={o.id}>
@@ -175,12 +201,39 @@ const AdminActiveOrders = () => {
                                         }}>
                                             {o.repartidor_nombre || 'Buscando Conductor...'}
                                         </td>
+
+                                        {/* BOTÓN DESVINCULAR */}
+                                        <td style={{ textAlign: "center" }}>
+                                            {isUnassignable ? (
+                                                <button
+                                                    onClick={() => handleUnassignOrder(o.id, o.repartidor_nombre)}
+                                                    disabled={loadingId === o.id}
+                                                    style={{
+                                                        backgroundColor: "#dc3545",
+                                                        color: "#fff",
+                                                        border: "none",
+                                                        padding: "6px 12px",
+                                                        borderRadius: "6px",
+                                                        fontSize: "12px",
+                                                        fontWeight: "bold",
+                                                        cursor: loadingId === o.id ? "not-allowed" : "pointer",
+                                                        opacity: loadingId === o.id ? 0.6 : 1,
+                                                        transition: "background-color 0.2s"
+                                                    }}
+                                                    title="Quitar pedido al conductor y dejarlo disponible"
+                                                >
+                                                    {loadingId === o.id ? "Quitando..." : "Desvincular"}
+                                                </button>
+                                            ) : (
+                                                <span style={{ fontSize: "12px", color: "#aaa" }}>--</span>
+                                            )}
+                                        </td>
                                     </tr>
                                 );
                             })
                         ) : (
                             <tr>
-                                <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "#999" }}>
+                                <td colSpan="8" style={{ textAlign: "center", padding: "30px", color: "#999" }}>
                                     No se encontraron pedidos con esos criterios.
                                 </td>
                             </tr>
@@ -195,6 +248,7 @@ const AdminActiveOrders = () => {
 export default AdminActiveOrders;
 
 
+
 // import React, { useEffect, useState } from "react";
 // import axios from "axios";
 
@@ -204,7 +258,6 @@ export default AdminActiveOrders;
 //     const [orders, setOrders] = useState([]);
 //     const [searchTerm, setSearchTerm] = useState("");
 //     const [statusFilter, setStatusFilter] = useState("todos");
-//     const [resettingId, setResettingId] = useState(null);
 
 //     const fetchOrders = async () => {
 //         try {
@@ -220,28 +273,6 @@ export default AdminActiveOrders;
 //         const interval = setInterval(fetchOrders, 10000);
 //         return () => clearInterval(interval);
 //     }, []);
-
-//     // Función para liberar y reiniciar los conductores descartados de un pedido
-//     // const handleResetRejected = async (orderId) => {
-//     //     if (!window.confirm(`¿Deseas reiniciar la lista de conductores rechazados para el Pedido #${orderId}? Volverá a ofrecerse a todos los conductores disponibles respetando la cola.`)) {
-//     //         return;
-//     //     }
-
-//     //     setResettingId(orderId);
-//     //     try {
-//     //         await axios.put(
-//     //             `${API_BASE_URL}/admin/reset-rejected-drivers/${orderId}`,
-//     //             {},
-//     //             { withCredentials: true }
-//     //         );
-//     //         alert(`✅ Pedido #${orderId} liberado con éxito. Se reanudó la búsqueda de repartidores.`);
-//     //         fetchOrders();
-//     //     } catch (error) {
-//     //         alert(error.response?.data?.error || "Error al reiniciar el pedido.");
-//     //     } finally {
-//     //         setResettingId(null);
-//     //     }
-//     // };
 
 //     // Función para definir los colores del estatus
 //     const getStatusStyles = (status) => {
@@ -265,7 +296,8 @@ export default AdminActiveOrders;
 //         const matchesSearch = 
 //             o.id.toString().includes(query) || 
 //             (o.cliente_nombre && o.cliente_nombre.toLowerCase().includes(query)) ||
-//             (o.codigo_conductor && o.codigo_conductor.toLowerCase().includes(query));
+//             (o.codigo_conductor && o.codigo_conductor.toLowerCase().includes(query)) ||
+//             (o.tipo_vehiculo && o.tipo_vehiculo.toLowerCase().includes(query));
 
 //         const matchesStatus = statusFilter === "todos" || o.estado === statusFilter;
 //         return matchesSearch && matchesStatus;
@@ -280,7 +312,7 @@ export default AdminActiveOrders;
 //                 <div style={{ display: "flex", gap: "10px", marginBottom: "12px", flexWrap: "wrap" }}>
 //                     <input 
 //                         type="text" 
-//                         placeholder="Buscar por Nro Pedido, Cliente o Código Conductor..." 
+//                         placeholder="Buscar por Nro Pedido, Cliente, Vehículo o Código Conductor..." 
 //                         value={searchTerm}
 //                         onChange={(e) => setSearchTerm(e.target.value)}
 //                         style={{
@@ -336,14 +368,12 @@ export default AdminActiveOrders;
 //                             <th style={{ textAlign: "center" }}>Monto</th>
 //                             <th style={{ textAlign: "center" }}>Código</th>
 //                             <th style={{ textAlign: "center" }}>Conductor</th>
-//                             {/* <th style={{ textAlign: "center" }}>Acción</th> */}
 //                         </tr>
 //                     </thead>
 //                     <tbody>
 //                         {filteredOrders.length > 0 ? (
 //                             filteredOrders.map(o => {
 //                                 const styles = getStatusStyles(o.estado);
-//                                 const esPendiente = o.estado === "pendiente";
 
 //                                 return (
 //                                     <tr key={o.id}>
@@ -353,8 +383,8 @@ export default AdminActiveOrders;
 //                                         </td>
 
 //                                         {/* TIPO DE VEHÍCULO */}
-//                                         <td style={{ textAlign: "center", fontWeight: "600" }}>
-//                                             {o.tipo_vehiculo || o.vehiculo_descript || "--"}
+//                                         <td style={{ textAlign: "center", fontWeight: "600", textTransform: "capitalize" }}>
+//                                             {o.tipo_vehiculo || "--"}
 //                                         </td>
 
 //                                         {/* CLIENTE */}
@@ -396,39 +426,12 @@ export default AdminActiveOrders;
 //                                         }}>
 //                                             {o.repartidor_nombre || 'Buscando Conductor...'}
 //                                         </td>
-
-//                                         {/* BOTÓN DE ACCIÓN / LIBERAR PEDIDO */}
-//                                         {/* <td style={{ textAlign: "center", width: "1%" }}>
-//                                             {esPendiente ? (
-//                                                 <button
-//                                                     onClick={() => handleResetRejected(o.id)}
-//                                                     disabled={resettingId === o.id}
-//                                                     style={{
-//                                                         backgroundColor: "#27ae60",
-//                                                         color: "#fff",
-//                                                         border: "none",
-//                                                         padding: "6px 12px",
-//                                                         borderRadius: "6px",
-//                                                         fontSize: "0.75rem",
-//                                                         fontWeight: "bold",
-//                                                         cursor: resettingId === o.id ? "not-allowed" : "pointer",
-//                                                         opacity: resettingId === o.id ? 0.6 : 1,
-//                                                         whiteSpace: "nowrap"
-//                                                     }}
-//                                                     title="Limpiar rechazados para volver a ofrecer este servicio a todos los conductores disponibles"
-//                                                 >
-//                                                     {resettingId === o.id ? "Liberando..." : "🔄 Reasignar"}
-//                                                 </button>
-//                                             ) : (
-//                                                 <span style={{ fontSize: "0.75rem", color: "#aaa" }}>--</span>
-//                                             )}
-//                                         </td> */}
 //                                     </tr>
 //                                 );
 //                             })
 //                         ) : (
 //                             <tr>
-//                                 <td colSpan="8" style={{ textAlign: "center", padding: "30px", color: "#999" }}>
+//                                 <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "#999" }}>
 //                                     No se encontraron pedidos con esos criterios.
 //                                 </td>
 //                             </tr>
@@ -441,4 +444,3 @@ export default AdminActiveOrders;
 // };
 
 // export default AdminActiveOrders;
-
